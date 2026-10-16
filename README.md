@@ -64,7 +64,7 @@ Execução de 2026-10-16 22:06–22:15 UTC (`--fresh --until-done`), com o multi
 | Controle negativo (o 36 é barrado) | ❌ entrou em (2100, 2032) sem mensagem nem teleporte |
 
 - **Exp do campo:** resolvida com o #384 junto com uma correção no bot. Na execução anterior, das 21:07, o nível 35 levou 25,5 min. O bot não distribuía os pontos de atributo, então terminou com dano 57 e gastou ~15 min em lutas abandonadas (40 golpes sem matar) contra Chefe_Krill e Orc_Arqueiro_, que têm AC alta. Distribuindo os pontos, o dano chega a ~126 no nível 35, e a escolha de alvo pela exp por segundo eliminou as desistências. Foram 60 kills e nenhuma desistência.
-- **Trava ausente:** confirmada no Railway. Veja [docs/findings/001-campo-de-treino-sem-trava.md](docs/findings/001-campo-de-treino-sem-trava.md).
+- **Trava ausente:** confirmada no Railway. Issue aberta: [Jean1dev/w2pp-OpenWYD#385](https://github.com/Jean1dev/w2pp-OpenWYD/issues/385). Veja [docs/findings/001-campo-de-treino-sem-trava.md](docs/findings/001-campo-de-treino-sem-trava.md).
 
 ## Estrutura
 
