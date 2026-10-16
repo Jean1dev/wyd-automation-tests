@@ -1,0 +1,1189 @@
+{
+ "source": "Jean1dev/w2pp-OpenWYD Release/TMsrv/run (AttributeMap.dat bit 0x80, NPCGener.txt, npc/*)",
+ "cellSize": 4,
+ "cells": 683,
+ "bbox": {
+  "minX": 2064,
+  "minY": 1932,
+  "maxX": 2159,
+  "maxY": 2051
+ },
+ "rows": {
+  "483": [
+   [
+    516,
+    539
+   ]
+  ],
+  "484": [
+   [
+    516,
+    539
+   ]
+  ],
+  "485": [
+   [
+    516,
+    539
+   ]
+  ],
+  "486": [
+   [
+    516,
+    539
+   ]
+  ],
+  "487": [
+   [
+    516,
+    539
+   ]
+  ],
+  "488": [
+   [
+    516,
+    539
+   ]
+  ],
+  "489": [
+   [
+    516,
+    539
+   ]
+  ],
+  "490": [
+   [
+    516,
+    539
+   ]
+  ],
+  "491": [
+   [
+    516,
+    539
+   ]
+  ],
+  "492": [
+   [
+    516,
+    522
+   ],
+   [
+    524,
+    539
+   ]
+  ],
+  "493": [
+   [
+    516,
+    539
+   ]
+  ],
+  "494": [
+   [
+    516,
+    539
+   ]
+  ],
+  "495": [
+   [
+    516,
+    539
+   ]
+  ],
+  "496": [
+   [
+    516,
+    539
+   ]
+  ],
+  "497": [
+   [
+    516,
+    539
+   ]
+  ],
+  "498": [
+   [
+    516,
+    539
+   ]
+  ],
+  "499": [
+   [
+    516,
+    539
+   ]
+  ],
+  "500": [
+   [
+    516,
+    539
+   ]
+  ],
+  "501": [
+   [
+    516,
+    539
+   ]
+  ],
+  "502": [
+   [
+    516,
+    539
+   ]
+  ],
+  "503": [
+   [
+    516,
+    539
+   ]
+  ],
+  "504": [
+   [
+    516,
+    539
+   ]
+  ],
+  "505": [
+   [
+    516,
+    539
+   ]
+  ],
+  "506": [
+   [
+    516,
+    539
+   ]
+  ],
+  "507": [
+   [
+    516,
+    539
+   ]
+  ],
+  "508": [
+   [
+    516,
+    539
+   ]
+  ],
+  "509": [
+   [
+    516,
+    539
+   ]
+  ],
+  "510": [
+   [
+    521,
+    532
+   ]
+  ],
+  "511": [
+   [
+    521,
+    532
+   ]
+  ],
+  "512": [
+   [
+    521,
+    532
+   ]
+  ]
+ },
+ "spawns": [
+  {
+   "gen": 1619,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2147,
+   "y": 2028,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1620,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2147,
+   "y": 2028,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1621,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2137,
+   "y": 2029,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1622,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2137,
+   "y": 2029,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1623,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2139,
+   "y": 2017,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1624,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2139,
+   "y": 2017,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1625,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2124,
+   "y": 2030,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1626,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2124,
+   "y": 2030,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1627,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2130,
+   "y": 2025,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1628,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2130,
+   "y": 2025,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1629,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2128,
+   "y": 2018,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1630,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2128,
+   "y": 2018,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1631,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2119,
+   "y": 2021,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1632,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2114,
+   "y": 2018,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1633,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2114,
+   "y": 2018,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1634,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2115,
+   "y": 2029,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1635,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2104,
+   "y": 2033,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1636,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2104,
+   "y": 2033,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1637,
+   "leader": "Aguia",
+   "follower": "Porco",
+   "x": 2109,
+   "y": 2017,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 65,
+   "level": 2
+  },
+  {
+   "gen": 1609,
+   "leader": "Porco",
+   "follower": "Porco",
+   "x": 2127,
+   "y": 2040,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 295,
+   "level": 3
+  },
+  {
+   "gen": 1610,
+   "leader": "Porco",
+   "follower": "Porco",
+   "x": 2127,
+   "y": 2040,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 295,
+   "level": 3
+  },
+  {
+   "gen": 1611,
+   "leader": "Porco",
+   "follower": "Porco",
+   "x": 2113,
+   "y": 2046,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 295,
+   "level": 3
+  },
+  {
+   "gen": 1612,
+   "leader": "Porco",
+   "follower": "Porco",
+   "x": 2113,
+   "y": 2046,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 295,
+   "level": 3
+  },
+  {
+   "gen": 1613,
+   "leader": "Porco",
+   "follower": "Porco",
+   "x": 2110,
+   "y": 2040,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 295,
+   "level": 3
+  },
+  {
+   "gen": 1614,
+   "leader": "Porco",
+   "follower": "Porco",
+   "x": 2110,
+   "y": 2040,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 295,
+   "level": 3
+  },
+  {
+   "gen": 1615,
+   "leader": "Porco",
+   "follower": "Porco",
+   "x": 2110,
+   "y": 2046,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 295,
+   "level": 3
+  },
+  {
+   "gen": 1616,
+   "leader": "Porco",
+   "follower": "Porco",
+   "x": 2110,
+   "y": 2046,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 295,
+   "level": 3
+  },
+  {
+   "gen": 1617,
+   "leader": "Porco",
+   "follower": "Porco",
+   "x": 2092,
+   "y": 2040,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 295,
+   "level": 3
+  },
+  {
+   "gen": 1618,
+   "leader": "Porco",
+   "follower": "Porco",
+   "x": 2092,
+   "y": 2040,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 295,
+   "level": 3
+  },
+  {
+   "gen": 1638,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2103,
+   "y": 2031,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1639,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2103,
+   "y": 2031,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1640,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2102,
+   "y": 2021,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1641,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2095,
+   "y": 2018,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1642,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2095,
+   "y": 2018,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1643,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2091,
+   "y": 2026,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1644,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2090,
+   "y": 2030,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1645,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2090,
+   "y": 2030,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1646,
+   "leader": "Krill_",
+   "follower": "Gremlin_",
+   "x": 2081,
+   "y": 2027,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1647,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2083,
+   "y": 2021,
+   "range": 0,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1648,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2083,
+   "y": 2021,
+   "range": 0,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1649,
+   "leader": "Krill_",
+   "follower": "Gremlin_",
+   "x": 2074,
+   "y": 2023,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1651,
+   "leader": "Krill_",
+   "follower": "Gremlin_",
+   "x": 2075,
+   "y": 2012,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1652,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2072,
+   "y": 2000,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1653,
+   "leader": "Krill_",
+   "follower": "Gremlin_",
+   "x": 2078,
+   "y": 1993,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1654,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2087,
+   "y": 1992,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1655,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2083,
+   "y": 2008,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1656,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2090,
+   "y": 1996,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1657,
+   "leader": "Krill_",
+   "follower": "Gremlin_",
+   "x": 2097,
+   "y": 1994,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1658,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2094,
+   "y": 2004,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1659,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2103,
+   "y": 1999,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1660,
+   "leader": "Krill",
+   "follower": "Gremlin",
+   "x": 2106,
+   "y": 1998,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 432,
+   "level": 8
+  },
+  {
+   "gen": 1661,
+   "leader": "Rei_Gremlin",
+   "follower": "Serpente",
+   "x": 2113,
+   "y": 2007,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1662,
+   "leader": "Rei_Gremlin",
+   "follower": "Serpente",
+   "x": 2111,
+   "y": 2003,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1663,
+   "leader": "Rei_Gremlin",
+   "follower": "Serpente",
+   "x": 2115,
+   "y": 1996,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1664,
+   "leader": "Rei_Gremlin",
+   "follower": "Serpente",
+   "x": 2122,
+   "y": 1994,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1665,
+   "leader": "Rei_Gremlin",
+   "follower": "Serpente",
+   "x": 2125,
+   "y": 2002,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1666,
+   "leader": "Rei_Gremlin",
+   "follower": "Serpente",
+   "x": 2124,
+   "y": 2011,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1667,
+   "leader": "Rei_Gremlin",
+   "follower": "Gremlin",
+   "x": 2140,
+   "y": 2007,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1668,
+   "leader": "Rei_Gremlin_",
+   "follower": "Gremlin_",
+   "x": 2133,
+   "y": 2002,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1669,
+   "leader": "Rei_Gremlin",
+   "follower": "Gremlin",
+   "x": 2138,
+   "y": 1994,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1670,
+   "leader": "Rei_Gremlin",
+   "follower": "Gremlin",
+   "x": 2146,
+   "y": 2005,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1672,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2139,
+   "y": 1980,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1673,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2149,
+   "y": 1969,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1674,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2137,
+   "y": 1974,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1675,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2128,
+   "y": 1978,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1676,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2123,
+   "y": 1980,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1677,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2120,
+   "y": 1976,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1678,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2112,
+   "y": 1970,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1679,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2098,
+   "y": 1978,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1680,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2098,
+   "y": 1970,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1685,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2083,
+   "y": 1970,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1686,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2083,
+   "y": 1970,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1687,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2083,
+   "y": 1970,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1689,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2096,
+   "y": 1943,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1690,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2101,
+   "y": 1946,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1693,
+   "leader": "Rei_Gremlin_",
+   "follower": "Krill_",
+   "x": 2117,
+   "y": 1949,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1005,
+   "level": 15
+  },
+  {
+   "gen": 1681,
+   "leader": "Chefe_Krill",
+   "follower": "Rei_Gremlin",
+   "x": 2085,
+   "y": 1977,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1208,
+   "level": 17
+  },
+  {
+   "gen": 1682,
+   "leader": "Chefe_Krill",
+   "follower": "Rei_Gremlin",
+   "x": 2086,
+   "y": 1969,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1208,
+   "level": 17
+  },
+  {
+   "gen": 1683,
+   "leader": "Chefe_Krill",
+   "follower": "Rei_Gremlin",
+   "x": 2078,
+   "y": 1976,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 1208,
+   "level": 17
+  },
+  {
+   "gen": 1650,
+   "leader": "Gremlin_Artif",
+   "follower": "Gremlin_Artif",
+   "x": 2082,
+   "y": 2028,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 1313,
+   "level": 18
+  },
+  {
+   "gen": 1671,
+   "leader": "Krill_Gigante",
+   "follower": "Krill_Gigante",
+   "x": 2147,
+   "y": 2005,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 1936,
+   "level": 23
+  },
+  {
+   "gen": 1697,
+   "leader": "Orc_Arqueiro_",
+   "follower": "Orc_Arqueiro_",
+   "x": 2138,
+   "y": 1941,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 2212,
+   "level": 25
+  },
+  {
+   "gen": 1684,
+   "leader": "Orc_Sniper",
+   "follower": "Orc_Sniper",
+   "x": 2079,
+   "y": 1976,
+   "range": 1,
+   "maxNumMob": 1,
+   "exp": 9415,
+   "level": 34
+  },
+  {
+   "gen": 1688,
+   "leader": "Chefe_Krill_",
+   "follower": "Rei_Gremlin_",
+   "x": 2085,
+   "y": 1945,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 4895,
+   "level": 40
+  },
+  {
+   "gen": 1691,
+   "leader": "Chefe_Krill_",
+   "follower": "Rei_Gremlin_",
+   "x": 2110,
+   "y": 1942,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 4895,
+   "level": 40
+  },
+  {
+   "gen": 1692,
+   "leader": "Chefe_Krill_",
+   "follower": "Rei_Gremlin_",
+   "x": 2119,
+   "y": 1941,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 4895,
+   "level": 40
+  },
+  {
+   "gen": 1694,
+   "leader": "Chefe_Krill_",
+   "follower": "Rei_Gremlin_",
+   "x": 2130,
+   "y": 1942,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 4895,
+   "level": 40
+  },
+  {
+   "gen": 1695,
+   "leader": "Chefe_Krill_",
+   "follower": "Rei_Gremlin_",
+   "x": 2128,
+   "y": 1948,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 4895,
+   "level": 40
+  },
+  {
+   "gen": 1696,
+   "leader": "Chefe_Krill_",
+   "follower": "Rei_Gremlin_",
+   "x": 2141,
+   "y": 1953,
+   "range": 1,
+   "maxNumMob": 3,
+   "exp": 4895,
+   "level": 40
+  },
+  {
+   "gen": 4176,
+   "leader": "Orc_Guerreiro",
+   "follower": "Orc_Guerreiro",
+   "x": 2140,
+   "y": 1947,
+   "range": 3,
+   "maxNumMob": 1,
+   "exp": 8854,
+   "level": 60
+  }
+ ]
+}
