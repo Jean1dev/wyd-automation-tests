@@ -115,6 +115,16 @@ export function attack(r: AttackRequest): Buffer {
   return b;
 }
 
+/** MSG_ApplyBonus (0x0277), 6 B: BonusType i16@0 (0 = atributo), Detail i16@2 (0 Str, 1 Int, 2 Dex, 3 Con), TargetID u16@4. */
+export const BONUS_SCORE = 0;
+export const STAT = { str: 0, int: 1, dex: 2, con: 3 } as const;
+export function applyBonus(detail: number, bonusType = BONUS_SCORE): Buffer {
+  const b = Buffer.alloc(6);
+  b.writeInt16LE(bonusType, 0);
+  b.writeInt16LE(detail, 2);
+  return b;
+}
+
 /** MSG_MessageChat (0x0333): String[96]. */
 export function chat(text: string): Buffer {
   const b = Buffer.alloc(96);
@@ -164,6 +174,7 @@ export interface CharacterSnapshot {
   name: string;
   exp: bigint;
   level: number;
+  damage: number;
   maxHp: number;
   hp: number;
   clientId: number;
@@ -183,6 +194,7 @@ export function parseCNFCharacterLogin(body: Buffer): CharacterSnapshot {
     name: cstr(body, mob, 12),
     exp: body.readBigInt64LE(mob + 32),
     level: body.readInt32LE(score),
+    damage: body.readInt32LE(score + 8),
     maxHp: body.readInt32LE(score + 16),
     hp: body.readInt32LE(score + 24),
     slot: body.readUInt16LE(1028),
@@ -196,6 +208,7 @@ export interface MobView {
   x: number;
   y: number;
   level: number;
+  ac: number;
   maxHp: number;
   hp: number;
   merchant: number;
@@ -215,6 +228,7 @@ export function parseCreateMob(body: Buffer): MobView {
     x: body.readInt16LE(0),
     y: body.readInt16LE(2),
     level: body.readInt32LE(score),
+    ac: body.readInt32LE(score + 4),
     merchant: body[score + 12],
     maxHp: body.readInt32LE(score + 16),
     hp: body.readInt32LE(score + 24),
@@ -255,18 +269,19 @@ export function parseAttack(body: Buffer): AttackEcho {
   };
 }
 
-/** UpdateScore (0x0336), 140 B: Level@0 MaxHp@16 Hp@24 … CurrHp@124. */
-export function parseUpdateScore(body: Buffer): { level: number; maxHp: number; hp: number } {
+/** UpdateScore (0x0336), 140 B: Level@0 Ac@4 Damage@8 MaxHp@16 Hp@24 … CurrHp@124. */
+export function parseUpdateScore(body: Buffer): { level: number; damage: number; maxHp: number; hp: number } {
   return {
     level: body.readInt32LE(0),
+    damage: body.readInt32LE(8),
     maxHp: body.readInt32LE(16),
     hp: body.length >= 128 ? body.readInt32LE(124) : body.readInt32LE(24),
   };
 }
 
-/** UpdateEtc (0x0337), 36 B: Hold@0 Exp i64@4 … Coin@28. */
-export function parseUpdateEtc(body: Buffer): { exp: bigint; coin: number } {
-  return { exp: body.readBigInt64LE(4), coin: body.readInt32LE(28) };
+/** UpdateEtc (0x0337), 36 B: Hold@0 Exp i64@4 Learn u64@12 ScoreBonus u16@20 … Coin@28. */
+export function parseUpdateEtc(body: Buffer): { exp: bigint; scoreBonus: number; coin: number } {
+  return { exp: body.readBigInt64LE(4), scoreBonus: body.readUInt16LE(20), coin: body.readInt32LE(28) };
 }
 
 /** SetHpMp (0x0181): Hp@0 Mp@4 · SetHpDam (0x018A): Hp@0 Dam@4. */

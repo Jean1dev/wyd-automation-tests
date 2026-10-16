@@ -14,6 +14,7 @@ export const Op = {
   AttackOne: 0x039d,
   AttackTwo: 0x039e,
   Restart: 0x0289, // reviver após a morte
+  ApplyBonus: 0x0277, // distribuir ponto de atributo
   MessageChat: 0x0333,
   MessageWhisper: 0x0334,
   Ping: 0x03a0,

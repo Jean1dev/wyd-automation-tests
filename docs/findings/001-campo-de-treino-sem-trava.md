@@ -1,6 +1,6 @@
 # 001 — Campo de Treino sem trava de nível no servidor Go
 
-**Status:** aberto. Detectado na leitura do código e ainda não confirmado no Railway: o cenário `training-field-lv35` foi pausado no nível exibido 26 por causa da exp lenta do campo ([w2pp-OpenWYD#383](https://github.com/Jean1dev/w2pp-OpenWYD/issues/383)).
+**Status:** aberto, **confirmado no Railway** em 2026-10-16 (execuções `reports/2026-10-16T21-07-12-674Z-training-field-lv35` e `reports/2026-10-16T22-06-51-007Z-training-field-lv35`): o personagem com nível exibido 36 entrou no campo em (2100, 2032) sem mensagem nem teleporte. O PR [w2pp-OpenWYD#384](https://github.com/Jean1dev/w2pp-OpenWYD/pull/384) corrigiu a exp do campo, mas deixou a trava fora do escopo.
 **Cenário:** `npm run scenario:training-field`
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (commit inspecionado `931f097`)
 

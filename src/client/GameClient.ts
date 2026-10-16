@@ -35,6 +35,10 @@ export interface SelfState {
   exp: bigint;
   hp: number;
   maxHp: number;
+  /** Dano do CurrentScore (base + atributos + arma), como o servidor calcula. */
+  damage: number;
+  /** Pontos de atributo livres; undefined até o servidor mandar um UpdateEtc. */
+  scoreBonus?: number;
   coin: number;
 }
 
@@ -228,7 +232,7 @@ export class GameClient extends EventEmitter {
         const s = P.parseCNFCharacterLogin(b);
         this.mobs.clear();
         this.connId = s.clientId;
-        this.self = { name: s.name, clientId: s.clientId, x: s.x, y: s.y, level: s.level, exp: s.exp, hp: s.hp, maxHp: s.maxHp, coin: 0 };
+        this.self = { name: s.name, clientId: s.clientId, x: s.x, y: s.y, level: s.level, exp: s.exp, hp: s.hp, maxHp: s.maxHp, damage: s.damage, coin: 0 };
         break;
       }
       case Op.CreateMob:
@@ -285,13 +289,13 @@ export class GameClient extends EventEmitter {
         if (me && f.header.id === me.clientId && b.length >= 28) {
           const s = P.parseUpdateScore(b);
           if (s.level !== me.level) this.emit('level', { from: me.level, to: s.level, seq: f.seq });
-          me.level = s.level; me.maxHp = s.maxHp; me.hp = s.hp;
+          me.level = s.level; me.maxHp = s.maxHp; me.hp = s.hp; me.damage = s.damage;
         }
         break;
       case Op.UpdateEtc:
         if (me && b.length >= 32) {
           const e = P.parseUpdateEtc(b);
-          me.exp = e.exp; me.coin = e.coin;
+          me.exp = e.exp; me.coin = e.coin; me.scoreBonus = e.scoreBonus;
         }
         break;
       case Op.SetHpMp:

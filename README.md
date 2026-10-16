@@ -29,7 +29,7 @@ npm test                   # codec contra os 97 vetores de transporte do webclie
 `npm run scenario:training-field`
 
 1. Cria um personagem novo (classe de `WYD_CHAR_CLASS`) e confere que ele começa no nível exibido 1.
-2. Sai de Armia, entra no Campo de Treino e upa até o nível exibido 35 matando os mobs do campo. A área de caça muda conforme o nível: Águia/Porco → Gremlin/Krill → Rei Gremlin → Krill Gigante/Orcs. O bot recua para descansar com HP baixo e revive se morrer.
+2. Sai de Armia, entra no Campo de Treino e upa até o nível exibido 35 matando os mobs do campo. Como um jogador comum, o bot distribui os pontos de atributo de cada nível (tudo em Str). A área e o alvo são escolhidos pela exp por segundo que o dano atual rende, calculada a partir do AC e do HP de cada mob. Um mob que não morre em 40 golpes fica de fora. O bot recua para descansar com HP baixo e revive se morrer.
 3. **Controle positivo:** no nível exibido 35, sai para Armia e volta ao campo. Deve entrar normalmente.
 4. Continua upando até o nível exibido 36.
 5. **Controle negativo:** sai para Armia e tenta entrar de novo. Deve receber a mensagem "Somente nível 35 ou inferior pode entrar no campo de treinamento." e/ou ser teleportado para Armia, sem ficar dentro do campo.
@@ -52,10 +52,19 @@ Códigos de saída: `0` passou ou ainda em progresso · `1` falhou · `3` erro d
 
 Cada execução grava `reports/<data>-training-field-lv35/` com `report.json` (veredito, verificações, curva de nível, kills e exp por mob) e `events.jsonl` (log sanitizado, sem senha nem PIN).
 
-### Situação (2026-10-16): pausado aguardando o servidor
+### Situação (2026-10-16): meta de tempo cumprida, trava ausente
 
-- **Exp do campo insuficiente:** o nível 35 não sai em 15 min. Na medição, o nível exibido 16 veio com ~14 min de jogo e o 26 com ~76 min, a cerca de 900–1.000 de exp/min; a meta exige cerca de 11.700. Issue aberta: [Jean1dev/w2pp-OpenWYD#383](https://github.com/Jean1dev/w2pp-OpenWYD/issues/383). O cenário foi interrompido no nível exibido 26 e será retomado quando o servidor for corrigido. Para medir de novo do zero: `--fresh --until-done`.
-- **Trava ausente:** o servidor Go ainda não implementa a trava do Campo de Treino; a regra só existe no servidor C++ legado. Até ela ser portada, a verificação negativa deve falhar. Veja [docs/findings/001-campo-de-treino-sem-trava.md](docs/findings/001-campo-de-treino-sem-trava.md).
+Execução de 2026-10-16 22:06–22:15 UTC (`--fresh --until-done`), com o multiplicador de exp do campo no servidor ([Jean1dev/w2pp-OpenWYD#384](https://github.com/Jean1dev/w2pp-OpenWYD/pull/384)). Veredito: **falhou**, só pela trava.
+
+| Verificação | Resultado |
+|---|---|
+| Começa no nível exibido 1 | ✅ |
+| Nível exibido 35 em até 15 min | ✅ **6,6 min** (nível 30 com 4 min) |
+| Controle positivo (o 35 entra no campo) | ✅ |
+| Controle negativo (o 36 é barrado) | ❌ entrou em (2100, 2032) sem mensagem nem teleporte |
+
+- **Exp do campo:** resolvida com o #384 junto com uma correção no bot. Na execução anterior, das 21:07, o nível 35 levou 25,5 min. O bot não distribuía os pontos de atributo, então terminou com dano 57 e gastou ~15 min em lutas abandonadas (40 golpes sem matar) contra Chefe_Krill e Orc_Arqueiro_, que têm AC alta. Distribuindo os pontos, o dano chega a ~126 no nível 35, e a escolha de alvo pela exp por segundo eliminou as desistências. Foram 60 kills e nenhuma desistência.
+- **Trava ausente:** confirmada no Railway. Veja [docs/findings/001-campo-de-treino-sem-trava.md](docs/findings/001-campo-de-treino-sem-trava.md).
 
 ## Estrutura
 
