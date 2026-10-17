@@ -95,7 +95,7 @@ export interface CastResult {
   mpBefore: number;
   special: number;
   /** Eco do servidor (o próprio pacote com o dano e o MP calculados por ele). */
-  echo?: { skillIndex: number; currentMp: number; reqMp: number; motion: number; dam: { targetId: number; damage: number }[] };
+  echo?: { skillIndex: number; currentHp: number; currentMp: number; reqMp: number; motion: number; dam: { targetId: number; damage: number }[] };
   mpSpent?: number;
   /** Frames de MP (SetHpMp) e avisos recebidos em vez do eco. */
   setHpMp: { hp: number; mp: number }[];
@@ -150,7 +150,7 @@ export async function castSkill(c: GameClient, log: Logger, skill: number, targe
     const f = await c.waitFor((x) => isAttack(x) && x.body.length >= 56 && P.parseAttack(x.body).attackerId === me.clientId && P.parseAttack(x.body).skillIndex === skill && P.parseAttack(x.body).motion !== 254,
       { timeoutMs: waitMs, since, what: `eco da skill ${skill}` });
     const e = P.parseAttack(f.body);
-    r.echo = { skillIndex: e.skillIndex, currentMp: e.currentMp, reqMp: e.reqMp, motion: e.motion, dam: e.dam };
+    r.echo = { skillIndex: e.skillIndex, currentHp: e.currentHp, currentMp: e.currentMp, reqMp: e.reqMp, motion: e.motion, dam: e.dam };
     r.mpSpent = r.mpBefore - e.currentMp;
     await sleep(300); // SendAffect / UpdateScore dos alvos
   } catch {

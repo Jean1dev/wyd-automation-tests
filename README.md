@@ -15,7 +15,7 @@ cp .env.example .env
 npm run account:create     # cria uma conta no portal e preenche WYD_ACCOUNT/WYD_PASSWORD/WYD_PIN
 npm run account:create -- --second   # segunda conta (WYD_ACCOUNT_B/WYD_PASSWORD_B), só para o cenário de troca
 npm run account:create -- --arch     # conta do cenário do Arch (WYD_ACCOUNT_ARCH/WYD_PASSWORD_ARCH)
-npm run account:create -- --foema    # conta do cenário da Magia Negra (WYD_ACCOUNT_FOEMA/WYD_PASSWORD_FOEMA)
+npm run account:create -- --foema    # conta dos cenários da Foema (WYD_ACCOUNT_FOEMA/WYD_PASSWORD_FOEMA)
 ```
 
 O `.env` aponta por padrão para o tm-server do Railway (`reseau.proxy.rlwy.net:56950`, versão de cliente 12000). Ele nunca vai para o Git.
@@ -350,13 +350,71 @@ Execuções de 2026-10-17 entre 17:02 e 17:28 UTC (`--fresh --until-done`, retom
 
 Na primeira tentativa do Trovão, a conexão caiu 4 s depois do cast. Um processo órfão de uma execução anterior, que tinha sido interrompida, entrou na mesma conta ("Conta desconectada por conexão simultânea."). O `--skill 37` repetiu o cast numa sessão estável, e ele passou.
 
+## Cenário 7 — Skills de Magia Branca da Foema
+
+`npm run scenario:foema-white` (a mesma conta do cenário 6, com outra Foema: `npm run account:create -- --foema`)
+
+O mesmo cenário do 6 (`src/scenarios/foemaSkillTree.ts --tree branca`), agora na árvore 1. São as skills 24–31, bits 0–7 do `LearnedSkill`, com maestria em `Special[1]`. Nos requisitos do ItemList, o campo "ReqInt" é comparado com `Special[1]`.
+
+| id | Skill | Pontos | Requisito (nível exibido / Special[1]) | Como o bot testa |
+|---|---|---|---|---|
+| 24 | Flecha Mágica | 12 | 1 / 0 | dano num mob |
+| 25 | Desintoxicar | 42 | 20 / 0 | em si mesma: sem dano, MP certo |
+| 26 | Flash | 66 | 34 / 0 | nos mobs em volta: sem dano, MP certo; conta os ataques dos alvos antes e depois |
+| 27 | Cura | 48 | 1 / 0 | em si mesma, depois de perder HP: +2×Special + 100 (teto 1100) |
+| 28 | Choque Divino | 78 | 58 / 86 | dano num mob |
+| 29 | Recuperar | 48 | 69 / 102 | em si mesma, depois de perder HP: +3×Special/2 + 150 |
+| 30 | Julgamento Divino | 102 | 133 / 180 | em mobs colados: dano + o HP da Foema em cada alvo, e ela fica com HP/6 + 1 a cada alvo |
+| 31 | Renascimento (8ª) | 281 | 220 / 200, mais as 7 anteriores e 50M de gold | só a recusa sem o gold |
+
+Os Gremlins não atacam sozinhos, porque o clã deles não puxa briga. Por isso, para testar as curas, a Foema usa o Julgamento Divino em si mesma (fica com HP/6 + 1) quando ele já está aprendido; antes disso, espera os mobs tirarem HP.
+
+Para o Julgamento em vários alvos, o bot espera dois Gremlins, andando, ficarem a até 2 tiles um do outro e para colado nos dois. O dano base sorteia entre 90% e 110% (`combat.SkillDamage`). Então, entre alvos com a mesma AC, o dano base de cada alvo (dano − HP de antes) tem que ser pelo menos 90/110 do primeiro.
+
+As opções são as do cenário 6. `--skill` aceita uma lista, por exemplo `--skill 27,29,30`. O estado fica em `state/foema-white-magic.json` e os relatórios em `reports/<data>-foema-white-magic/`.
+
+### Situação (2026-10-17): falha no Julgamento Divino com vários alvos
+
+Execuções de 2026-10-17 entre 17:50 e 18:22 UTC (`--until-done` e duas vezes `--skill 27,29,30`), com a Foema `bot05clvd48c`: 29 min de jogo e 219 Poeiras de Fada.
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast |
+|---|---|---|---|
+| 24 Flecha Mágica | ✅ recusada no 4 | 5 | ✅ 57 de dano / MP 5 (5) |
+| 25 Desintoxicar | ✅ `ReqNotMet` no 19 | 20 | ✅ sem dano / MP 12 (12) |
+| 26 Flash | ✅ no 40 | 41 | ✅ sem dano / MP 40 (40); o alvo parou de atacar (1 ataque antes, 0 depois) |
+| 27 Cura | ✅ no 56 | 57 | ✅ +500, HP 129 → 629 / MP 30 (30) |
+| 28 Choque Divino | ✅ no 82 | 83 | ✅ 1021 de dano / MP 42 (42) |
+| 29 Recuperar | ✅ no 98 | 99 | ✅ +450, HP 129 → 579 / MP 60 (60) |
+| 30 Julgamento Divino | ✅ no 132 | 133 | ✅ num alvo; ❌ em dois (abaixo) |
+
+- **Controles:**
+  - Desintoxicar não aprendido: descartado. ✅
+  - Sem MP: descartado. ✅
+  - Alvo a 9 tiles, com alcance 6: dano 0. ✅
+- **Compra da skill como item:** ❌ o Foema_Ancian deu a skill 5025 pelo `MSG_Buy`, o mesmo problema do cenário 6 ([#391](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391)).
+- **Reaprender e Renascimento:**
+  - Reaprender com 281 pontos livres: `AlreadyLearned`. ✅
+  - Renascimento sem os 50M: `NotEnoughCoin`, e nada muda. ✅
+- **Relogin:** `Learn` 0x7F e `SkillBonus` 281. ✅
+- **O que não foi exercitado:**
+  - o Desintoxicar tirando um debuff: nenhum mob daqui aplica debuff, e a lentidão só vem de outro jogador;
+  - o Renascimento revivendo alguém.
+- **Julgamento Divino em dois Gremlins:** ❌ a Foema estava com 768 de HP.
+  - O 1º alvo levou 2875 e o 2º, 2449.
+  - Com o HP de antes somado aos dois, como no legado, o dano base do 2º seria 1681, abaixo do mínimo possível (1914).
+  - Somando o HP já reduzido (129), ele dá 2320, dentro da faixa.
+  - O Go soma o `e.HP` atual alvo a alvo (`combat.go:710`); o legado soma o HP guardado antes do laço (`_MSG_Attack.cpp:281`).
+  - Issue: [Jean1dev/w2pp-OpenWYD#392](https://github.com/Jean1dev/w2pp-OpenWYD/issues/392). Veja [docs/findings/004-julgamento-divino-hp-por-alvo.md](docs/findings/004-julgamento-divino-hp-por-alvo.md).
+
+Na primeira execução, os mobs não tiraram HP e só um Gremlin ficou colado. O bot passou a derrubar o HP com o Julgamento e a procurar dois Gremlins juntos. Na segunda tentativa, o filtro de alvos usava o nome igual ao do primeiro ("Gremlin" e "Gremlin_" são nomes diferentes); agora usa a mesma AC.
+
 ## Estrutura
 
 ```
 src/protocol/   codec CPSock (keytable, encode/decode, framer), opcodes e pacotes no layout do servidor Go
 src/client/     GameClient (TCP, relógio de ClientTick, estado do mundo, waitFor) e logger
 src/bot/        sessão (login/PIN/personagem), movimento, viagens (Grifo, tiles), combate, grind, sobrevivência, NPCs (loja, itens, quest), quests de arena, build de atributos e maestria, skills (aprender e conjurar), equipamento, troca entre jogadores e progresso
-src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento), criação do Arch e Magia Negra da Foema (skills, mestre e campo de teste)
+src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento), criação do Arch e as árvores de Magia Negra e Branca da Foema (skills, mestre e campo de teste)
 src/scenarios/  cenários de teste e peças comuns (common.ts)
 scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja, equipamento/Grifo, lista de personagens)
 tests/          testes unitários (vitest)
