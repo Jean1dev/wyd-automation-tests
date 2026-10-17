@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  BLACK_MAGIC, BM_MAGIC, BM_SUMMON, BM_TRANSFORM, buffGain, HT_T1, HT_T2, HT_T3, cumulativePoints, summonCount, transformScore, healAmount, judgmentHp, learnBit, learnLevel, manaCost, masteryCapAt, skillIn, skillPointsAt, SPECIAL_MAGIC, WHITE_MAGIC,
+  assaultScore, BLACK_MAGIC, BM_MAGIC, BM_SUMMON, BM_TRANSFORM, buffGain, HT_T1, HT_T2, HT_T3, possessedGain, TK_T1, TK_T2, TK_T3, cumulativePoints, summonCount, transformScore, healAmount, judgmentHp, learnBit, learnLevel, manaCost, masteryCapAt, skillIn, skillPointsAt, SPECIAL_MAGIC, WHITE_MAGIC,
 } from '../../src/world/skillTrees.ts';
 
 describe('árvores de skills da Foema', () => {
@@ -83,5 +83,17 @@ describe('árvores de skills da Foema', () => {
   it('Meditação e "Escudo Dourado" (affects 21 e 31) mexem na AC', () => {
     expect(buffGain(21, 15, 123)).toBe(-51);
     expect(buffGain(31, 150, 82)).toBe(191);
+  });
+
+  it('TransKnight: bits, pontos e nível de cada skill (a árvore 1 soma 689: o Destino só no nível 223)', () => {
+    expect([TK_T1, TK_T2, TK_T3].map((t) => t.skills.reduce((m, k) => m | learnBit(k.id), 0))).toEqual([0xff, 0xff00, 0xff0000]);
+    expect(TK_T1.skills.map((k) => learnLevel(TK_T1, k.id))).toEqual([8, 24, 46, 87, 98, 125, 155, 222]);
+    expect(TK_T2.skills.map((k) => learnLevel(TK_T2, k.id))).toEqual([7, 22, 45, 71, 95, 119, 149, 219]);
+    expect(TK_T3.skills.map((k) => learnLevel(TK_T3, k.id))).toEqual([26, 23, 43, 69, 91, 120, 150, 219]);
+  });
+
+  it('Assalto pelo legado (×9/10 no HP máximo) e Possuído pela conta do Go', () => {
+    expect(assaultScore({ damage: 250, maxHp: 145 })).toEqual({ damage: 280, maxHp: 130 });
+    expect(possessedGain(87, 10)).toBe(75);
   });
 });

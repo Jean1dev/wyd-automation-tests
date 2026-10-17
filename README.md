@@ -18,6 +18,7 @@ npm run account:create -- --arch     # conta do cenário do Arch (WYD_ACCOUNT_AR
 npm run account:create -- --foema    # conta dos cenários da Foema (WYD_ACCOUNT_FOEMA/WYD_PASSWORD_FOEMA)
 npm run account:create -- --bm       # conta dos cenários do BeastMaster (WYD_ACCOUNT_BM/WYD_PASSWORD_BM)
 npm run account:create -- --ht       # conta dos cenários da Huntress (WYD_ACCOUNT_HT/WYD_PASSWORD_HT)
+npm run account:create -- --tk       # conta dos cenários do TransKnight (WYD_ACCOUNT_TK/WYD_PASSWORD_TK)
 ```
 
 O `.env` aponta por padrão para o tm-server do Railway (`reseau.proxy.rlwy.net:56950`, versão de cliente 12000). Ele nunca vai para o Git.
@@ -596,13 +597,79 @@ Execuções de 2026-10-17 entre 21:04 e 21:46 UTC, cerca de 13 min de jogo por �
   - não é uma divergência do Go, e por isso não há issue; o comentário "// 22" do legado sugere que o bit certo seria o 22.
   - Na primeira execução, o bot esperava +65; a verificação agora segue o legado.
 
+## Cenário 11 — Skills do TransKnight (três árvores)
+
+```
+npm run account:create -- --tk   # conta própria (WYD_ACCOUNT_TK): um TK por árvore
+npm run scenario:tk-1            # 0–7, Special[1]
+npm run scenario:tk-2            # 8–15, Special[2]
+npm run scenario:tk-3            # 16–23, Special[3]
+```
+
+É o mesmo cenário das outras classes (`src/scenarios/skillTree.ts --tree tk-…`):
+- **Mestre:** o **Cap.Cavaleiros** (2144,2120), que tem Merchant 19 e vende 5000–5023.
+- **Build:** "TransKnight misto".
+- **Nomes:** seguem o SkillData e o `docs/migration/skills/transknight.md` (o ItemList troca 3 e 13).
+
+| Árvore | Skill | Como o bot testa |
+|---|---|---|
+| 1 | 0 Giro da Fúria | dano em área |
+| | 1 Toque Sagrado | debuff sem dano |
+| | 2 Golpe Duplo, 4 Fanatismo | dano |
+| | 3 Possuído | affect 14: Con + v e HP máximo + 2v, v = Level×3/4 + 10 (a conta do Go, que segue o "Buff Loop.txt" de propósito; o HP sai × o EF_HPADD do equipamento) |
+| | 5 Aura da Vida | affect (tick 17) |
+| | 6 Fúria Divina | puxa o mob para junto do TK (com chance; até 6 casts num mob a 3–5 tiles) |
+| | 7 Destino (8ª) | a recusa; os pontos somam 689, então ela vem no nível exibido 223 |
+| 2 | 8 Carga, 10 Golpe Mortal, 12 Espada da Fênix | dano (alcance 1) |
+| | 9 Mestre das Armas, 14 Noção de Combate | passivas |
+| | 11 Assalto | affect 13: HP máximo ⌊M×9/10⌋ do legado, com o EF_HPADD; o dano fica informativo |
+| | 13 Samaritano | affect 24 (o Go diverge do legado de propósito, issue #267) |
+| | 15 Armadura Crítica (8ª) | a recusa |
+| 3 | 16 Perseguição | debuff sem dano |
+| | 17 Espada Flamejante | dano em área |
+| | 18, 19, 20, 21 | dano |
+| | 22 Exterminar | gasta todo o MP e soma MP + Int/2 ao dano |
+| | 23 Tempestade de Gelo (8ª) | a recusa |
+
+Os estados ficam em `state/tk-tree{1,2,3}.json`. Antes de medir um buff, o bot espera o mesmo affect de uma execução anterior acabar.
+
+### Situação (2026-10-17): falha no Assalto (HP máximo +1)
+
+Execuções de 2026-10-17 entre 22:10 e 23:30 UTC:
+
+| Árvore | TK | Destaques |
+|---|---|---|
+| 1 | `bot0cm6n9gu5` | Giro da Fúria em área; Golpe Duplo 103; Fanatismo 498; Possuído com Con +160 e HP máximo +336 (= 2×160 × 1,05 do HPADD); Fúria Divina puxou o mob no 3º cast |
+| 2 | `bot075uxuiek` | Carga 171; Golpe Mortal 1038; Espada da Fênix 1978; Samaritano com o affect; ❌ Assalto |
+| 3 | `bot0a4p1o285` | Espada Flamejante em área; dano de 157 a 607; Exterminar com o MP 262 → 0 e dano 1072 |
+
+- **Nas três árvores:**
+  - recusa um nível antes ✅;
+  - aprender com o desconto exato ✅;
+  - controles ✅;
+  - reaprender ✅;
+  - 8ª sem os 50M ✅;
+  - relogin ✅.
+- **Compra da skill como item:** ❌ também no Cap.Cavaleiros ([#391](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391)).
+- **Assalto:** ❌ o HP máximo ficou 1 acima do legado.
+  - O legado faz `MaxHp×9/10` (`Basedef.cpp:4036`); o Go faz `MaxHP − MaxHP/10` (`affect_score.go:144`).
+  - Com M = 435: legado 410, Go 411. Com M = 1103: legado 1041, Go 1042.
+  - É o mesmo arredondamento da transformação. O caso entrou no [#394](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394), que agora cobre os dois.
+- **A investigar:** o dano do Assalto (654 → 830, Level 200) não é comparável direto.
+  - O Go separa o dano da arma e aplica os +15% e o `DAMAGEMULTI` só na parte base (`item.go` `effectiveDamage`, que o próprio comentário diz divergir "alguns pontos").
+  - Falta confirmar se o legado põe a arma no `CurrentScore.Damage`.
+- **Correções no bot durante as execuções:**
+  - a Fúria Divina mirava Gremlins já colados (puxar não mudava nada);
+  - o controle de MP da Carga procurava mob a −1 tile;
+  - o HP do Possuído não levava em conta o EF_HPADD +5% do equipamento inicial do TK.
+
 ## Estrutura
 
 ```
 src/protocol/   codec CPSock (keytable, encode/decode, framer), opcodes e pacotes no layout do servidor Go
 src/client/     GameClient (TCP, relógio de ClientTick, estado do mundo, waitFor) e logger
 src/bot/        sessão (login/PIN/personagem), movimento, viagens (Grifo, tiles), combate, grind, sobrevivência, NPCs (loja, itens, quest), quests de arena, build de atributos e maestria, skills (aprender e conjurar), equipamento, troca entre jogadores e progresso
-src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento), criação do Arch e as árvores de skills da Foema, do BeastMaster e da Huntress (skills, mestre e campo de teste)
+src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento), criação do Arch e as árvores de skills das quatro classes (skills, mestre e campo de teste)
 src/scenarios/  cenários de teste e peças comuns (common.ts)
 scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja, equipamento/Grifo, lista de personagens, resumo de árvore de skills)
 tests/          testes unitários (vitest)

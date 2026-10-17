@@ -5,6 +5,7 @@
 // - Foema (classe 1): Magia Branca 24–31, Magia Negra 32–39, Magia Especial 40–47.
 // - BeastMaster (classe 2): magias 48–55, evocações 56–63, transformações 64–71.
 // - Huntress (classe 3): árvores 72–79, 80–87 e 88–95.
+// - TransKnight (classe 0): árvores 0–7, 8–15 e 16–23.
 // - Dados: Release/Common/SkillData.csv. Requisitos para aprender: ItemList.csv 5000 + skill,
 //   "ReqLvl.ReqStr.ReqInt.ReqDex.ReqCon", em que ReqInt/ReqDex/ReqCon são comparados com
 //   Special[1]/[2]/[3] (handler/skill.go learnSkill; legado _MSG_ApplyBonus.cpp:131-249). A 8ª
@@ -13,6 +14,7 @@
 import type { NpcSpec } from '../bot/npc.ts';
 import type { Point } from './coveiro.ts';
 
+export const TRANSKNIGHT = 0;
 export const FOEMA = 1;
 export const BEASTMASTER = 2;
 export const HUNTRESS = 3;
@@ -40,10 +42,12 @@ export const BM_MASTER: NpcSpec = { name: 'Mestre_Archi', merchant: 19, pos: { x
  *   com `passiveAc`, soma Special[3]/3 + 10 de AC ao ser aprendida (Proteção das Sombras);
  * - illusion: a Ilusão da Huntress, que é um movimento MSG_Action3 com 45 de MP;
  * - utility: usada fora do combate (Alquimia, Extração na combinação de itens): só se aprende;
+ * - pull: Fúria Divina, que puxa o alvo para junto do TK (com chance; handler/combat.go applyDivineFury);
+ * - exterminate: Exterminar, que gasta todo o MP e soma MP + Int/2 ao dano;
  * - eighth: a 8ª skill, que só tem a recusa sem os 50M de gold.
  */
 export type SkillKind = 'damage' | 'area' | 'thunder' | 'heal' | 'detox' | 'flash' | 'judgment' | 'buff' | 'teleport'
-  | 'debuff' | 'ethereal' | 'summon' | 'transform' | 'passive' | 'illusion' | 'utility' | 'eighth';
+  | 'debuff' | 'ethereal' | 'summon' | 'transform' | 'passive' | 'illusion' | 'utility' | 'pull' | 'exterminate' | 'eighth';
 
 export interface SkillDef {
   id: number;
@@ -73,14 +77,14 @@ export interface SkillDef {
   passiveAc?: boolean;
 }
 
-export type TreeKey = 'negra' | 'branca' | 'especial' | 'bm-magia' | 'bm-evocacao' | 'bm-transformacao' | 'ht-1' | 'ht-2' | 'ht-3';
+export type TreeKey = 'negra' | 'branca' | 'especial' | 'bm-magia' | 'bm-evocacao' | 'bm-transformacao' | 'ht-1' | 'ht-2' | 'ht-3' | 'tk-1' | 'tk-2' | 'tk-3';
 
 export interface SkillTree {
   key: TreeKey;
   label: string;
   /** Classe do personagem (STRUCT_MOB.Class) e a conta do .env do cenário. */
   cls: number;
-  account: 'foema' | 'bm' | 'ht';
+  account: 'foema' | 'bm' | 'ht' | 'tk';
   /** Nome do estado e da pasta de relatório. */
   scenario: string;
   /** O mestre de skills da classe (Merchant 19), que abre a janela das 24 skills dela. */
@@ -309,11 +313,95 @@ export const HT_T3: SkillTree = {
   ],
 };
 
+/** Cap.Cavaleiros (NPCGener.txt [3416], Merchant 19): o mestre de skills do TransKnight (Carry 5000–5023), em Armia. */
+export const TK_MASTER: NpcSpec = { name: 'Cap.Cavaleiros', merchant: 19, pos: { x: 2144, y: 2120 }, stand: { x: 2144, y: 2118 } };
+
+/**
+ * TransKnight, árvore 1. Os nomes seguem o SkillData e docs/migration/skills/transknight.md (o
+ * ItemList troca 3 e 13). Os pontos somam 689: o Destino (8ª) só pode ser pedido no nível exibido 223.
+ */
+export const TK_T1: SkillTree = {
+  key: 'tk-1',
+  label: 'TransKnight: árvore 1',
+  cls: TRANSKNIGHT,
+  account: 'tk',
+  scenario: 'tk-tree1',
+  master: TK_MASTER,
+  tree: 1,
+  skills: [
+    { id: 0, name: 'Giro da Fúria', points: 24, mana: 15, range: 5, kind: 'area', maxTarget: 13, reqLevel: 0, reqSpecial: 0, base: 5 },
+    { id: 1, name: 'Toque Sagrado', points: 48, mana: 20, range: 0, kind: 'debuff', maxTarget: 13, reqLevel: 0, reqSpecial: 0, base: 0, affect: { type: 1, value: 2 } },
+    { id: 2, name: 'Golpe Duplo', points: 66, mana: 10, range: 3, kind: 'damage', maxTarget: 2, reqLevel: 0, reqSpecial: 0, base: 13 },
+    { id: 3, name: 'Possuído', points: 84, mana: 105, range: 0, kind: 'buff', maxTarget: 1, reqLevel: 87, reqSpecial: 87, base: 0, affect: { type: 14, value: 10 } },
+    { id: 4, name: 'Fanatismo', points: 72, mana: 30, range: 5, kind: 'damage', maxTarget: 1, reqLevel: 64, reqSpecial: 96, base: 75 },
+    { id: 5, name: 'Aura da Vida', points: 81, mana: 53, range: 0, kind: 'buff', maxTarget: 1, reqLevel: 84, reqSpecial: 126, base: 0, affect: { type: 17, value: 75 } },
+    { id: 6, name: 'Fúria Divina', points: 90, mana: 75, range: 6, kind: 'pull', maxTarget: 1, reqLevel: 130, reqSpecial: 150, base: 0 },
+    { id: 7, name: 'Destino', points: 224, mana: 140, range: 5, kind: 'eighth', maxTarget: 13, reqLevel: 219, reqSpecial: 200, base: 190 },
+  ],
+};
+
+/**
+ * TransKnight, árvore 2. Assalto (affect 13): dano + 15% e HP máximo × 9/10 no legado
+ * (Basedef.cpp:4036-4051). Samaritano (affect 24) diverge do legado de propósito no Go (issue #267).
+ */
+export const TK_T2: SkillTree = {
+  key: 'tk-2',
+  label: 'TransKnight: árvore 2',
+  cls: TRANSKNIGHT,
+  account: 'tk',
+  scenario: 'tk-tree2',
+  master: TK_MASTER,
+  tree: 2,
+  skills: [
+    { id: 8, name: 'Carga', points: 21, mana: 12, range: 1, kind: 'damage', maxTarget: 1, reqLevel: 0, reqSpecial: 0, base: 15 },
+    { id: 9, name: 'Mestre das Armas', points: 45, mana: 0, range: 0, kind: 'passive', maxTarget: 0, reqLevel: 0, reqSpecial: 0, base: 0 },
+    { id: 10, name: 'Golpe Mortal', points: 69, mana: 20, range: 1, kind: 'damage', maxTarget: 2, reqLevel: 28, reqSpecial: 0, base: 40 },
+    { id: 11, name: 'Assalto', points: 78, mana: 47, range: 0, kind: 'buff', maxTarget: 1, reqLevel: 43, reqSpecial: 0, base: 0, affect: { type: 13, value: 7 } },
+    { id: 12, name: 'Espada da Fênix', points: 72, mana: 25, range: 1, kind: 'damage', maxTarget: 2, reqLevel: 62, reqSpecial: 62, base: 60 },
+    { id: 13, name: 'Samaritano', points: 72, mana: 25, range: 5, kind: 'buff', maxTarget: 1, reqLevel: 36, reqSpecial: 0, base: 0, affect: { type: 24, value: 0 } },
+    { id: 14, name: 'Noção de Combate', points: 90, mana: 0, range: 0, kind: 'passive', maxTarget: 0, reqLevel: 135, reqSpecial: 135, base: 0 },
+    { id: 15, name: 'Armadura Crítica', points: 218, mana: 150, range: 0, kind: 'eighth', maxTarget: 1, reqLevel: 219, reqSpecial: 200, base: 1 },
+  ],
+};
+
+/** TransKnight, árvore 3. Exterminar (22) gasta todo o MP e soma MP + Int/2 ao dano (handler/combat.go applySkillSpecial). */
+export const TK_T3: SkillTree = {
+  key: 'tk-3',
+  label: 'TransKnight: árvore 3',
+  cls: TRANSKNIGHT,
+  account: 'tk',
+  scenario: 'tk-tree3',
+  master: TK_MASTER,
+  tree: 3,
+  skills: [
+    { id: 16, name: 'Perseguição', points: 24, mana: 25, range: 5, kind: 'debuff', maxTarget: 13, reqLevel: 26, reqSpecial: 0, base: 0, affect: { type: 3, value: 60 } },
+    { id: 17, name: 'Espada Flamejante', points: 45, mana: 25, range: 5, kind: 'area', maxTarget: 10, reqLevel: 0, reqSpecial: 0, base: 25 },
+    { id: 18, name: 'Contra Ataque', points: 60, mana: 17, range: 5, kind: 'damage', maxTarget: 2, reqLevel: 24, reqSpecial: 0, base: 35 },
+    { id: 19, name: 'Lâmina Congelante', points: 78, mana: 22, range: 5, kind: 'damage', maxTarget: 1, reqLevel: 38, reqSpecial: 0, base: 50 },
+    { id: 20, name: 'Ataque da Alma', points: 66, mana: 30, range: 5, kind: 'damage', maxTarget: 1, reqLevel: 63, reqSpecial: 95, base: 65 },
+    { id: 21, name: 'Punhalada Venenosa', points: 87, mana: 38, range: 5, kind: 'damage', maxTarget: 1, reqLevel: 84, reqSpecial: 126, base: 80 },
+    { id: 22, name: 'Exterminar', points: 90, mana: 0, range: 3, kind: 'exterminate', maxTarget: 1, reqLevel: 137, reqSpecial: 200, base: 90 },
+    { id: 23, name: 'Tempestade de Gelo', points: 227, mana: 150, range: 5, kind: 'eighth', maxTarget: 13, reqLevel: 219, reqSpecial: 200, base: 210 },
+  ],
+};
+
 export const TREES: Record<TreeKey, SkillTree> = {
   negra: BLACK_MAGIC, branca: WHITE_MAGIC, especial: SPECIAL_MAGIC,
   'bm-magia': BM_MAGIC, 'bm-evocacao': BM_SUMMON, 'bm-transformacao': BM_TRANSFORM,
   'ht-1': HT_T1, 'ht-2': HT_T2, 'ht-3': HT_T3,
+  'tk-1': TK_T1, 'tk-2': TK_T2, 'tk-3': TK_T3,
 };
+
+/**
+ * Assalto (affect 13) no legado (Basedef.cpp:4036-4051): dano + (dano/100)×15 e HP máximo × 9/10.
+ * Possuído (affect 14) como o Go documenta (handler/affect_score.go applyConHpBuff, seguindo o
+ * "Buff Loop.txt"; o Basedef.cpp:4053 tem outra conta, deixada de fora de propósito):
+ * v = Level×3/4 + Value, Con + v e HP máximo + 2v.
+ */
+export function assaultScore(base: { damage: number; maxHp: number }): { damage: number; maxHp: number } {
+  return { damage: base.damage + Math.trunc(base.damage / 100) * 15, maxHp: Math.trunc((base.maxHp * 9) / 10) };
+}
+export const possessedGain = (level: number, value: number) => Math.trunc((level * 3) / 4) + value;
 
 /** Bichos de uma evocação (_MSG_Attack.cpp:818-828, handler/summon.go summonCount). */
 export function summonCount(value: number, special: number): number {

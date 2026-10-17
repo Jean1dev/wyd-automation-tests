@@ -1,4 +1,4 @@
-# 006 — A transformação do BM com multiplicador abaixo de 100 arredonda diferente do legado
+# 006 — Transformação do BM (Lobisomem) e Assalto do TK arredondam o desconto diferente do legado
 
 **Status:** aberto. Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T19-39-11-741Z-bm-transform`).
 **Issue:** [Jean1dev/w2pp-OpenWYD#394](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394)
@@ -32,6 +32,17 @@ O legado aplica a transformação como `AC×multi/100` e `MaxHp×multi/100` (`Ba
 - **Relogin:** Learn 0x7F0000 e SkillBonus 212. ✅
 
 Na primeira execução, o Astaroth refeito com Asas do Inferno (Level 88) deu HP máximo 485 com 429 de base, enquanto a fórmula dá 484. Repetido com `--skill 69`, bateu exatamente. Ficou como inconclusivo, sem issue.
+
+## O mesmo no Assalto do TransKnight (cenário 11)
+
+O Assalto (skill 11, affect 13) faz `MaxHp×9/10` no legado (`Basedef.cpp:4036`) e `MaxHP − MaxHP/10` no Go (`affect_score.go:144`).
+
+| UTC | Base M | Legado (com o EF_HPADD +5%) | Recebido |
+|---|---|---|---|
+| 22:56:47 | 435 | 410 | 411 |
+| 23:27:53 | 1103 | 1041 | 1042 |
+
+Registrado no mesmo [#394](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394) ([comentário](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394#issuecomment-6242824400)). A verificação é `npm run scenario:tk-2 -- --skill 11`.
 
 ## Como verificar
 

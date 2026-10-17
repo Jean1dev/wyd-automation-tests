@@ -26,7 +26,10 @@
     "scenario:bm-transformacao": "tsx src/scenarios/skillTree.ts --tree bm-transformacao",
     "scenario:ht-1": "tsx src/scenarios/skillTree.ts --tree ht-1",
     "scenario:ht-2": "tsx src/scenarios/skillTree.ts --tree ht-2",
-    "scenario:ht-3": "tsx src/scenarios/skillTree.ts --tree ht-3"
+    "scenario:ht-3": "tsx src/scenarios/skillTree.ts --tree ht-3",
+    "scenario:tk-1": "tsx src/scenarios/skillTree.ts --tree tk-1",
+    "scenario:tk-2": "tsx src/scenarios/skillTree.ts --tree tk-2",
+    "scenario:tk-3": "tsx src/scenarios/skillTree.ts --tree tk-3"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",

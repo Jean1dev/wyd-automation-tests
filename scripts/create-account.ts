@@ -11,6 +11,7 @@
 //      npm run account:create -- --foema    # conta dos cenários de skills da Foema (WYD_ACCOUNT_FOEMA/WYD_PASSWORD_FOEMA)
 //      npm run account:create -- --bm       # conta dos cenários de skills do BeastMaster (WYD_ACCOUNT_BM/WYD_PASSWORD_BM)
 //      npm run account:create -- --ht       # conta dos cenários de skills da Huntress (WYD_ACCOUNT_HT/WYD_PASSWORD_HT)
+//      npm run account:create -- --tk       # conta dos cenários de skills do TransKnight (WYD_ACCOUNT_TK/WYD_PASSWORD_TK)
 import { randomInt } from 'node:crypto';
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -23,7 +24,7 @@ const mask = (s: string) => s.slice(0, 4) + '*'.repeat(Math.max(0, s.length - 4)
 
 const i = process.argv.indexOf('--portal');
 const portal = i >= 0 ? process.argv[i + 1] : 'https://wyd-ten.vercel.app';
-const sfx = process.argv.includes('--second') ? '_B' : process.argv.includes('--arch') ? '_ARCH' : process.argv.includes('--foema') ? '_FOEMA' : process.argv.includes('--bm') ? '_BM' : process.argv.includes('--ht') ? '_HT' : '';
+const sfx = process.argv.includes('--second') ? '_B' : process.argv.includes('--arch') ? '_ARCH' : process.argv.includes('--foema') ? '_FOEMA' : process.argv.includes('--bm') ? '_BM' : process.argv.includes('--ht') ? '_HT' : process.argv.includes('--tk') ? '_TK' : '';
 
 if (!existsSync(ENV)) copyFileSync(resolve(ROOT, '.env.example'), ENV);
 const current = Object.fromEntries(

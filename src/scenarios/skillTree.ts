@@ -35,7 +35,7 @@ import { join } from 'node:path';
 import type { GameClient, Mob } from '../client/GameClient.ts';
 import { Logger } from '../client/logger.ts';
 import { loadConfig, type BotConfig } from '../config.ts';
-import { CASTER_INT, HUNTRESS_STR, spendBuild, spendMastery, type MasteryResult } from '../bot/build.ts';
+import { BUILDS, CASTER_INT, HUNTRESS_STR, spendBuild, spendMastery, type MasteryResult } from '../bot/build.ts';
 import { walkPath, walkTo } from '../bot/movement.ts';
 import { buyItem, type Purchase } from '../bot/npc.ts';
 import { Progress } from '../bot/progress.ts';
@@ -49,7 +49,7 @@ import { Op } from '../protocol/opcodes.ts';
 import * as P from '../protocol/packets.ts';
 import { FAIRY_DUST_PRICE, NPC } from '../world/coveiro.ts';
 import {
-  buffGain, CAST_SPOT, cumulativePoints, EIGHTH_SKILL_COIN, healAmount, HUNTRESS, summonCount, SUMMON_MOB, summonMinSpecial, transformScore, judgmentHp, learnBit, learnLevel, manaCost,
+  assaultScore, buffGain, CAST_SPOT, cumulativePoints, EIGHTH_SKILL_COIN, healAmount, HUNTRESS, possessedGain, TRANSKNIGHT, summonCount, SUMMON_MOB, summonMinSpecial, transformScore, judgmentHp, learnBit, learnLevel, manaCost,
   ROUTE_TO_CAST_SPOT, skillPointsAt, TREES, type SkillDef, type SkillTree, type TreeKey,
 } from '../world/skillTrees.ts';
 import { cleanupScenario, ensureCharacter, flag, opt, parseDuration, PlayClock, reportDirFor, runMain, runWithReconnect, writeReportFile, type CharacterState } from './common.ts';
@@ -60,8 +60,8 @@ const TREE: SkillTree = TREES[treeKey];
 const SCENARIO = TREE.scenario;
 /** O mestre de skills da classe. */
 const SKILL_MASTER = TREE.master;
-/** A Huntress bate com Str; Foema e BM, com Int. */
-const BUILD = TREE.cls === HUNTRESS ? HUNTRESS_STR : CASTER_INT;
+/** A Huntress bate com Str, o TK com o misto da comunidade; Foema e BM, com Int. */
+const BUILD = TREE.cls === HUNTRESS ? HUNTRESS_STR : TREE.cls === TRANSKNIGHT ? BUILDS[0] : CASTER_INT;
 const DUST_STACK = 255;
 /** As 7 primeiras skills; a 8ª só tem o controle de recusa. */
 const LEARNABLE = TREE.skills.filter((s) => s.kind !== 'eighth');
@@ -86,7 +86,7 @@ interface CastCheck {
   /** Julgamento Divino: o HP antes, os danos por alvo e o HP depois. */
   judgment?: { hpBefore: number; hpAfter?: number; expectedHp: number[]; damage: { id: number; name: string; damage: number }[] };
   /** Buff: o affect que chegou e o score antes/depois. */
-  buff?: { affect?: { type: number; value: number; level: number; time: number }; before: ScoreView; after: ScoreView; expectedGain: number };
+  buff?: { affect?: { type: number; value: number; level: number; time: number }; before: ScoreView; after: ScoreView; expectedGain: number; scores?: { t: string; maxHp?: number; ac: number; con?: number; level: number }[] };
   /** Evocação: a maestria, os bichos esperados e os que apareceram. */
   summon?: { special: number; expected: number; mob: string; appeared: { id: number; name: string; x: number; y: number }[] };
   /** Transformação: o affect, o score antes e depois e o esperado pela fórmula do legado. */
@@ -99,7 +99,7 @@ interface CastCheck {
 }
 
 type Pt = { x: number; y: number };
-interface ScoreView { ac: number; damage: number; run: number; special: number[]; maxHp: number; mp: number; resist: number[] }
+interface ScoreView { ac: number; damage: number; run: number; special: number[]; maxHp: number; mp: number; resist: number[]; con: number }
 
 interface SkillRecord {
   id: number;
@@ -514,24 +514,34 @@ async function castJudgment(c: GameClient, s: SkillDef, cc: CastCheck): Promise<
 
 const scoreView = (c: GameClient): ScoreView => {
   const me = c.self!;
-  return { ac: me.ac, damage: me.damage, run: (me.attackRun ?? 0) & 0x0f, special: [...me.special], maxHp: me.maxHp, mp: me.mp, resist: [...(me.resist ?? [])] };
+  return { ac: me.ac, damage: me.damage, run: (me.attackRun ?? 0) & 0x0f, special: [...me.special], maxHp: me.maxHp, mp: me.mp, resist: [...(me.resist ?? [])], con: me.attrs.con };
 };
 
 /** Buff em si mesma: chega o SendAffect com o tipo e o nível (= a maestria) e o score muda pela fórmula. */
 async function castBuff(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void> {
   const me = c.self!;
   const fx = s.affect!;
+  // Com o mesmo buff ainda ativo (de uma execução anterior), o score não muda: espera ele acabar.
+  if (me.affects.some((a) => a.type === fx.type)) {
+    log.info('esperando o buff anterior acabar', { type: fx.type, affects: me.affects });
+    const t0 = Date.now();
+    while (me.affects.some((a) => a.type === fx.type) && Date.now() - t0 < 15 * 60_000) await sleep(5000);
+  }
   await sleep(1000);
+  const markBefore = c.mark;
   const before = scoreView(c);
   const coinBefore = me.coin;
   const r = await castSkill(c, log, s.id, 'self');
   cc.attempts.push(r);
   await sleep(1000); // UpdateScore com o buff
   const after = scoreView(c);
+  // Os UpdateScore do próprio personagem desde a medição de antes, para conferir à mão.
+  const scores = c.framesSince(markBefore).filter((f) => f.header.type === Op.UpdateScore && f.header.id === me.clientId)
+    .map((f) => { const u = P.parseUpdateScore(f.body); return { t: new Date(f.at).toISOString(), maxHp: u.maxHp, ac: u.ac, con: u.attrs?.con, level: u.level }; });
   const affect = r.affects.filter((a) => a.targetId === me.clientId).flatMap((a) => a.affects).find((a) => a.type === fx.type);
   const level = affect?.level ?? r.special;
   const expectedGain = buffGain(fx.type, fx.value, level, me.learn);
-  cc.buff = { affect, before, after, expectedGain };
+  cc.buff = { affect, before, after, expectedGain, scores };
   cc.checks = { echo: echoOk(r, s), mpCharged: mpOk(r, s), affect: !!affect, affectLevel: affect?.level === r.special };
   // A 85 cobra 100 × Special[2] de gold antes do MP (_MSG_Attack.cpp:223-232, combat.go validateCast).
   if (s.id === 85) {
@@ -544,6 +554,29 @@ async function castBuff(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void
     case 11: case 21: case 31: cc.checks.acChange = after.ac - before.ac === expectedGain; break;
     case 9: cc.checks.damageUp = after.damage - before.damage === expectedGain; break;
     case 15: cc.checks.specialUp = after.special.every((v, k) => v - before.special[k] === expectedGain); break;
+    case 13: {
+      const exp = assaultScore({ damage: before.damage, maxHp: before.maxHp });
+      // O HP máximo mostrado leva o EF_HPADD do equipamento: base M = mostrado/(1 + pct); o legado dá ⌊M×9/10⌋.
+      const m = Math.round(before.maxHp / 1.05);
+      const legacyHp = Math.trunc((Math.trunc((m * 9) / 10) * 105) / 100);
+      cc.checks.maxHpExact = after.maxHp === legacyHp;
+      // O dano não é comparável direto: o Go separa o dano da arma (weaponDamage) e aplica os +15% e o
+      // DAMAGEMULTI só na parte base (handler/item.go effectiveDamage); fica informativo.
+      cc.note = `dano ${before.damage} → ${after.damage} (legado, com a arma dentro do Damage: ${exp.damage} antes do DAMAGEMULTI); HP máx. ${before.maxHp} → ${after.maxHp} (legado ⌊M×9/10⌋ com o HPADD: ${legacyHp})`;
+      break;
+    }
+    case 14: {
+      const v = possessedGain(level, fx.value);
+      cc.checks.conUp = after.con - before.con === v;
+      // O HP máximo mostrado é (MaxHP + buffs) × (100 + EF_HPADD%)/100 (handler/item.go effectiveMaxHP):
+      // os +2v do buff saem multiplicados pelo HPADD do equipamento (o TK novo tem +5%).
+      const pct = Math.round(((after.maxHp - before.maxHp) / (2 * v) - 1) * 100);
+      cc.checks.maxHpUp = after.maxHp - before.maxHp >= 2 * v && pct >= 0 && pct <= 30;
+      cc.note = `Con ${before.con} → ${after.con}, HP máx. ${before.maxHp} → ${after.maxHp} = +2v × ${100 + pct}% (EF_HPADD do equipamento; v = ${level}×3/4 + ${fx.value} = ${v}; a conta do Go/"Buff Loop.txt", não a do Basedef.cpp:4053)`;
+      break;
+    }
+    case 17: cc.note = 'Aura da Vida: o tick 17 (cura por tempo) chegou como affect; a cura não foi exercitada (os Gremlins não tiram HP)'; break;
+    case 24: cc.note = 'Samaritano: o efeito diverge do legado de propósito no Go (issue #267); vale o affect'; break;
     case 18: cc.note = 'Controle de Mana: o affect 18 chegou; o dano virar gasto de MP não foi exercitado (os Gremlins não atacam)'; break;
     case 25: {
       // Três das quatro resistências sobem; quais três é uma escolha deliberada do Go (issue #233).
@@ -592,7 +625,7 @@ async function castTeleport(c: GameClient, s: SkillDef, cc: CastCheck): Promise<
 
 /** Debuff hostil sem dano (Enfraquecer) nos mobs ao alcance. Em mob o SetAffect não pega (só jogador). */
 async function castDebuff(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void> {
-  const targets = (await mobsInReach(c, s.range - 2)).slice(0, s.maxTarget + 1);
+  const targets = (await mobsInReach(c, s.range > 0 ? Math.max(1, s.range - 2) : 4)).slice(0, s.maxTarget + 1);
   const r = await castSkill(c, log, s.id, targets);
   cc.attempts.push(r);
   cc.checks = { echo: echoOk(r, s), mpCharged: mpOk(r, s), noDamage: !!r.echo && r.echo.dam.every((d) => d.damage <= 0) };
@@ -735,6 +768,55 @@ async function castIllusion(c: GameClient, s: SkillDef, cc: CastCheck): Promise<
   cc.note = `MP ${mpBefore} → ${r.echo?.currentMp} depois da Ilusão de (${from.x},${from.y}) para (${to.x},${to.y}) e de ${probe.name}: −${spent} (esperado −${s.mana} − ${manaCost(probe.mana, r.special)})`;
 }
 
+/**
+ * Fúria Divina: com chance (Special/5 + 40 + diferença de nível/4, até 50%), puxa o mob para o tile
+ * vizinho do TK, sem dano. Tenta até 6 vezes num mob a 3–5 tiles.
+ */
+async function castPull(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void> {
+  const me = c.self!;
+  let pulled: { from: Pt; to: Pt } | undefined;
+  for (let i = 0; i < 6 && !pulled; i++) {
+    if (me.mp < manaCost(s.mana, special(c))) await rest(c, manaCost(s.mana, special(c)) * 2), await goToCastSpot(c);
+    // Um mob a 3–5 tiles: colado no TK, puxar não muda nada. Sem nenhum, a 4 tiles do mais perto.
+    const farEnough = () => mobsByDistance(c).find((x) => tiles(me, x) >= 3 && tiles(me, x) <= s.range - 1);
+    let m = farEnough();
+    for (let k = 0; k < 4 && !m; k++) {
+      const n = mobsByDistance(c)[0];
+      if (n) await walkTo(c, n.x + (me.x >= n.x ? 4 : -4), n.y);
+      await sleep(1000);
+      m = farEnough();
+    }
+    if (!m) continue;
+    const from = { x: m.x, y: m.y };
+    const r = await castSkill(c, log, s.id, [m]);
+    cc.attempts.push(r);
+    await sleep(1200);
+    const now = c.mobs.get(m.id);
+    if (now && tiles(me, now) <= 1 && tiles(from, now) >= 2) pulled = { from, to: { x: now.x, y: now.y } };
+  }
+  const r = cc.attempts.at(-1);
+  if (!r) {
+    cc.checks = { targetFound: false };
+    cc.note = 'nenhum mob a 3–5 tiles para puxar';
+    return;
+  }
+  cc.checks = { echo: echoOk(r, s), mpCharged: mpOk(r, s), noDamage: cc.attempts.every((a) => !a.echo || a.echo.dam.every((d) => d.damage <= 0)), pulled: !!pulled };
+  cc.note = pulled ? `mob puxado de (${pulled.from.x},${pulled.from.y}) para (${pulled.to.x},${pulled.to.y}) em ${cc.attempts.length} cast(s)` : `nenhum mob puxado em ${cc.attempts.length} casts (chance de até 50% por cast)`;
+}
+
+/** Exterminar: gasta todo o MP e soma MP + Int/2 ao dano (handler/combat.go:717-724). */
+async function castExterminate(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void> {
+  const me = c.self!;
+  await rest(c, me.maxMp);
+  await goToCastSpot(c);
+  const [m] = await mobsInReach(c, Math.max(1, s.range - 2));
+  const r = await castSkill(c, log, s.id, [m]);
+  cc.attempts.push(r);
+  const dmg = r.echo?.dam.find((d) => d.targetId === m.id)?.damage ?? 0;
+  cc.checks = { echo: echoOk(r, s), allMpSpent: r.echo?.currentMp === 0, damageWithMp: dmg >= r.mpBefore };
+  cc.note = `MP ${r.mpBefore} → ${r.echo?.currentMp}; dano ${dmg} (≥ MP + Int/2 = ${r.mpBefore} + ${Math.trunc(me.attrs.int / 2)})`;
+}
+
 async function castStep(c: GameClient, state: State, s: SkillDef): Promise<void> {
   const me = c.self!;
   const rec = state.skills[s.id];
@@ -757,6 +839,8 @@ async function castStep(c: GameClient, state: State, s: SkillDef): Promise<void>
     case 'transform': await castTransform(c, s, cc); break;
     case 'passive': await castPassive(c, state, s, cc); break;
     case 'illusion': await castIllusion(c, s, cc); break;
+    case 'pull': await castPull(c, s, cc); break;
+    case 'exterminate': await castExterminate(c, s, cc); break;
     case 'utility':
       cc.checks = { learned: learned(c, s.id) };
       cc.note = 'usada na combinação de itens (_MSG_CombineItemAlquimia / Extracao), não por cast; só o aprendizado foi testado';
@@ -874,7 +958,7 @@ async function controls(c: GameClient, state: State): Promise<void> {
   if (!state.controls.noMana && (ranged || selfCast)) {
     let drained = 0;
     const cost = () => manaCost(first.mana, special(c));
-    const target = async (): Promise<Mob[] | 'self'> => (selfCast ? 'self' : [farMob() ?? (await mobsInReach(c, first.range - 2))[0]]);
+    const target = async (): Promise<Mob[] | 'self'> => (selfCast ? 'self' : [farMob() ?? (await mobsInReach(c, Math.max(1, first.range - 2)))[0]]);
     for (let i = 0; i < 120 && me.mp >= cost(); i++) {
       if (me.hp < me.maxHp * 0.35) await walkTo(c, CAST_SPOT.x - 10, CAST_SPOT.y); // sai de perto sem descansar o MP
       const r = await castSkill(c, log, first.id, await target());
@@ -882,7 +966,7 @@ async function controls(c: GameClient, state: State): Promise<void> {
       else break;
     }
     if (me.mp < cost()) {
-      const r = await castSkill(c, log, first.id, selfCast ? 'self' : [(await mobsInReach(c, first.range - 2))[0]]); // só a falta de MP impede
+      const r = await castSkill(c, log, first.id, selfCast ? 'self' : [(await mobsInReach(c, Math.max(1, first.range - 2)))[0]]); // só a falta de MP impede
       const ok = !r.echo && r.setHpMp.length > 0;
       state.controls.noMana = { drained, final: r, ok };
       if (r.echo) fail(state, `${first.name} com ${r.mpBefore} de MP (custo ${cost()}): o servidor aceitou (dano ${r.echo.dam.map((d) => d.damage).join('/')}, MP → ${r.echo.currentMp})`);
