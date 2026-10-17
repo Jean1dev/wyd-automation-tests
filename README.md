@@ -271,7 +271,7 @@ Execução de 2026-10-17 15:54–16:10 UTC (`--until-done`): um TransKnight viro
 
 Duas diferenças do legado, que o cenário não reprova:
 - **Gold do Arch:** ele nasce com 1.000.000 de gold. No legado o BaseSet dá 5.000.000; o Go usa 1.000.000 para todo personagem novo (valor provisório em `dbserver` `server.go`).
-- **Sephirot do Mestre de Skills:** pela leitura do código, o `compSephi` do Go dá `1760 + Class`, enquanto o legado (`_MSG_Quest.cpp:2149`) dá `1759 + Class`. Isso daria a Sephirot de outra classe. Não dá para testar sem as 8 Pedras Arch.
+- **Sephirot do Mestre de Skills:** pela leitura do código, o `compSephi` do Go dá `1760 + Class`, enquanto o legado (`_MSG_Quest.cpp:2149`) dá `1759 + Class`. Isso daria a Sephirot de outra classe. Não dá para testar sem as 8 Pedras Arch. Issue: [Jean1dev/w2pp-OpenWYD#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390).
 
 ## Estrutura
 
