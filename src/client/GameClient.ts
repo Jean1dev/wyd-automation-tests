@@ -42,6 +42,15 @@ export interface SelfState {
   ac: number;
   /** Str/Int/Dex/Con do CurrentScore (com o equipamento). */
   attrs: P.Attributes;
+  mp: number;
+  maxMp: number;
+  /** CurrentScore.Special[4]: maestria de cada árvore (com equipamento e buffs). */
+  special: number[];
+  /** LearnedSkill: bit (skill % 24) de cada skill aprendida. */
+  learn: number;
+  /** Pontos de skill e de maestria livres (CNFCharacterLogin e cada UpdateEtc). */
+  skillBonus: number;
+  specialBonus: number;
   /** Pontos de atributo livres; undefined até o servidor mandar um UpdateEtc. */
   scoreBonus?: number;
   coin: number;
@@ -266,6 +275,7 @@ export class GameClient extends EventEmitter {
         this.self = {
           name: s.name, cls: s.cls, clientId: s.clientId, x: s.x, y: s.y, level: s.level, exp: s.exp, hp: s.hp, maxHp: s.maxHp,
           damage: s.damage, ac: s.ac, attrs: s.attrs, coin: s.coin, carry: s.carry, equip: s.equip,
+          mp: s.mp, maxMp: s.maxMp, special: s.special, learn: s.learn, skillBonus: s.skillBonus, specialBonus: s.specialBonus,
         };
         break;
       }
@@ -303,6 +313,7 @@ export class GameClient extends EventEmitter {
         const a = P.parseAttack(b);
         if (me && a.attackerId === me.clientId) {
           me.hp = a.currentHp;
+          me.mp = a.currentMp;
           if (a.currentExp > 0n) me.exp = a.currentExp;
         } else {
           const atk = this.mobs.get(a.attackerId);
@@ -325,15 +336,24 @@ export class GameClient extends EventEmitter {
           if (s.level !== me.level) this.emit('level', { from: me.level, to: s.level, seq: f.seq });
           me.level = s.level; me.maxHp = s.maxHp; me.hp = s.hp; me.damage = s.damage; me.ac = s.ac;
           if (s.attrs) me.attrs = s.attrs;
+          if (s.mp !== undefined) me.mp = s.mp;
+          if (s.maxMp !== undefined) me.maxMp = s.maxMp;
+          if (s.special) me.special = s.special;
         }
         break;
       case Op.UpdateEtc:
         if (me && b.length >= 32) {
           const e = P.parseUpdateEtc(b);
           me.exp = e.exp; me.coin = e.coin; me.scoreBonus = e.scoreBonus;
+          me.learn = e.learn; me.skillBonus = e.skillBonus; me.specialBonus = e.specialBonus;
         }
         break;
       case Op.SetHpMp:
+        if (me && (f.header.id === me.clientId || f.header.id === this.connId) && b.length >= 8) {
+          const hm = P.parseHpMp(b);
+          me.hp = hm.hp; me.mp = hm.mp;
+        }
+        break;
       case Op.SetHpDam:
         if (me && (f.header.id === me.clientId || f.header.id === this.connId) && b.length >= 4) me.hp = P.parseHp(b);
         break;

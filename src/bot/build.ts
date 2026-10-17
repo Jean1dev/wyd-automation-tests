@@ -29,6 +29,13 @@ export const BUILDS: Record<number, Build> = {
   3: { name: 'Huntress', share: { dex: 0.6, con: 0.4 }, cap: { con: 1000 } },
 };
 
+/**
+ * Foema de Magia Negra: o dano das magias da Foema é Int/30 + Int/3 + nível + base + 2×Special
+ * (combat/skill.go SkillBaseDamage) e o MP cresce com Int, então quase tudo vai para Int, com
+ * Con suficiente para aguentar os mobs do campo (wydtutoriais "Guia FM": Int alta).
+ */
+export const FOEMA_NEGRA: Build = { name: 'Foema Magia Negra', share: { int: 0.8, con: 0.2 }, cap: { con: 500 } };
+
 /** Só Str: a distribuição dos cenários 1 a 3, em que o bot só precisa de dano. */
 export const ALL_STR: Build = { name: 'tudo em Str', share: { str: 1 }, cap: {} };
 
@@ -92,4 +99,41 @@ export async function spendBuild(c: GameClient, log: Logger, build: Build, req: 
     });
   }
   return spent;
+}
+
+export interface MasteryResult {
+  tree: number;
+  spent: number;
+  from: number;
+  to: number;
+  /** Avisos do servidor (o teto de maestria manda NoticeMaxPoint). */
+  notices: number[];
+}
+
+/**
+ * Põe pontos de maestria em Special[tree] (MSG_ApplyBonus BonusType 1), um clique por vez, até
+ * chegar em `until`, acabar o saldo ou o servidor recusar (teto 3×(nível+1)/2 e 200).
+ */
+export async function spendMastery(c: GameClient, log: Logger, tree: number, until: number): Promise<MasteryResult> {
+  const me = c.self!;
+  const r: MasteryResult = { tree, spent: 0, from: me.special[tree] ?? 0, to: me.special[tree] ?? 0, notices: [] };
+  for (let i = 0; i < MAX_CLICKS && me.specialBonus > 0 && (me.special[tree] ?? 0) < until; i++) {
+    const since = c.mark;
+    const before = me.special[tree] ?? 0;
+    c.send(Op.ApplyBonus, P.applyBonus(tree, P.BONUS_SPECIAL));
+    try {
+      await c.waitFor((f) => f.header.type === Op.UpdateEtc || f.header.type === Op.MessageBoxOk, { timeoutMs: 3000, since, what: 'resposta do ponto de maestria' });
+    } catch {
+      log.warn('ponto de maestria sem resposta', { tree, special: me.special[tree], specialBonus: me.specialBonus });
+      break;
+    }
+    await sleep(150); // o UpdateScore com o Special novo vem logo antes do UpdateEtc
+    const notices = c.framesSince(since).filter((f) => f.header.type === Op.MessageBoxOk).map((f) => P.parseNotice(f.body));
+    if (notices.length) { r.notices.push(...notices); break; }
+    if ((me.special[tree] ?? 0) <= before) break;
+    r.spent++;
+  }
+  r.to = me.special[tree] ?? 0;
+  if (r.spent || r.notices.length) log.info('pontos de maestria distribuídos', { ...r, left: me.specialBonus, level: me.level });
+  return r;
 }

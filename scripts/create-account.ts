@@ -8,6 +8,7 @@
 // Uso: npm run account:create [-- --portal https://wyd-ten.vercel.app]
 //      npm run account:create -- --second   # segunda conta (WYD_ACCOUNT_B/WYD_PASSWORD_B), para a troca
 //      npm run account:create -- --arch     # conta do cenário do Arch (WYD_ACCOUNT_ARCH/WYD_PASSWORD_ARCH), que precisa de slot livre
+//      npm run account:create -- --foema    # conta do cenário da Magia Negra (WYD_ACCOUNT_FOEMA/WYD_PASSWORD_FOEMA)
 import { randomInt } from 'node:crypto';
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -20,7 +21,7 @@ const mask = (s: string) => s.slice(0, 4) + '*'.repeat(Math.max(0, s.length - 4)
 
 const i = process.argv.indexOf('--portal');
 const portal = i >= 0 ? process.argv[i + 1] : 'https://wyd-ten.vercel.app';
-const sfx = process.argv.includes('--second') ? '_B' : process.argv.includes('--arch') ? '_ARCH' : '';
+const sfx = process.argv.includes('--second') ? '_B' : process.argv.includes('--arch') ? '_ARCH' : process.argv.includes('--foema') ? '_FOEMA' : '';
 
 if (!existsSync(ENV)) copyFileSync(resolve(ROOT, '.env.example'), ENV);
 const current = Object.fromEntries(

@@ -15,6 +15,7 @@ cp .env.example .env
 npm run account:create     # cria uma conta no portal e preenche WYD_ACCOUNT/WYD_PASSWORD/WYD_PIN
 npm run account:create -- --second   # segunda conta (WYD_ACCOUNT_B/WYD_PASSWORD_B), só para o cenário de troca
 npm run account:create -- --arch     # conta do cenário do Arch (WYD_ACCOUNT_ARCH/WYD_PASSWORD_ARCH)
+npm run account:create -- --foema    # conta do cenário da Magia Negra (WYD_ACCOUNT_FOEMA/WYD_PASSWORD_FOEMA)
 ```
 
 O `.env` aponta por padrão para o tm-server do Railway (`reseau.proxy.rlwy.net:56950`, versão de cliente 12000). Ele nunca vai para o Git.
@@ -273,13 +274,89 @@ Duas diferenças do legado, que o cenário não reprova:
 - **Gold do Arch:** ele nasce com 1.000.000 de gold. No legado o BaseSet dá 5.000.000; o Go usa 1.000.000 para todo personagem novo (valor provisório em `dbserver` `server.go`).
 - **Sephirot do Mestre de Skills:** pela leitura do código, o `compSephi` do Go dá `1760 + Class`, enquanto o legado (`_MSG_Quest.cpp:2149`) dá `1759 + Class`. Isso daria a Sephirot de outra classe. Não dá para testar sem as 8 Pedras Arch. Issue: [Jean1dev/w2pp-OpenWYD#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390).
 
+## Cenário 6 — Skills de Magia Negra da Foema
+
+`npm run scenario:foema-black` (exige a conta do cenário no `.env`: `npm run account:create -- --foema`)
+
+A Foema tem três árvores de skills. A Magia Negra é a segunda: skills 32–39, bits 8–15 do `LearnedSkill`, maestria `Special[2]`. Os nomes e as regras seguem o servidor (`SkillData.csv`, `ItemList.csv` 5032–5039, `handler/skill.go`, `handler/combat.go`) e os guias da comunidade ([WYD Tutoriais: Guia FM](https://wydtutoriais.wordpress.com/guia-fm/)).
+
+| id | Skill | Pontos | Requisito (nível exibido / Special[2]) | Tipo |
+|---|---|---|---|---|
+| 32 | Ataque de Fogo | 18 | 1 / 0 | 1 alvo |
+| 33 | Relâmpago | 51 | 1 / 0 | 1 alvo |
+| 34 | Lança de Gelo | 69 | 30 / 0 | 1 alvo |
+| 35 | Tempestade de Meteoros | 72 | 46 / 0 | área |
+| 36 | Nevasca | 72 | 76 / 112 | 1 alvo |
+| 37 | Trovão | 90 | 100 / 148 | buff: dispara Relâmpagos sozinho a cada 8 s |
+| 38 | Fênix de Fogo | 81 | 140 / 190 | 1 alvo |
+| 39 | Inferno (8ª) | 224 | 220 / 200, mais as 7 anteriores e 50M de gold | área |
+
+Como um jogador comum, numa conta só do cenário:
+
+1. Cria uma Foema e sobe de nível com a Poeira de Fada.
+   - Cada nível dá 3 pontos de skill (4 a partir do 200) e 2 de maestria.
+   - Os atributos vão quase todos em Int (`FOEMA_NEGRA` em `src/bot/build.ts`).
+   - A maestria vai em `Special[2]`, só até o que a próxima skill pede.
+2. Em cada skill, na ordem:
+   - **Controle "antes da hora":** um nível antes, o Foema_Ancian (2094,2126) tem que recusar o aprendizado sem mexer no `Learn`.
+   - **Aprender:** abre a janela de skills (`MSG_REQShopList`, ShopType 3) e manda `MSG_ApplyBonus` BonusType 2. Tem que ligar só o bit da skill, descontar exatamente os pontos dela e não cobrar gold.
+   - **Aprender de novo:** tem que ser recusado sem mexer em nada. Como no legado, os pontos são conferidos antes de "já aprendida".
+   - **Conjurar** nos Gremlins a leste de Armia (`MSG_AttackOne`, ou `MSG_Attack` em área, com `SkillIndex` e `Dam = -1`). O eco tem que voltar com a skill e dano no alvo, e o MP debitado tem que ser `ManaSpent × (Special/2 + 100) / 100`.
+   - Na Tempestade de Meteoros, o cast tem que acertar 2 ou mais alvos.
+   - O Trovão tem que disparar Relâmpagos (skill 33, Motion 254) sozinho.
+3. **Controles de cast**, com só o Ataque de Fogo aprendido:
+   - conjurar o Relâmpago ainda não aprendido;
+   - conjurar sem MP, gastando o MP antes num alvo fora do alcance, para não subir de nível;
+   - conjurar num alvo fora do alcance;
+   - comprar a skill do mestre como item (`MSG_Buy`), o que o legado só permite com o Merchant 1.
+4. **Inferno:** no nível exibido 220, com as 7 aprendidas e cerca de 1M de gold, o aprendizado tem que ser recusado com `NotEnoughCoin`.
+   - Antes disso, reaprender o Ataque de Fogo com 224 pontos livres tem que dar `AlreadyLearned`.
+   - Aprender e conjurar o Inferno fica bloqueado, porque um jogador comum não junta 50M.
+5. **Relogin:** o `Learn` tem que ser 0x7F00, e o `SkillBonus` igual a `3×nível + (nível − 199) − pontos gastos`.
+
+| Opção | Efeito |
+|---|---|
+| `--budget 2h` / `--until-done` / `--fresh` / `--cleanup` | Como no cenário 1. |
+| `--skill 37` | Repete o cast de uma skill já aprendida (depois, a recusa do Inferno e o relogin). |
+
+O estado fica em `state/foema-black-magic.json`. Cada execução grava `reports/<data>-foema-black-magic/` com o `report.json` e o `events.jsonl`. O relatório traz, por skill, o nível em que ela foi aprendida, os pontos, a máscara, o MP e o dano de cada cast, além dos controles, da curva de nível e dos pontos de maestria.
+
+### Situação (2026-10-17): tudo passa, menos a compra da skill como item
+
+Execuções de 2026-10-17 entre 17:02 e 17:28 UTC (`--fresh --until-done`, retomada, e `--skill 37`), com a Foema `bot0fagjhyod`: 21 min de jogo e 210 Poeiras de Fada.
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast: dano / MP (esperado) |
+|---|---|---|---|
+| 32 Ataque de Fogo | ✅ recusada no 6 | 7 | ✅ 67 / 7 (7) |
+| 33 Relâmpago | ✅ no 23 | 24 | ✅ 214 / 10 (10) |
+| 34 Lança de Gelo | ✅ no 46 | 47 | ✅ 343 / 15 (15) |
+| 35 Tempestade de Meteoros | ✅ no 70 | 71 | ✅ 400 e 381, dois alvos / 25 (25) |
+| 36 Nevasca | ✅ no 94 | 95 | ✅ 1111 / 54 (54) |
+| 37 Trovão | ✅ no 124 | 125 | ✅ affect 22 no personagem e um Relâmpago de 1746, 6 s depois / 150 (150) |
+| 38 Fênix de Fogo | ✅ no 151 | 152 | ✅ 1927 / 169 (169) |
+
+- **Controles:**
+  - Relâmpago não aprendido: descartado, sem eco nem MP. ✅
+  - Sem MP: descartado com SetHpMp (MP 1, custo 7). ✅
+  - Alvo a 9 tiles, com alcance 5: dano 0. ✅ O Go ainda cobra o MP; o legado não confere o alcance.
+- **Reaprender e Inferno:**
+  - Reaprender com 224 pontos livres: `AlreadyLearned`. ✅
+  - Inferno sem os 50M: `NotEnoughCoin`, e nada muda. ✅
+- **Relogin:** `Learn` 0x7F00 e `SkillBonus` 224. ✅
+- **Lentidão:** a da Lança de Gelo e da Nevasca não pega em mob, porque `SetAffect` só vale para jogadores, como no legado. Fica só no relatório.
+- **Compra da skill como item:** ❌ o Foema_Ancian (Merchant 19) entregou o Relâmpago (5033) de graça pelo `MSG_Buy`. O legado recusa com "Pode comprar itens apenas do mercador." (`_MSG_Buy.cpp:55`); o Go só recusa Merchant 0 (`shop.go:64`), e a venda tem a mesma diferença.
+  - Issue: [Jean1dev/w2pp-OpenWYD#391](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391).
+  - Veja [docs/findings/003-mestre-de-skills-vende-skill-como-item.md](docs/findings/003-mestre-de-skills-vende-skill-como-item.md).
+
+Na primeira tentativa do Trovão, a conexão caiu 4 s depois do cast. Um processo órfão de uma execução anterior, que tinha sido interrompida, entrou na mesma conta ("Conta desconectada por conexão simultânea."). O `--skill 37` repetiu o cast numa sessão estável, e ele passou.
+
 ## Estrutura
 
 ```
 src/protocol/   codec CPSock (keytable, encode/decode, framer), opcodes e pacotes no layout do servidor Go
 src/client/     GameClient (TCP, relógio de ClientTick, estado do mundo, waitFor) e logger
-src/bot/        sessão (login/PIN/personagem), movimento, viagens (Grifo, tiles), combate, grind, sobrevivência, NPCs (loja, itens, quest), quests de arena, build de atributos, equipamento, troca entre jogadores e progresso
-src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento) e criação do Arch
+src/bot/        sessão (login/PIN/personagem), movimento, viagens (Grifo, tiles), combate, grind, sobrevivência, NPCs (loja, itens, quest), quests de arena, build de atributos e maestria, skills (aprender e conjurar), equipamento, troca entre jogadores e progresso
+src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento), criação do Arch e Magia Negra da Foema (skills, mestre e campo de teste)
 src/scenarios/  cenários de teste e peças comuns (common.ts)
 scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja, equipamento/Grifo, lista de personagens)
 tests/          testes unitários (vitest)

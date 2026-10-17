@@ -60,6 +60,30 @@ describe('builders C→S', () => {
     expect(b.readInt16LE(44)).toBe(-1);
   });
 
+  it('Attack com skill: SkillIndex@44, CurrentMp@40, Dam = damSkill em cada alvo (skill_test.go skillAttackFrame)', () => {
+    const one = P.attack({ attackerId: 7, posX: 1, posY: 2, targetId: 1234, targetX: 3, targetY: 4, skillIndex: 32, currentMp: 90 });
+    expect([one.length, one.readInt16LE(44), one.readInt32LE(40), one.readInt32LE(48), one.readInt32LE(52)]).toEqual([56, 32, 90, 1234, P.DAM_SKILL]);
+    const area = P.attack({ attackerId: 7, posX: 1, posY: 2, targetId: 1001, targetX: 3, targetY: 4, skillIndex: 35, moreTargets: [1002, 1003] });
+    expect(area.length).toBe(48 + 3 * 8);
+    const e = P.parseAttack(area);
+    expect(e.skillIndex).toBe(35);
+    expect(e.dam).toEqual([1001, 1002, 1003].map((targetId) => ({ targetId, damage: P.DAM_SKILL })));
+    expect(() => P.attack({ attackerId: 7, posX: 1, posY: 2, targetId: 1, targetX: 3, targetY: 4, skillIndex: 35, moreTargets: Array(13).fill(2) })).toThrow();
+  });
+
+  it('ApplyBonus: aprender skill = BonusType 2, Detail 5000 + skill, TargetID do mestre (skill_test.go learnBody)', () => {
+    const b = P.learnSkill(33, 1234);
+    expect([b.length, b.readInt16LE(0), b.readInt16LE(2), b.readUInt16LE(4)]).toEqual([6, 2, 5033, 1234]);
+    const m = P.applyBonus(2, P.BONUS_SPECIAL);
+    expect([m.readInt16LE(0), m.readInt16LE(2), m.readUInt16LE(4)]).toEqual([1, 2, 0]);
+  });
+
+  it('SendAffect: STRUCT_AFFECT[32] de 8 B, só os ocupados', () => {
+    const b = Buffer.alloc(256);
+    b[8] = 1; b[9] = 2; b.writeUInt16LE(30, 10); b.writeUInt32LE(4, 12);
+    expect(P.parseSendAffect(b)).toEqual([{ type: 1, value: 2, level: 30, time: 4 }]);
+  });
+
   it('REQShopList: 2 B, TargetID@0', () => {
     const b = P.reqShopList(1234);
     expect([b.length, b.readUInt16LE(0)]).toEqual([2, 1234]);
@@ -170,10 +194,14 @@ describe('parsers S→C', () => {
     const s = Buffer.alloc(140);
     s.writeInt32LE(35, 0); s.writeInt32LE(12, 4); s.writeInt32LE(57, 8); s.writeInt32LE(400, 16); s.writeInt32LE(390, 124);
     s.writeInt16LE(132, 32); s.writeInt16LE(12, 34); s.writeInt16LE(96, 36); s.writeInt16LE(80, 38);
-    expect(P.parseUpdateScore(s)).toEqual({ level: 35, ac: 12, damage: 57, maxHp: 400, hp: 390, attrs: { str: 132, int: 12, dex: 96, con: 80 } });
+    s.writeInt32LE(250, 20); s.writeInt32LE(180, 128); s.writeInt16LE(112, 44); s.writeUInt16LE((22 << 8) | 150, 50);
+    expect(P.parseUpdateScore(s)).toEqual({
+      level: 35, ac: 12, damage: 57, maxHp: 400, hp: 390, maxMp: 250, mp: 180, attrs: { str: 132, int: 12, dex: 96, con: 80 },
+      special: [0, 0, 112, 0], affects: [(22 << 8) | 150],
+    });
     const e = Buffer.alloc(36);
-    e.writeBigInt64LE(192215n, 4); e.writeUInt16LE(170, 20); e.writeInt32LE(1000, 28);
-    expect(P.parseUpdateEtc(e)).toEqual({ exp: 192215n, scoreBonus: 170, coin: 1000 });
+    e.writeBigInt64LE(192215n, 4); e.writeBigInt64LE(0x7f00n, 12); e.writeUInt16LE(170, 20); e.writeUInt16LE(4, 22); e.writeUInt16LE(224, 24); e.writeInt32LE(1000, 28);
+    expect(P.parseUpdateEtc(e)).toEqual({ exp: 192215n, learn: 0x7f00, scoreBonus: 170, specialBonus: 4, skillBonus: 224, coin: 1000 });
   });
 
   it('UpdateCarry: Carry[64]@0 + Coin@512', () => {

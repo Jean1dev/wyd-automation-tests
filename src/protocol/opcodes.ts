@@ -58,6 +58,7 @@ export const Op = {
   CNFCheck: 0x0386, // troca: o servidor aceitou a minha confirmação
   StartTime: 0x03a1, // contador das arenas de quest (legado)
   SendArchEffect: 0x03b4, // Arch criado: STANDARDPARM com o slot do novo personagem
+  SendAffect: 0x03b9, // buffs/debuffs do personagem: STRUCT_AFFECT[32] {Type u8, Value u8, Level u16, Time u32}
 } as const;
 
 export function opName(type: number): string {
