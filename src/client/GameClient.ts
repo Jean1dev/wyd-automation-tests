@@ -40,7 +40,7 @@ export interface SelfState {
   /** Pontos de atributo livres; undefined até o servidor mandar um UpdateEtc. */
   scoreBonus?: number;
   coin: number;
-  /** Inventário (Carry[64]) do CNFCharacterLogin, atualizado a cada SendItem. */
+  /** Inventário (Carry[64]) do CNFCharacterLogin, atualizado a cada SendItem e UpdateCarry. */
   carry: P.Item[];
 }
 
@@ -181,6 +181,14 @@ export class GameClient extends EventEmitter {
     const carry = this.self?.carry ?? [];
     for (let i = 0; i < P.BASE_CARRY_SLOTS; i++) if (carry[i]?.index === index) return i;
     return -1;
+  }
+
+  /** Quantos slots acessíveis do inventário têm o item `index`. */
+  countItem(index: number): number {
+    const carry = this.self?.carry ?? [];
+    let n = 0;
+    for (let i = 0; i < P.BASE_CARRY_SLOTS; i++) if (carry[i]?.index === index) n++;
+    return n;
   }
 
   /** Primeiro slot acessível vazio do inventário, ou -1. */
@@ -326,6 +334,13 @@ export class GameClient extends EventEmitter {
         break;
       case Op.Buy:
         if (me && b.length >= 12) me.coin = P.parseBuy(b).coin;
+        break;
+      case Op.UpdateCarry:
+        if (me && b.length >= P.MAX_CARRY * 8 + 4) {
+          const u = P.parseUpdateCarry(b);
+          me.carry = u.carry;
+          me.coin = u.coin;
+        }
         break;
       case Op.MessagePanel:
       case Op.MessageChat:

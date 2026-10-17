@@ -231,6 +231,19 @@ export function itemAmount(it: Item | undefined): number {
   return a && a[1] > 0 ? a[1] : 1;
 }
 
+export function writeItem(b: Buffer, off: number, it: Item): void {
+  b.writeUInt16LE(it.index, off);
+  for (let i = 0; i < 3; i++) {
+    b[off + 2 + i * 2] = it.eff[i]?.[0] ?? 0;
+    b[off + 3 + i * 2] = it.eff[i]?.[1] ?? 0;
+  }
+}
+
+export function sameItem(a: Item | undefined, b: Item | undefined): boolean {
+  if (!a || !b || a.index !== b.index) return false;
+  return [0, 1, 2].every((i) => (a.eff[i]?.[0] ?? 0) === (b.eff[i]?.[0] ?? 0) && (a.eff[i]?.[1] ?? 0) === (b.eff[i]?.[1] ?? 0));
+}
+
 /** Slots do Carry: 64 no STRUCT_MOB, 30 acessíveis sem bolsa (carry.go baseCarrySlots). */
 export const MAX_CARRY = 64;
 export const BASE_CARRY_SLOTS = 30;
@@ -398,4 +411,59 @@ export function parseText(body: Buffer): string {
 /** ExpPanel (0x5000): Msg[96] + cor. */
 export function parseExpPanel(body: Buffer): string {
   return cstr(body, 0, Math.min(96, body.length));
+}
+
+// ---------------------------------------------------------------- troca entre jogadores
+
+/** Entradas da oferta de troca (MAX_TRADE). */
+export const MAX_TRADE = 15;
+/** InvenPos de uma entrada vazia da oferta (o char -1 do legado). */
+export const TRADE_EMPTY_POS = 0xff;
+/** MSG_Trade: Item[15]@0 (8 B cada), InvenPos[15]@120, TradeMoney i32@135, MyCheck u8@139, OpponentID u16@140. */
+export const TRADE_BODY_SIZE = MAX_TRADE * 8 + MAX_TRADE + 4 + 1 + 2;
+
+export interface TradeOffer {
+  /** Itens oferecidos e o slot do inventário de onde saem. */
+  items: { slot: number; item: Item }[];
+  money: number;
+  check: boolean;
+  /** Na ida (C→S), o outro jogador; no repasse (S→C), quem fez a oferta. */
+  opponentId: number;
+}
+
+/** MSG_Trade (0x0383), 142 B, layout de messages.go MsgTradeBody. */
+export function trade(o: TradeOffer): Buffer {
+  if (o.items.length > MAX_TRADE) throw new Error(`oferta com ${o.items.length} itens (máximo ${MAX_TRADE})`);
+  const b = Buffer.alloc(TRADE_BODY_SIZE);
+  b.fill(TRADE_EMPTY_POS, MAX_TRADE * 8, MAX_TRADE * 9);
+  o.items.forEach(({ slot, item }, i) => {
+    writeItem(b, i * 8, item);
+    b[MAX_TRADE * 8 + i] = slot;
+  });
+  b.writeInt32LE(o.money, MAX_TRADE * 9);
+  b[MAX_TRADE * 9 + 4] = o.check ? 1 : 0;
+  b.writeUInt16LE(o.opponentId, MAX_TRADE * 9 + 5);
+  return b;
+}
+
+export function parseTrade(body: Buffer): TradeOffer {
+  const items: TradeOffer['items'] = [];
+  for (let i = 0; i < MAX_TRADE; i++) {
+    const item = parseItem(body, i * 8);
+    const slot = body[MAX_TRADE * 8 + i];
+    if (item.index !== 0 && slot !== TRADE_EMPTY_POS) items.push({ slot, item });
+  }
+  return {
+    items,
+    money: body.readInt32LE(MAX_TRADE * 9),
+    check: body[MAX_TRADE * 9 + 4] === 1,
+    opponentId: body.readUInt16LE(MAX_TRADE * 9 + 5),
+  };
+}
+
+/** UpdateCarry (0x0185), 516 B: Carry[64]@0 (8 B cada) + Coin i32@512 (carry.go EncodeUpdateCarryBody). */
+export function parseUpdateCarry(body: Buffer): { carry: Item[]; coin: number } {
+  const carry: Item[] = [];
+  for (let i = 0; i < MAX_CARRY; i++) carry.push(parseItem(body, i * 8));
+  return { carry, coin: body.readInt32LE(MAX_CARRY * 8) };
 }

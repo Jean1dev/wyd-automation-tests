@@ -19,6 +19,8 @@ export const Op = {
   Buy: 0x0379, // comprar do NPC (C↔S; o eco S→C traz o gold novo)
   UseItem: 0x0373, // usar item do inventário (clique direito)
   Quest: 0x028b, // falar com NPC de quest (MSG_STANDARDPARM2)
+  Trade: 0x0383, // troca entre jogadores (C↔S; o servidor repassa a oferta ao outro lado)
+  QuitTrade: 0x0384, // cancela a troca (C↔S; S→C também fecha a janela depois da troca)
   MessageChat: 0x0333,
   MessageWhisper: 0x0334,
   Ping: 0x03a0,
@@ -48,6 +50,8 @@ export const Op = {
   ExpPanel: 0x5000,
   ShopList: 0x017c, // lista da loja (o Carry do NPC)
   SendItem: 0x0182, // atualiza um slot do inventário
+  UpdateCarry: 0x0185, // inventário inteiro (Carry[64]) + gold, depois da troca
+  CNFCheck: 0x0386, // troca: o servidor aceitou a minha confirmação
   StartTime: 0x03a1, // contador das arenas de quest (legado)
 } as const;
 

@@ -13,6 +13,7 @@ Os bots não usam navegador. Eles falam o protocolo CPSock direto com o tm-serve
 npm install
 cp .env.example .env
 npm run account:create     # cria uma conta no portal e preenche WYD_ACCOUNT/WYD_PASSWORD/WYD_PIN
+npm run account:create -- --second   # segunda conta (WYD_ACCOUNT_B/WYD_PASSWORD_B), só para o cenário de troca
 ```
 
 O `.env` aponta por padrão para o tm-server do Railway (`reseau.proxy.rlwy.net:56950`, versão de cliente 12000). Ele nunca vai para o Git.
@@ -93,7 +94,7 @@ Cada execução grava `reports/<data>-coveiro-quest/` com `report.json` (veredit
 
 ### Situação (2026-10-16): entrega funciona, reset ausente
 
-Execução de 2026-10-16 22:58–23:32 UTC (`--until-done`). O processo foi encerrado por falta de memória na máquina de teste aos 30 min de espera, antes da virada da hora. Por isso não há `report.json`, só o `events.jsonl`.
+Execução de 2026-10-16 22:58 a 2026-10-17 00:02 UTC (`--until-done`). Veredito: **falhou**, só pelo reset.
 
 | Verificação | Resultado |
 |---|---|
@@ -102,16 +103,51 @@ Execução de 2026-10-16 22:58–23:32 UTC (`--until-done`). O processo foi ence
 | Intruso na arena volta para a cidade | ✅ teleportado para (2100,2095) |
 | Vela do Coveiro de graça na Aki | ✅ |
 | A: a entrega teleporta para a arena | ✅ (2398,2105), vela consumida |
-| B: o reset manda de volta | ❌ 30 min vivo na arena, sem teleporte (o legado teria resetado 3 vezes) |
+| B: o reset manda de volta | ❌ 59,5 min vivo na arena, passando pela virada da hora (00:00 UTC), sem teleporte. O legado teria resetado pelo menos 5 vezes. |
 
 O servidor Go não tem o reset das áreas de quest. Issue aberta: [Jean1dev/w2pp-OpenWYD#386](https://github.com/Jean1dev/w2pp-OpenWYD/issues/386). Veja [docs/findings/002-quest-coveiro-sem-reset.md](docs/findings/002-quest-coveiro-sem-reset.md).
+
+## Cenário 3 — Troca entre jogadores
+
+`npm run scenario:trade` (exige a segunda conta no `.env`)
+
+1. Cada conta entra com um personagem: o A na conta principal e o B na `WYD_ACCOUNT_B`. Na primeira execução os personagens são criados, e depois são reaproveitados (`state/player-trade.json`).
+2. Os dois vão até a Aki, em Armia, e ficam lado a lado. Ali o A compra a **Vela do Coveiro** (4038) e o B a **Colheita do Jardineiro** (4039). As duas são grátis e podem ser trocadas.
+3. **Verificação A, item por item:** o A oferece a vela, o B oferece a colheita e os dois confirmam. Passa quando:
+   - o servidor repassa a cada lado exatamente a oferta do outro;
+   - a troca conclui com UpdateCarry para os dois;
+   - cada inventário perde o item que deu e ganha o que recebeu, idêntico (índice e efeitos);
+   - nada mais muda, nem o gold.
+4. **Verificação B, só gold:** o A oferece um valor (`--gold`, padrão 12345) e o B não oferece nada. Passa quando o A perde o valor, o B ganha o mesmo valor e os inventários não mudam.
+5. **Verificação C, relogin:** os dois saem e entram de novo. O inventário e o gold precisam ser os mesmos do fim das trocas.
+
+O fluxo de pacotes segue o cliente (`handler/trade.go`):
+- o A abre a troca com a sua oferta, e o B responde com a dele;
+- o A confirma e recebe CNFCheck;
+- o B confirma, e o servidor troca tudo de uma vez, manda UpdateCarry aos dois e fecha com QuitTrade.
+
+Um QuitTrade antes do UpdateCarry é recusa.
+
+| Opção | Efeito |
+|---|---|
+| `--gold 50000` | Valor da troca de gold. |
+| `--fresh` | Apaga os dois personagens e o estado e recomeça. |
+| `--cleanup` | Apaga os dois personagens e o estado e sai. |
+
+Códigos de saída: `0` passou · `1` falhou · `3` erro de execução. Cada execução grava `reports/<data>-player-trade/` com `report.json` (ofertas, repasses, inventário e gold antes, depois e no relogin, com as diferenças) e `events.jsonl`.
+
+### Situação (2026-10-17): passa
+
+Foram três execuções no Railway entre 01:28 e 01:30 UTC. As duas últimas **passaram** em todas as verificações: item por item, gold (12345 do A para o B) e relogin.
+
+A primeira acusou falha na troca de gold, mas o erro era do bot. O gold tinha passado certo, e o QuitTrade que fecha a troca chegou ao A antes do UpdateCarry do B. O bot leu esse QuitTrade como recusa e foi corrigido. Nenhuma issue foi necessária.
 
 ## Estrutura
 
 ```
 src/protocol/   codec CPSock (keytable, encode/decode, framer), opcodes e pacotes no layout do servidor Go
 src/client/     GameClient (TCP, relógio de ClientTick, estado do mundo, waitFor) e logger
-src/bot/        sessão (login/PIN/personagem), movimento, combate, grind, sobrevivência, NPCs (loja, itens, quest) e progresso
+src/bot/        sessão (login/PIN/personagem), movimento, combate, grind, sobrevivência, NPCs (loja, itens, quest), troca entre jogadores e progresso
 src/world/      Campo de Treino (zona 0x80 e spawns) e Quest do Coveiro (NPCs, arena, rotas)
 src/scenarios/  cenários de teste e peças comuns (common.ts)
 scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja)
@@ -123,5 +159,5 @@ Para regenerar a zona a partir de um clone do servidor: `npm run zone:extract --
 ### Referências de protocolo
 
 - Transporte: `tmserver/internal/protocol/{codec,transform,checksum,keytable}.go` (servidor) e `tools/protocol/cpsock_ref.py` (webclient).
-- Layout dos corpos: `tmserver/internal/protocol/messages.go`, `selchar.go`, `mob.go`, `createmob.go`, `score.go` e `shop.go`.
+- Layout dos corpos: `tmserver/internal/protocol/messages.go`, `selchar.go`, `mob.go`, `createmob.go`, `score.go`, `shop.go` e `carry.go`; troca em `messages.go` (`MsgTradeBody`).
 - Regras de movimento e ataque: `handler/movement.go` (janela de tick de +15 s/−120 s; o primeiro passo nos 3 s após o login é descartado) e `handler/combat.go` (ataques a no mínimo 800 ms um do outro).

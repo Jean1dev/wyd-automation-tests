@@ -1,6 +1,6 @@
 # 002 — Quest do Coveiro (e demais arenas da Quest 256) sem reset no servidor Go
 
-**Status:** aberto, **confirmado no Railway** em 2026-10-16 (execução `reports/2026-10-16T22-58-44-311Z-coveiro-quest`, `events.jsonl`): o personagem entregou a Vela do Coveiro às 23:02:27 UTC, foi teleportado para dentro da arena e ficou lá, vivo, por **30 min** sem ser mandado de volta. No legado, o reset teria acontecido três vezes nesse intervalo. A execução foi interrompida às 23:32:47 UTC (o processo foi encerrado por falta de memória na máquina de teste), antes da virada da hora.
+**Status:** aberto, **confirmado no Railway** em 2026-10-16 (execução `reports/2026-10-16T22-58-44-311Z-coveiro-quest`). O personagem entregou a Vela do Coveiro às 23:02:27 UTC e foi teleportado para dentro da arena. Ficou lá, vivo, até o fim da janela de espera às 00:02:00 UTC, **59,5 min** sem ser mandado de volta. A janela passou pela virada da hora (00:00 UTC), e nesse intervalo o legado teria resetado pelo menos cinco vezes.
 **Issue:** [Jean1dev/w2pp-OpenWYD#386](https://github.com/Jean1dev/w2pp-OpenWYD/issues/386)
 **Cenário:** `npm run scenario:coveiro`
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `4181ce3`)
@@ -15,7 +15,7 @@
 | Entrar a pé na arena sem QuestFlag: o guarda manda para Armia (2100,2095) | ✅ |
 | Vela do Coveiro (4038) comprada de graça na Aki | ✅ |
 | Entregar a vela ao Coveiro: teleporta para (2398,2105), dentro da arena, e consome a vela | ✅ |
-| **Reset da quest manda o personagem de volta** | ❌ 30 min dentro da arena sem teleporte |
+| **Reset da quest manda o personagem de volta** | ❌ 59,5 min dentro da arena, passando por 00:00 UTC, sem teleporte e sem `MSG_StartTime` |
 
 ## Comportamento esperado (legado)
 

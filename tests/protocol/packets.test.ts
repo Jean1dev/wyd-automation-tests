@@ -139,4 +139,42 @@ describe('parsers S→C', () => {
     e.writeBigInt64LE(192215n, 4); e.writeUInt16LE(170, 20); e.writeInt32LE(1000, 28);
     expect(P.parseUpdateEtc(e)).toEqual({ exp: 192215n, scoreBonus: 170, coin: 1000 });
   });
+
+  it('UpdateCarry: Carry[64]@0 + Coin@512', () => {
+    const b = Buffer.alloc(516);
+    b.writeUInt16LE(4039, 5 * 8); b[5 * 8 + 2] = P.EF_AMOUNT; b[5 * 8 + 3] = 3;
+    b.writeInt32LE(1012345, 512);
+    const u = P.parseUpdateCarry(b);
+    expect(u.carry).toHaveLength(64);
+    expect(u.carry[5]).toEqual({ index: 4039, eff: [[61, 3], [0, 0], [0, 0]] });
+    expect(u.coin).toBe(1012345);
+  });
+});
+
+describe('troca entre jogadores (MsgTradeBody)', () => {
+  const vela: P.Item = { index: 4038, eff: [[0, 0], [0, 0], [0, 0]] };
+
+  it('Trade: 142 B, Item[15]@0, InvenPos[15]@120 (0xFF = vazio), Money@135, MyCheck@139, OpponentID@140', () => {
+    const b = P.trade({ items: [{ slot: 5, item: vela }], money: 12345, check: true, opponentId: 2 });
+    expect(b.length).toBe(142);
+    expect(b.readUInt16LE(0)).toBe(4038);
+    expect(b[120]).toBe(5);
+    expect([...b.subarray(121, 135)].every((x) => x === 0xff)).toBe(true);
+    expect(b.readInt32LE(135)).toBe(12345);
+    expect(b[139]).toBe(1);
+    expect(b.readUInt16LE(140)).toBe(2);
+    expect(() => P.trade({ items: Array(16).fill({ slot: 0, item: vela }), money: 0, check: false, opponentId: 1 })).toThrow();
+  });
+
+  it('parseTrade lê de volta a oferta e ignora entradas vazias', () => {
+    const offer = { items: [{ slot: 5, item: vela }], money: 0, check: false, opponentId: 1 };
+    expect(P.parseTrade(P.trade(offer))).toEqual(offer);
+    expect(P.parseTrade(P.trade({ items: [], money: 7, check: false, opponentId: 9 })).items).toEqual([]);
+  });
+
+  it('sameItem compara índice e os três efeitos', () => {
+    expect(P.sameItem(vela, { index: 4038, eff: [[0, 0], [0, 0], [0, 0]] })).toBe(true);
+    expect(P.sameItem(vela, { index: 4038, eff: [[61, 2], [0, 0], [0, 0]] })).toBe(false);
+    expect(P.sameItem(vela, undefined)).toBe(false);
+  });
 });
