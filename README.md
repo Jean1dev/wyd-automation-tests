@@ -17,6 +17,7 @@ npm run account:create -- --second   # segunda conta (WYD_ACCOUNT_B/WYD_PASSWORD
 npm run account:create -- --arch     # conta do cenário do Arch (WYD_ACCOUNT_ARCH/WYD_PASSWORD_ARCH)
 npm run account:create -- --foema    # conta dos cenários da Foema (WYD_ACCOUNT_FOEMA/WYD_PASSWORD_FOEMA)
 npm run account:create -- --bm       # conta dos cenários do BeastMaster (WYD_ACCOUNT_BM/WYD_PASSWORD_BM)
+npm run account:create -- --ht       # conta dos cenários da Huntress (WYD_ACCOUNT_HT/WYD_PASSWORD_HT)
 ```
 
 O `.env` aponta por padrão para o tm-server do Railway (`reseau.proxy.rlwy.net:56950`, versão de cliente 12000). Ele nunca vai para o Git.
@@ -533,15 +534,77 @@ Execuções de 2026-10-17 entre 19:07 e 20:30 UTC:
   - Na primeira execução das magias, o bot usou o mestre da Foema, e o BM aprendeu as skills dele no Foema_Ancian. Nem o legado nem o Go conferem qual mestre ensina, só o `TargetID` (`_MSG_ApplyBonus.cpp:139`). A execução final usou o Mestre_Archi.
   - Um HP máximo +1 no Astaroth com Asas do Inferno não se repetiu com `--skill 69` e ficou como inconclusivo.
 
+## Cenário 10 — Skills da Huntress (três árvores)
+
+```
+npm run account:create -- --ht   # conta própria (WYD_ACCOUNT_HT): uma Huntress por árvore
+npm run scenario:ht-1            # 72–79, Special[1]
+npm run scenario:ht-2            # 80–87, Special[2]
+npm run scenario:ht-3            # 88–95, Special[3]
+```
+
+É o mesmo cenário das outras classes (`src/scenarios/skillTree.ts --tree ht-…`):
+- **Mestre:** o **ForeLearner** (2130,2125), que tem Merchant 19 e vende 5072–5095.
+- **Build:** de Str, porque o dano da HT é 3×arma + 3×Str + nível/2 + Special + base.
+- **Nomes:** seguem o SkillData e o `docs/migration/skills/huntress.md` do servidor. O ItemList troca os nomes de 74/75, 83/84, 85/86 e 90–92; os requisitos vêm do ItemList pelo índice.
+
+| Árvore | Skill | Como o bot testa |
+|---|---|---|
+| 1 | 72 Ataque Fatal | dano (alcance 2) |
+| | 73 Ilusão | não é cast: o `MSG_Action3` move a HT e cobra 45 de MP, conferido pelo eco do cast seguinte |
+| | 75 Agressividade, 76 Imunidade | affect 27 / 19 |
+| | 77 Meditação | AC − (Level/3 + 10) |
+| | 74 Encantar Gelo, 78 Lança de Ferro | passivas: o cast é recusado |
+| | 79 Tempestade de Raios (8ª) | só a recusa sem os 50M |
+| 2 | 80 Golpe Felino | dano (alcance 2) |
+| | 81 Ligação Espectral | affect 37 |
+| | 82 Perícia do Caçador | passiva |
+| | 83 Alquimia, 84 Extração | só o aprendizado: são usadas na combinação de itens |
+| | 85 Explosão Etérea | affect 31: AC + Level/2 + 150, e cobra 100 × Special[2] de gold |
+| | 86 Escudo Dourado | dano em área |
+| | 87 Troca de Espíritos (8ª) | só a recusa |
+| 3 | 88 Lâmina das Sombras | dano |
+| | 89 Evasão Aprimorada, 92 Olhos de Águia | affect 26 / 36 |
+| | 90 Toxina, 91 Visão Caçadora, 93 Lâmina Aérea | passivas |
+| | 94 Proteção das Sombras | passiva; a AC ao aprender, pela regra do legado (abaixo) |
+| | 95 Invisibilidade (8ª) | só a recusa; os pontos da árvore somam 680, então ela vem no nível exibido 221 |
+
+O efeito dos affects 19, 26, 27, 36 e 37 só aparece em combate ou com a arma certa: bloqueio, parry, congelar com arma de gelo, drenar com arma 41, dano extra. Para esses, vale o affect. Os estados ficam em `state/ht-tree{1,2,3}.json`.
+
+### Situação (2026-10-17): passa (só a compra da skill como item reprova)
+
+Execuções de 2026-10-17 entre 21:04 e 21:46 UTC, cerca de 13 min de jogo por árvore:
+
+| Árvore | HT | Destaques |
+|---|---|---|
+| 1 | `bot0ul7emabi` | Ataque Fatal 253; Ilusão −45 de MP exato; Meditação AC 148 → 97 (−51 = 123/3 + 10) |
+| 2 | `bot0f2gutoo6` | Golpe Felino 244; Explosão Etérea AC 150 → 341 (+191 = 82/2 + 150) e gold −8200 (100 × 82); Escudo Dourado 3466/3288 em dois alvos |
+| 3 | `bot0rpd4a5ih` | Lâmina das Sombras 232; Evasão e Olhos de Águia com o affect |
+
+- **Nas três árvores:**
+  - recusa um nível antes ✅;
+  - aprender descontando os pontos exatos ✅;
+  - controles de cast ✅;
+  - reaprender: `AlreadyLearned` ✅;
+  - recusa da 8ª sem os 50M ✅;
+  - relogin ✅.
+- **Compra da skill como item:** ❌ o ForeLearner também entrega a skill pelo `MSG_Buy` ([#391](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391)).
+- **Proteção das Sombras (94):** ao ser aprendida, a AC não mudou (181 → 181). É o que o legado faz:
+  - o legado confere o bit 23 (`Basedef.cpp:3867`, `LearnedSkill & (1 << 23) // 22`), que é a Invisibilidade (95), e não o bit 22 da própria 94;
+  - o Go copia o legado (`score_derive.go:331`);
+  - então a passiva só dá AC com a 8ª aprendida;
+  - não é uma divergência do Go, e por isso não há issue; o comentário "// 22" do legado sugere que o bit certo seria o 22.
+  - Na primeira execução, o bot esperava +65; a verificação agora segue o legado.
+
 ## Estrutura
 
 ```
 src/protocol/   codec CPSock (keytable, encode/decode, framer), opcodes e pacotes no layout do servidor Go
 src/client/     GameClient (TCP, relógio de ClientTick, estado do mundo, waitFor) e logger
 src/bot/        sessão (login/PIN/personagem), movimento, viagens (Grifo, tiles), combate, grind, sobrevivência, NPCs (loja, itens, quest), quests de arena, build de atributos e maestria, skills (aprender e conjurar), equipamento, troca entre jogadores e progresso
-src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento), criação do Arch e as árvores de skills da Foema e do BeastMaster (skills, mestre e campo de teste)
+src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento), criação do Arch e as árvores de skills da Foema, do BeastMaster e da Huntress (skills, mestre e campo de teste)
 src/scenarios/  cenários de teste e peças comuns (common.ts)
-scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja, equipamento/Grifo, lista de personagens)
+scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja, equipamento/Grifo, lista de personagens, resumo de árvore de skills)
 tests/          testes unitários (vitest)
 ```
 

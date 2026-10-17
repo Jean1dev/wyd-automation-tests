@@ -36,6 +36,12 @@ export const BUILDS: Record<number, Build> = {
  */
 export const CASTER_INT: Build = { name: 'Int (magias)', share: { int: 0.8, con: 0.2 }, cap: { con: 500 } };
 
+/**
+ * Huntress das skills: o dano das skills da HT é 3×dano da arma + 3×Str + nível/2 + Special + base
+ * (combat/skill.go SkillBaseDamage, sem o multiplicador de Magic), então Str, com Con para aguentar.
+ */
+export const HUNTRESS_STR: Build = { name: 'Huntress de Str (skills)', share: { str: 0.75, con: 0.25 }, cap: { con: 500 } };
+
 /** Só Str: a distribuição dos cenários 1 a 3, em que o bot só precisa de dano. */
 export const ALL_STR: Build = { name: 'tudo em Str', share: { str: 1 }, cap: {} };
 

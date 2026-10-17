@@ -23,7 +23,10 @@
     "scenario:foema-special": "tsx src/scenarios/skillTree.ts --tree especial",
     "scenario:bm-magia": "tsx src/scenarios/skillTree.ts --tree bm-magia",
     "scenario:bm-evocacao": "tsx src/scenarios/skillTree.ts --tree bm-evocacao",
-    "scenario:bm-transformacao": "tsx src/scenarios/skillTree.ts --tree bm-transformacao"
+    "scenario:bm-transformacao": "tsx src/scenarios/skillTree.ts --tree bm-transformacao",
+    "scenario:ht-1": "tsx src/scenarios/skillTree.ts --tree ht-1",
+    "scenario:ht-2": "tsx src/scenarios/skillTree.ts --tree ht-2",
+    "scenario:ht-3": "tsx src/scenarios/skillTree.ts --tree ht-3"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",

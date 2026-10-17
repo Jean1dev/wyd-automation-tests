@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  BLACK_MAGIC, BM_MAGIC, BM_SUMMON, BM_TRANSFORM, buffGain, cumulativePoints, summonCount, transformScore, healAmount, judgmentHp, learnBit, learnLevel, manaCost, masteryCapAt, skillIn, skillPointsAt, SPECIAL_MAGIC, WHITE_MAGIC,
+  BLACK_MAGIC, BM_MAGIC, BM_SUMMON, BM_TRANSFORM, buffGain, HT_T1, HT_T2, HT_T3, cumulativePoints, summonCount, transformScore, healAmount, judgmentHp, learnBit, learnLevel, manaCost, masteryCapAt, skillIn, skillPointsAt, SPECIAL_MAGIC, WHITE_MAGIC,
 } from '../../src/world/skillTrees.ts';
 
 describe('árvores de skills da Foema', () => {
@@ -71,5 +71,17 @@ describe('árvores de skills da Foema', () => {
     expect(transformScore(1, 0, 0x20000, { ac: 100, maxHp: 200, run: 2 })).toEqual({ ac: 103, maxHp: 200, run: 3 });
     // Titã, Level 200: AC 110+15 → 125+10.
     expect(transformScore(4, 200, 0, { ac: 100, maxHp: 100, run: 6 })).toEqual({ ac: 135, maxHp: 115, run: 6 });
+  });
+
+  it('Huntress: bits, pontos e nível de cada skill (a árvore 3 soma 680: a 8ª só no nível 220)', () => {
+    expect([HT_T1, HT_T2, HT_T3].map((t) => t.skills.reduce((m, k) => m | learnBit(k.id), 0))).toEqual([0xff, 0xff00, 0xff0000]);
+    expect(HT_T1.skills.map((k) => learnLevel(HT_T1, k.id))).toEqual([7, 20, 42, 59, 87, 116, 148, 219]);
+    expect(HT_T2.skills.map((k) => learnLevel(HT_T2, k.id))).toEqual([6, 19, 42, 60, 88, 118, 145, 219]);
+    expect(HT_T3.skills.map((k) => learnLevel(HT_T3, k.id))).toEqual([8, 22, 39, 62, 87, 117, 149, 220]);
+  });
+
+  it('Meditação e "Escudo Dourado" (affects 21 e 31) mexem na AC', () => {
+    expect(buffGain(21, 15, 123)).toBe(-51);
+    expect(buffGain(31, 150, 82)).toBe(191);
   });
 });

@@ -5,6 +5,7 @@ Reproduzido de novo em todas as árvores seguintes:
 - Magia Branca (5025);
 - Magia Especial (5041);
 - no mestre do BeastMaster, o Mestre_Archi (Merchant 19): 5049, 5057 e 5066 (cenário 9).
+- no mestre da Huntress, o ForeLearner (Merchant 19): 5073, 5081 e 5089 (cenário 10).
 **Issue:** [Jean1dev/w2pp-OpenWYD#391](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391)
 **Cenário:** `npm run scenario:foema-black`
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `d896ae2f`)

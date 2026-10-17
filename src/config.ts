@@ -18,9 +18,9 @@ export interface BotConfig extends Credentials {
  * Configuração de uma conta do .env. A conta principal usa WYD_ACCOUNT/WYD_PASSWORD/WYD_PIN; a
  * segunda (cenários com dois jogadores) usa WYD_ACCOUNT_B/WYD_PASSWORD_B e WYD_PIN_B, a do
  * cenário do Arch usa WYD_ACCOUNT_ARCH/WYD_PASSWORD_ARCH e WYD_PIN_ARCH, e as dos cenários de
- * skills usam os sufixos _FOEMA e _BM. Os PINs caem no WYD_PIN quando vazios.
+ * skills usam os sufixos _FOEMA, _BM e _HT. Os PINs caem no WYD_PIN quando vazios.
  */
-export function loadConfig(which: 'a' | 'b' | 'arch' | 'foema' | 'bm' = 'a'): BotConfig {
+export function loadConfig(which: 'a' | 'b' | 'arch' | 'foema' | 'bm' | 'ht' = 'a'): BotConfig {
   const sfx = which === 'a' ? '' : `_${which.toUpperCase()}`;
   const pin = sfx && !process.env[`WYD_PIN${sfx}`]?.trim() ? need('WYD_PIN') : need(`WYD_PIN${sfx}`);
   if (!/^\d{6}$/.test(pin)) throw new Error(`WYD_PIN${sfx} deve ter 6 dígitos`);

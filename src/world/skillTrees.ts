@@ -4,6 +4,7 @@
 //
 // - Foema (classe 1): Magia Branca 24–31, Magia Negra 32–39, Magia Especial 40–47.
 // - BeastMaster (classe 2): magias 48–55, evocações 56–63, transformações 64–71.
+// - Huntress (classe 3): árvores 72–79, 80–87 e 88–95.
 // - Dados: Release/Common/SkillData.csv. Requisitos para aprender: ItemList.csv 5000 + skill,
 //   "ReqLvl.ReqStr.ReqInt.ReqDex.ReqCon", em que ReqInt/ReqDex/ReqCon são comparados com
 //   Special[1]/[2]/[3] (handler/skill.go learnSkill; legado _MSG_ApplyBonus.cpp:131-249). A 8ª
@@ -14,6 +15,7 @@ import type { Point } from './coveiro.ts';
 
 export const FOEMA = 1;
 export const BEASTMASTER = 2;
+export const HUNTRESS = 3;
 
 /** Foema_Ancian (NPCGener.txt [3407], Merchant 19): o mestre de skills da Foema, em Armia. */
 export const FOEMA_MASTER: NpcSpec = { name: 'Foema_Ancian', merchant: 19, pos: { x: 2094, y: 2126 }, stand: { x: 2094, y: 2124 } };
@@ -34,11 +36,14 @@ export const BM_MASTER: NpcSpec = { name: 'Mestre_Archi', merchant: 19, pos: { x
  * - ethereal: Chamas Etéreas (InstanceType 12), que só age em jogador; em mob vale o cast;
  * - summon: evocação (InstanceType 11) — o número de bichos é Special[2]/30, /40 ou /80;
  * - transform: transformação do BM (affect 16) — AC e HP máximo pela pTransBonus;
- * - passive: skill passiva — o cast é recusado; a passiva melhora a transformação `boosts`;
+ * - passive: skill passiva — o cast é recusado; a passiva melhora a transformação `boosts` ou,
+ *   com `passiveAc`, soma Special[3]/3 + 10 de AC ao ser aprendida (Proteção das Sombras);
+ * - illusion: a Ilusão da Huntress, que é um movimento MSG_Action3 com 45 de MP;
+ * - utility: usada fora do combate (Alquimia, Extração na combinação de itens): só se aprende;
  * - eighth: a 8ª skill, que só tem a recusa sem os 50M de gold.
  */
 export type SkillKind = 'damage' | 'area' | 'thunder' | 'heal' | 'detox' | 'flash' | 'judgment' | 'buff' | 'teleport'
-  | 'debuff' | 'ethereal' | 'summon' | 'transform' | 'passive' | 'eighth';
+  | 'debuff' | 'ethereal' | 'summon' | 'transform' | 'passive' | 'illusion' | 'utility' | 'eighth';
 
 export interface SkillDef {
   id: number;
@@ -64,16 +69,18 @@ export interface SkillDef {
   summon?: number;
   /** Passiva: a transformação que ela melhora. */
   boosts?: number;
+  /** Passiva que soma Special[3]/3 + 10 de AC com o bit 23 aprendido (Proteção das Sombras). */
+  passiveAc?: boolean;
 }
 
-export type TreeKey = 'negra' | 'branca' | 'especial' | 'bm-magia' | 'bm-evocacao' | 'bm-transformacao';
+export type TreeKey = 'negra' | 'branca' | 'especial' | 'bm-magia' | 'bm-evocacao' | 'bm-transformacao' | 'ht-1' | 'ht-2' | 'ht-3';
 
 export interface SkillTree {
   key: TreeKey;
   label: string;
   /** Classe do personagem (STRUCT_MOB.Class) e a conta do .env do cenário. */
   cls: number;
-  account: 'foema' | 'bm';
+  account: 'foema' | 'bm' | 'ht';
   /** Nome do estado e da pasta de relatório. */
   scenario: string;
   /** O mestre de skills da classe (Merchant 19), que abre a janela das 24 skills dela. */
@@ -224,9 +231,88 @@ export const BM_TRANSFORM: SkillTree = {
   ],
 };
 
+/** ForeLearner (NPCGener.txt [3417], Merchant 19): o mestre de skills da Huntress (Carry 5072–5095), em Armia. */
+export const HT_MASTER: NpcSpec = { name: 'ForeLearner', merchant: 19, pos: { x: 2130, y: 2125 }, stand: { x: 2130, y: 2123 } };
+
+/**
+ * Huntress, árvore 1. Os nomes seguem o SkillData e docs/migration/skills/huntress.md do servidor (o
+ * ItemList troca 74/75). A Ilusão (73) não é cast: é o MSG_Action3, que cobra 45 de MP
+ * (_MSG_Action.cpp:72-99, handler/movement.go consumeIllusion).
+ */
+export const HT_T1: SkillTree = {
+  key: 'ht-1',
+  label: 'Huntress: árvore 1',
+  cls: HUNTRESS,
+  account: 'ht',
+  scenario: 'ht-tree1',
+  master: HT_MASTER,
+  tree: 1,
+  skills: [
+    { id: 72, name: 'Ataque Fatal', points: 21, mana: 15, range: 2, kind: 'damage', maxTarget: 1, reqLevel: 0, reqSpecial: 0, base: 30 },
+    { id: 73, name: 'Ilusão', points: 39, mana: 45, range: 0, kind: 'illusion', maxTarget: 1, reqLevel: 0, reqSpecial: 0, base: 0 },
+    { id: 74, name: 'Encantar Gelo', points: 66, mana: 0, range: 0, kind: 'passive', maxTarget: 0, reqLevel: 34, reqSpecial: 0, base: 0 },
+    { id: 75, name: 'Agressividade', points: 51, mana: 30, range: 0, kind: 'buff', maxTarget: 1, reqLevel: 47, reqSpecial: 0, base: 0, affect: { type: 27, value: 1 } },
+    { id: 76, name: 'Imunidade', points: 84, mana: 42, range: 0, kind: 'buff', maxTarget: 1, reqLevel: 60, reqSpecial: 90, base: 0, affect: { type: 19, value: 15 } },
+    { id: 77, name: 'Meditação', points: 87, mana: 90, range: 0, kind: 'buff', maxTarget: 1, reqLevel: 82, reqSpecial: 123, base: 0, affect: { type: 21, value: 15 } },
+    { id: 78, name: 'Lança de Ferro', points: 96, mana: 0, range: 0, kind: 'passive', maxTarget: 0, reqLevel: 139, reqSpecial: 162, base: 0 },
+    { id: 79, name: 'Tempestade de Raios', points: 233, mana: 75, range: 6, kind: 'eighth', maxTarget: 6, reqLevel: 219, reqSpecial: 200, base: 0 },
+  ],
+};
+
+/**
+ * Huntress, árvore 2. A 85 aplica o affect 31 ("Escudo Dourado": AC + Level/2 + 150) e cobra
+ * 100 × Special[2] de gold (_MSG_Attack.cpp:223-232); a 86 é dano em área. Alquimia (83) e Extração
+ * (84) são usadas pela combinação de itens, não por cast.
+ */
+export const HT_T2: SkillTree = {
+  key: 'ht-2',
+  label: 'Huntress: árvore 2',
+  cls: HUNTRESS,
+  account: 'ht',
+  scenario: 'ht-tree2',
+  master: HT_MASTER,
+  tree: 2,
+  skills: [
+    { id: 80, name: 'Golpe Felino', points: 18, mana: 10, range: 2, kind: 'damage', maxTarget: 1, reqLevel: 0, reqSpecial: 0, base: 30 },
+    { id: 81, name: 'Ligação Espectral', points: 39, mana: 108, range: 0, kind: 'buff', maxTarget: 1, reqLevel: 0, reqSpecial: 0, base: 0, affect: { type: 37, value: 0 } },
+    { id: 82, name: 'Perícia do Caçador', points: 69, mana: 15, range: 0, kind: 'passive', maxTarget: 1, reqLevel: 33, reqSpecial: 0, base: 0 },
+    { id: 83, name: 'Alquimia', points: 54, mana: 30, range: 0, kind: 'utility', maxTarget: 1, reqLevel: 48, reqSpecial: 0, base: 0 },
+    { id: 84, name: 'Extração', points: 84, mana: 30, range: 0, kind: 'utility', maxTarget: 1, reqLevel: 61, reqSpecial: 61, base: 0 },
+    { id: 85, name: 'Explosão Etérea', points: 90, mana: 120, range: 0, kind: 'buff', maxTarget: 1, reqLevel: 82, reqSpecial: 82, base: 0, affect: { type: 31, value: 150 } },
+    { id: 86, name: 'Escudo Dourado', points: 81, mana: 25, range: 6, kind: 'area', maxTarget: 10, reqLevel: 131, reqSpecial: 131, base: 35 },
+    { id: 87, name: 'Troca de Espíritos', points: 242, mana: 90, range: 0, kind: 'eighth', maxTarget: 1, reqLevel: 219, reqSpecial: 200, base: 160 },
+  ],
+};
+
+/**
+ * Huntress, árvore 3. A Proteção das Sombras (94) soma Special[3]/3 + 10 de AC, mas o legado confere
+ * o bit 23 (Basedef.cpp:3867, `LearnedSkill & (1 << 23) // 22`), que é a Invisibilidade (95), e
+ * não o bit 22 da própria 94; o Go copia (handler/score_derive.go:331). Sem a 8ª, a AC não muda.
+ */
+export const HT_T3: SkillTree = {
+  key: 'ht-3',
+  label: 'Huntress: árvore 3',
+  cls: HUNTRESS,
+  account: 'ht',
+  scenario: 'ht-tree3',
+  master: HT_MASTER,
+  tree: 3,
+  skills: [
+    { id: 88, name: 'Lâmina das Sombras', points: 24, mana: 9, range: 6, kind: 'damage', maxTarget: 1, reqLevel: 0, reqSpecial: 0, base: 0 },
+    { id: 89, name: 'Evasão Aprimorada', points: 42, mana: 24, range: 0, kind: 'buff', maxTarget: 1, reqLevel: 0, reqSpecial: 0, base: 0, affect: { type: 26, value: 1 } },
+    { id: 90, name: 'Toxina da Serpente', points: 51, mana: 35, range: 0, kind: 'passive', maxTarget: 1, reqLevel: 32, reqSpecial: 0, base: 0 },
+    { id: 91, name: 'Visão Caçadora', points: 69, mana: 0, range: 0, kind: 'passive', maxTarget: 0, reqLevel: 50, reqSpecial: 0, base: 0 },
+    { id: 92, name: 'Olhos de Águia', points: 75, mana: 30, range: 0, kind: 'buff', maxTarget: 1, reqLevel: 61, reqSpecial: 92, base: 0, affect: { type: 36, value: 1 } },
+    { id: 93, name: 'Lâmina Aérea', points: 90, mana: 0, range: 0, kind: 'passive', maxTarget: 1, reqLevel: 82, reqSpecial: 123, base: 0 },
+    { id: 94, name: 'Proteção das Sombras', points: 96, mana: 0, range: 0, kind: 'passive', maxTarget: 0, reqLevel: 139, reqSpecial: 166, base: 0, passiveAc: true },
+    { id: 95, name: 'Invisibilidade', points: 233, mana: 90, range: 0, kind: 'eighth', maxTarget: 1, reqLevel: 219, reqSpecial: 200, base: 160 },
+  ],
+};
+
 export const TREES: Record<TreeKey, SkillTree> = {
   negra: BLACK_MAGIC, branca: WHITE_MAGIC, especial: SPECIAL_MAGIC,
   'bm-magia': BM_MAGIC, 'bm-evocacao': BM_SUMMON, 'bm-transformacao': BM_TRANSFORM,
+  'ht-1': HT_T1, 'ht-2': HT_T2, 'ht-3': HT_T3,
 };
 
 /** Bichos de uma evocação (_MSG_Attack.cpp:818-828, handler/summon.go summonCount). */
@@ -279,7 +365,9 @@ export function transformScore(value: number, level: number, learn: number, base
  * - 11 Escudo Mágico: AC + Level/3 + Value;
  * - 9 Arma Mágica: dano + (Level×5/20 + Value)×3/2, ×3 numa Foema com o bit 19 (Escudo Mágico);
  * - 15 Toque de Athena: cada Special + Level/10 + Value;
- * - 25 Proteção Elemental: três resistências + (Value + Level/4)/10 (handler/affect_score.go).
+ * - 25 Proteção Elemental: três resistências + (Value + Level/4)/10 (handler/affect_score.go);
+ * - 21 Meditação: AC − (Level/3 + 10) (Basedef.cpp:4214-4222);
+ * - 31 "Escudo Dourado" (skill 85): AC + Level/2 + Value (Basedef.cpp:4430-4434).
  */
 export function buffGain(type: number, value: number, level: number, learn = 0): number {
   switch (type) {
@@ -291,6 +379,8 @@ export function buffGain(type: number, value: number, level: number, learn = 0):
     }
     case 15: return Math.trunc(level / 10) + value;
     case 25: return Math.trunc((value + Math.trunc(level / 4)) / 10) + (level >= 255 ? 20 : 0);
+    case 21: return -(Math.trunc(level / 3) + 10);
+    case 31: return Math.trunc(level / 2) + value;
     default: return 0;
   }
 }

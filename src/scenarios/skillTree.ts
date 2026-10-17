@@ -35,7 +35,7 @@ import { join } from 'node:path';
 import type { GameClient, Mob } from '../client/GameClient.ts';
 import { Logger } from '../client/logger.ts';
 import { loadConfig, type BotConfig } from '../config.ts';
-import { CASTER_INT, spendBuild, spendMastery, type MasteryResult } from '../bot/build.ts';
+import { CASTER_INT, HUNTRESS_STR, spendBuild, spendMastery, type MasteryResult } from '../bot/build.ts';
 import { walkPath, walkTo } from '../bot/movement.ts';
 import { buyItem, type Purchase } from '../bot/npc.ts';
 import { Progress } from '../bot/progress.ts';
@@ -49,7 +49,7 @@ import { Op } from '../protocol/opcodes.ts';
 import * as P from '../protocol/packets.ts';
 import { FAIRY_DUST_PRICE, NPC } from '../world/coveiro.ts';
 import {
-  buffGain, CAST_SPOT, cumulativePoints, EIGHTH_SKILL_COIN, healAmount, summonCount, SUMMON_MOB, summonMinSpecial, transformScore, judgmentHp, learnBit, learnLevel, manaCost,
+  buffGain, CAST_SPOT, cumulativePoints, EIGHTH_SKILL_COIN, healAmount, HUNTRESS, summonCount, SUMMON_MOB, summonMinSpecial, transformScore, judgmentHp, learnBit, learnLevel, manaCost,
   ROUTE_TO_CAST_SPOT, skillPointsAt, TREES, type SkillDef, type SkillTree, type TreeKey,
 } from '../world/skillTrees.ts';
 import { cleanupScenario, ensureCharacter, flag, opt, parseDuration, PlayClock, reportDirFor, runMain, runWithReconnect, writeReportFile, type CharacterState } from './common.ts';
@@ -60,6 +60,8 @@ const TREE: SkillTree = TREES[treeKey];
 const SCENARIO = TREE.scenario;
 /** O mestre de skills da classe. */
 const SKILL_MASTER = TREE.master;
+/** A Huntress bate com Str; Foema e BM, com Int. */
+const BUILD = TREE.cls === HUNTRESS ? HUNTRESS_STR : CASTER_INT;
 const DUST_STACK = 255;
 /** As 7 primeiras skills; a 8ª só tem o controle de recusa. */
 const LEARNABLE = TREE.skills.filter((s) => s.kind !== 'eighth');
@@ -105,7 +107,7 @@ interface SkillRecord {
   expectedLevel: number;
   early?: LearnAttempt & { expected: number[]; ok: boolean };
   shop?: { npcId: number; shopType: number; listed: boolean };
-  learn?: LearnAttempt & { checks: Record<string, boolean>; ok: boolean };
+  learn?: LearnAttempt & { checks: Record<string, boolean>; ok: boolean; acBefore?: number; acAfter?: number; specialAtLearn?: number };
   again?: LearnAttempt & { ok: boolean };
   cast?: CastCheck;
 }
@@ -196,7 +198,7 @@ function recordLevel(c: GameClient, state: State): void {
 }
 
 async function spendPoints(c: GameClient, state: State, masteryUntil: number): Promise<void> {
-  await spendBuild(c, log, CASTER_INT);
+  await spendBuild(c, log, BUILD);
   if (c.self!.specialBonus > 0 && special(c) < masteryUntil) {
     const m = await spendMastery(c, log, TREE.tree, masteryUntil);
     if (m.spent || m.notices.length) state.mastery.push(m);
@@ -343,6 +345,7 @@ async function learnStep(c: GameClient, state: State, s: SkillDef): Promise<void
   // Aprende.
   const shop = await openSkillShop(c, SKILL_MASTER);
   rec.shop = { npcId: shop.npcId, shopType: shop.shopType, listed: shop.items.some((it) => it.index === 5000 + s.id) };
+  const acBefore = me.ac;
   const a = await learnSkill(c, log, shop.npcId, s.id);
   const checks = {
     bitSet: a.learned,
@@ -351,7 +354,7 @@ async function learnStep(c: GameClient, state: State, s: SkillDef): Promise<void
     noGold: a.coinAfter === a.coin,
     noRefusal: a.notices.length === 0,
   };
-  rec.learn = { ...a, checks, ok: Object.values(checks).every(Boolean) };
+  rec.learn = { ...a, checks, ok: Object.values(checks).every(Boolean), acBefore, acAfter: me.ac, specialAtLearn: special(c) };
   if (!rec.learn.ok) fail(state, `aprender ${s.name} (${s.id}) no nível exibido ${shownLevel(a.level)}: falhou ${failedChecks(checks).join(', ')} (Learn ${hex(a.learnBefore)}→${hex(a.learnAfter)}, SkillBonus ${a.skillBonusBefore}→${a.skillBonusAfter} de ${s.points}, gold ${a.coin}→${a.coinAfter}, avisos ${a.notices.map(noticeName).join(',') || 'nenhum'})`);
   progress.save(state);
   if (!a.learned) return;
@@ -520,6 +523,7 @@ async function castBuff(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void
   const fx = s.affect!;
   await sleep(1000);
   const before = scoreView(c);
+  const coinBefore = me.coin;
   const r = await castSkill(c, log, s.id, 'self');
   cc.attempts.push(r);
   await sleep(1000); // UpdateScore com o buff
@@ -529,9 +533,15 @@ async function castBuff(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void
   const expectedGain = buffGain(fx.type, fx.value, level, me.learn);
   cc.buff = { affect, before, after, expectedGain };
   cc.checks = { echo: echoOk(r, s), mpCharged: mpOk(r, s), affect: !!affect, affectLevel: affect?.level === r.special };
+  // A 85 cobra 100 × Special[2] de gold antes do MP (_MSG_Attack.cpp:223-232, combat.go validateCast).
+  if (s.id === 85) {
+    cc.checks.goldCharged = coinBefore - me.coin === 100 * r.special;
+    cc.note = `gold ${coinBefore} → ${me.coin} (esperado −${100 * r.special})`;
+  }
+  if ([19, 26, 27, 36, 37].includes(fx.type)) cc.note = `affect ${fx.type}: o efeito (bloqueio, parry, congelar/drenar com a arma certa, dano extra) só aparece em combate ou com arma; vale o affect`;
   switch (fx.type) {
     case 2: cc.checks.runUp = after.run === before.run + expectedGain; break;
-    case 11: cc.checks.acUp = after.ac - before.ac === expectedGain; break;
+    case 11: case 21: case 31: cc.checks.acChange = after.ac - before.ac === expectedGain; break;
     case 9: cc.checks.damageUp = after.damage - before.damage === expectedGain; break;
     case 15: cc.checks.specialUp = after.special.every((v, k) => v - before.special[k] === expectedGain); break;
     case 18: cc.note = 'Controle de Mana: o affect 18 chegou; o dano virar gasto de MP não foi exercitado (os Gremlins não atacam)'; break;
@@ -670,10 +680,27 @@ async function castTransform(c: GameClient, s: SkillDef, cc: CastCheck): Promise
   };
 }
 
-/** Passiva: o cast é recusado (Passive, combat.go validateCast); depois refaz a transformação que ela melhora. */
-async function castPassive(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void> {
+/**
+ * Passiva: o cast é recusado (Passive, combat.go validateCast). Se ela melhora uma transformação,
+ * refaz a transformação; se soma AC (Proteção das Sombras), confere o ganho de quando foi aprendida.
+ */
+async function castPassive(c: GameClient, state: State, s: SkillDef, cc: CastCheck): Promise<void> {
   const r = await castSkill(c, log, s.id, 'self');
   cc.attempts.push(r);
+  if (!s.boosts) {
+    cc.checks = { castRefused: !r.echo };
+    const l = rec(state, s).learn;
+    if (s.passiveAc && l?.acBefore !== undefined && l.acAfter !== undefined) {
+      // O legado (e o Go) só soma com o bit 23 (Invisibilidade, a 8ª), não com o bit da própria 94.
+      const bit23 = (l.learnAfter & (1 << 23)) !== 0;
+      const expected = bit23 ? Math.trunc((l.specialAtLearn ?? 0) / 3) + 10 : 0;
+      cc.checks.acOnLearn = l.acAfter - l.acBefore === expected;
+      cc.note = `AC ao aprender: ${l.acBefore} → ${l.acAfter} (esperado +${expected}: o legado soma Special[3]/3 + 10 = ${Math.trunc((l.specialAtLearn ?? 0) / 3) + 10} só com o bit 23, da Invisibilidade, Basedef.cpp:3867)`;
+    } else {
+      cc.note = 'passiva: o efeito só aparece em combate ou com arma (Basedef.cpp / handler/item.go); vale a recusa do cast';
+    }
+    return;
+  }
   const boosted: CastCheck = { attempts: [], expectedMp: 0, checks: {}, ok: false };
   const target = TREE.skills.find((k) => k.id === s.boosts)!;
   await castTransform(c, target, boosted);
@@ -681,6 +708,31 @@ async function castPassive(c: GameClient, s: SkillDef, cc: CastCheck): Promise<v
   cc.passive = { cast: r, boosted };
   cc.checks = { castRefused: !r.echo, noMp: r.echo === undefined, boostedTransform: boosted.ok };
   cc.note = `${target.name} refeito com ${s.name}: AC ${boosted.transform?.before.ac}→${boosted.transform?.after.ac} (esperado ${boosted.transform?.expected.ac}), HP máx. ${boosted.transform?.before.maxHp}→${boosted.transform?.after.maxHp} (esperado ${boosted.transform?.expected.maxHp})`;
+}
+
+/**
+ * Ilusão: o MSG_Action3 move a Huntress e cobra 45 de MP (o ManaSpent, sem escala:
+ * _MSG_Action.cpp:81-90, handler/movement.go consumeIllusion). O servidor não ecoa o próprio
+ * movimento, então o MP é conferido pelo eco do cast seguinte.
+ */
+async function castIllusion(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void> {
+  const me = c.self!;
+  const probe = TREE.skills.find((k) => k.kind === 'damage' && learned(c, k.id))!;
+  await rest(c, s.mana + manaCost(probe.mana, special(c)) + 10);
+  await goToCastSpot(c);
+  const mpBefore = me.mp;
+  const from = { x: me.x, y: me.y };
+  const to = { x: me.x - 5, y: me.y };
+  c.send(Op.Action3, P.action({ posX: from.x, posY: from.y, effect: 0, speed: (me.attackRun ?? 2) & 0x0f, targetX: to.x, targetY: to.y }));
+  me.x = to.x; me.y = to.y;
+  await sleep(1200); // > 900 ms: o próximo movimento antes disso é crack (103)
+  const [m] = await mobsInReach(c, Math.max(1, probe.range - 1));
+  const r = await castSkill(c, log, probe.id, [m]);
+  cc.attempts.push(r);
+  const spent = r.echo ? mpBefore - r.echo.currentMp : undefined;
+  const expected = s.mana + manaCost(probe.mana, r.special);
+  cc.checks = { probeEcho: !!r.echo, illusionMp: spent === expected };
+  cc.note = `MP ${mpBefore} → ${r.echo?.currentMp} depois da Ilusão de (${from.x},${from.y}) para (${to.x},${to.y}) e de ${probe.name}: −${spent} (esperado −${s.mana} − ${manaCost(probe.mana, r.special)})`;
 }
 
 async function castStep(c: GameClient, state: State, s: SkillDef): Promise<void> {
@@ -703,9 +755,14 @@ async function castStep(c: GameClient, state: State, s: SkillDef): Promise<void>
     case 'ethereal': await castEthereal(c, s, cc); break;
     case 'summon': await castSummon(c, state, s, cc); break;
     case 'transform': await castTransform(c, s, cc); break;
-    case 'passive': await castPassive(c, s, cc); break;
+    case 'passive': await castPassive(c, state, s, cc); break;
+    case 'illusion': await castIllusion(c, s, cc); break;
+    case 'utility':
+      cc.checks = { learned: learned(c, s.id) };
+      cc.note = 'usada na combinação de itens (_MSG_CombineItemAlquimia / Extracao), não por cast; só o aprendizado foi testado';
+      break;
     default: {
-      const within = s.range - 2; // a distância do servidor é a da tabela; 2 tiles de folga
+      const within = Math.max(1, s.range - 2); // a distância do servidor é a da tabela; folga de 2 tiles (1 no alcance 2)
       for (let i = 0; i < 4; i++) {
         if (me.hp <= 0 || me.hp < me.maxHp * 0.35 || me.mp < expectedMp()) {
           await rest(c, expectedMp());
