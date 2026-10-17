@@ -160,15 +160,78 @@ Foram três execuções no Railway entre 01:28 e 01:30 UTC. As duas últimas **p
 
 A primeira acusou falha na troca de gold, mas o erro era do bot. O gold tinha passado certo, e o QuitTrade que fecha a troca chegou ao A antes do UpdateCarry do B. O bot leu esse QuitTrade como recusa e foi corrigido. Nenhuma issue foi necessária.
 
+## Cenário 4 — Quest 256, passos 2 a 5 (Colheita, Cura do Batedor, Mana e Emblema)
+
+`npm run scenario:quest256`
+
+Um personagem só faz as quatro arenas seguintes ao Coveiro, subindo de nível em cadeia com a Poeira de Fada.
+
+| Passo | NPC | Item (Aki, grátis) | Nível exibido | Arena |
+|---|---|---|---|---|
+| 2 Jardineiro | Jardineiro (2222,1714) | Colheita do Jardineiro 4039 | 116–190 | (2228,1700)–(2257,1728) |
+| 3 Kaizen | Patrulha_ (454,3910), Dungeon 1 | Cura do Batedor 4040 | 191–265 | (459,3887)–(497,3916) |
+| 4 Hidra | Patrulha (668,3768), Dungeon 1 | Mana do Batedor 4041 | 266–320 | (658,3728)–(703,3762) |
+| 5 Elfos | Guarda (1303,4036), Submundo | Emblema do Guarda 4042 | 321–350 | (1312,4027)–(1348,4055) |
+
+Em cada passo, como um jogador comum:
+
+1. **Nível.** Usa Poeira de Fada até um nível abaixo do mínimo do passo e distribui os pontos de cada nível pela build da classe (`src/bot/build.ts`).
+   - A build do TransKnight segue o TK misto dos guias da comunidade: Con até ~600, Dex ≥ 400 e o resto em Str.
+   - Antes da build, cumpre os requisitos de atributo do próximo equipamento (por exemplo, Str 132 e Dex 96 da Espada em Cruz).
+2. **Equipamento.** Compra gulosa, guardando 10k de gold, na ordem Espada em Cruz (Berlund, Noatum), Luvas, Hrotti, Botas, Armadura e Calça do Set Melpômene (Set_TK e Arma_SemiDeus, Armia). A peça que sai do slot é vendida.
+3. **Controle: item errado.** Vai até a NPC só com o item do passo anterior. Ela não pode teleportar nem consumir o item.
+4. **Controle: intruso.** Entra a pé na arena. Deve ser mandado de volta para a cidade.
+5. Compra o item do passo na Aki e confere que saiu de graça.
+6. **Controle: nível.** Com o item, um nível abaixo do mínimo, a NPC tem que recusar e o item fica. Depois usa uma Poeira ali mesmo.
+7. **Verificação A:** a entrega teleporta para dentro da arena e o item some.
+8. **Verificação B:** o reset da arena manda o personagem de volta para a cidade (o bot espera no ponto mais longe dos spawns).
+
+A viagem segue o caminho de um jogador:
+- Jardineiro: Mestre Grifo "Jardim dos Deuses" (`MSG_MasterGriff`).
+- Kaizen e Hidra: Grifo "Calabouço", tile do Armia Field para o Dungeon 1 e o resto a pé.
+- Elfos: Grifo "Submundo" e tile do Azran Field para o Underworld.
+
+Se a Aki não vender o Emblema (o `npc/Aki` do repositório tem o 4043 no slot 32), o bot farma o Argos, o Argos_Errante e o Troll_Ghoul, que soltam o 4042, por até `--emblem-farm` (padrão 30 min). Sem o Emblema, a entrega fica `blocked`, e a arena é testada entrando pelo Mestre Grifo.
+
+| Opção | Efeito |
+|---|---|
+| `--budget 2h` / `--until-done` / `--fresh` / `--cleanup` | Como no cenário 1. Um personagem adotado não é apagado, só o estado. |
+| `--adopt <nome>` | Usa um personagem que já existe na conta em vez de criar um (útil com os 4 slots ocupados). |
+| `--step 3` | Repete um passo (exige nível abaixo do máximo dele). |
+| `--emblem-farm 30m` | Tempo máximo do farm de reserva do Emblema. |
+| `--reset-wait 12m` | Espera fixa pelo reset, contada da entrada na arena. |
+
+O cenário é retomável (`state/quest256-chain.json`). Cada execução grava `reports/<data>-quest256-chain/` com `report.json` (veredito e verificações por passo, Poeiras usadas, curva de nível, compras, peças vestidas com dano/AC/HP antes e depois, viagens) e `events.jsonl`.
+
+### Situação (2026-10-17): passa nos quatro passos
+
+Execução de 2026-10-17 14:23–15:01 UTC (`--adopt botq5cm1l --until-done`, TransKnight do nível exibido 7 ao 321). O veredito foi **passou**: 37,8 min de jogo, 314 Poeiras de Fada (2 pilhas), nenhuma morte e uma tentativa por passo.
+
+| Passo | Item errado | Intruso | Abaixo do nível | A: entrega | B: reset |
+|---|---|---|---|---|---|
+| 2 Jardineiro | ✅ recusado (aviso 15) | ✅ volta para (2086,2095) | ✅ recusado no 115 | ✅ no 116 → (2234,1713), item consumido | ✅ 14:31:43, 230 s depois |
+| 3 Kaizen | ✅ | ✅ | ✅ no 190 | ✅ no 191 → (465,3901) | ✅ 14:41:43, 227 s |
+| 4 Hidra | ✅ | ✅ | ✅ no 265 | ✅ no 266 → (665,3756) | ✅ 14:51:43, 161 s |
+| 5 Elfos | ✅ | ✅ | ✅ no 320 | ✅ no 321 → (1319,4041) | ✅ 15:01:43, 317 s |
+
+- **Itens:** os quatro saíram de graça na Aki. No Railway o slot 32 dela vende o **Emblema do Guarda (4042)**; o `npc/Aki` do repositório tem o 4043 nesse slot, então a configuração das NPCs em tempo de execução difere do arquivo. O farm de reserva não foi necessário e não foi exercitado.
+- **Reset:** todos vieram no mesmo ciclo de 10 min, em xx:x1:43, contados do boot, como no legado, e mandaram o personagem para Armia.
+- **Build e equipamento:** no fim, Str 1872 (com o +210 do Hrotti), Dex 461 e Con 373.
+  - A Espada em Cruz levou o dano de 539 para 633 no 190.
+  - As Luvas Melpômene levaram a AC de 296 para 1520 no 265.
+  - O Hrotti levou o dano de 1125 para 6027 no 320.
+  - As Botas e a Armadura Melpômene levaram a AC a 4399.
+  - A Calça ficou de fora por gold (sobraram 156k de 1M). As peças antigas foram vendidas.
+
 ## Estrutura
 
 ```
 src/protocol/   codec CPSock (keytable, encode/decode, framer), opcodes e pacotes no layout do servidor Go
 src/client/     GameClient (TCP, relógio de ClientTick, estado do mundo, waitFor) e logger
-src/bot/        sessão (login/PIN/personagem), movimento, combate, grind, sobrevivência, NPCs (loja, itens, quest), troca entre jogadores e progresso
-src/world/      Campo de Treino (zona 0x80 e spawns) e Quest do Coveiro (NPCs, arena, rotas)
+src/bot/        sessão (login/PIN/personagem), movimento, viagens (Grifo, tiles), combate, grind, sobrevivência, NPCs (loja, itens, quest), quests de arena, build de atributos, equipamento, troca entre jogadores e progresso
+src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro e Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento)
 src/scenarios/  cenários de teste e peças comuns (common.ts)
-scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja)
+scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja, equipamento/Grifo, lista de personagens)
 tests/          testes unitários (vitest)
 ```
 
@@ -177,5 +240,5 @@ Para regenerar a zona a partir de um clone do servidor: `npm run zone:extract --
 ### Referências de protocolo
 
 - Transporte: `tmserver/internal/protocol/{codec,transform,checksum,keytable}.go` (servidor) e `tools/protocol/cpsock_ref.py` (webclient).
-- Layout dos corpos: `tmserver/internal/protocol/messages.go`, `selchar.go`, `mob.go`, `createmob.go`, `score.go`, `shop.go` e `carry.go`; troca em `messages.go` (`MsgTradeBody`).
+- Layout dos corpos: `tmserver/internal/protocol/messages.go`, `selchar.go`, `mob.go`, `createmob.go`, `score.go`, `shop.go` e `carry.go`; troca em `messages.go` (`MsgTradeBody`); equipar em `messages.go` (`MsgTradingItemBody`, `handler/item.go tradingItem`), venda em `handler/shop.go sell` e Mestre Grifo em `handler/misc.go masterGriff`.
 - Regras de movimento e ataque: `handler/movement.go` (janela de tick de +15 s/−120 s; o primeiro passo nos 3 s após o login é descartado) e `handler/combat.go` (ataques a no mínimo 800 ms um do outro).

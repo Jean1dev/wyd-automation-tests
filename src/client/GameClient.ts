@@ -37,11 +37,16 @@ export interface SelfState {
   maxHp: number;
   /** Dano do CurrentScore (base + atributos + arma), como o servidor calcula. */
   damage: number;
+  ac: number;
+  /** Str/Int/Dex/Con do CurrentScore (com o equipamento). */
+  attrs: P.Attributes;
   /** Pontos de atributo livres; undefined até o servidor mandar um UpdateEtc. */
   scoreBonus?: number;
   coin: number;
   /** Inventário (Carry[64]) do CNFCharacterLogin, atualizado a cada SendItem e UpdateCarry. */
   carry: P.Item[];
+  /** Equipamento (Equip[16]) do CNFCharacterLogin, atualizado a cada SendItem. */
+  equip: P.Item[];
 }
 
 const HISTORY = 4000;
@@ -256,7 +261,10 @@ export class GameClient extends EventEmitter {
         const s = P.parseCNFCharacterLogin(b);
         this.mobs.clear();
         this.connId = s.clientId;
-        this.self = { name: s.name, clientId: s.clientId, x: s.x, y: s.y, level: s.level, exp: s.exp, hp: s.hp, maxHp: s.maxHp, damage: s.damage, coin: s.coin, carry: s.carry };
+        this.self = {
+          name: s.name, clientId: s.clientId, x: s.x, y: s.y, level: s.level, exp: s.exp, hp: s.hp, maxHp: s.maxHp,
+          damage: s.damage, ac: s.ac, attrs: s.attrs, coin: s.coin, carry: s.carry, equip: s.equip,
+        };
         break;
       }
       case Op.CreateMob:
@@ -313,7 +321,8 @@ export class GameClient extends EventEmitter {
         if (me && f.header.id === me.clientId && b.length >= 28) {
           const s = P.parseUpdateScore(b);
           if (s.level !== me.level) this.emit('level', { from: me.level, to: s.level, seq: f.seq });
-          me.level = s.level; me.maxHp = s.maxHp; me.hp = s.hp; me.damage = s.damage;
+          me.level = s.level; me.maxHp = s.maxHp; me.hp = s.hp; me.damage = s.damage; me.ac = s.ac;
+          if (s.attrs) me.attrs = s.attrs;
         }
         break;
       case Op.UpdateEtc:
@@ -330,6 +339,7 @@ export class GameClient extends EventEmitter {
         if (me && b.length >= 12) {
           const it = P.parseSendItem(b);
           if (it.place === P.PLACE_CARRY && it.slot < P.MAX_CARRY) me.carry[it.slot] = it.item;
+          else if (it.place === P.PLACE_EQUIP && it.slot < P.MAX_EQUIP) me.equip[it.slot] = it.item;
         }
         break;
       case Op.Buy:

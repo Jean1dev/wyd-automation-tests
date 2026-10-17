@@ -19,6 +19,10 @@ export const Op = {
   Buy: 0x0379, // comprar do NPC (C↔S; o eco S→C traz o gold novo)
   UseItem: 0x0373, // usar item do inventário (clique direito)
   Quest: 0x028b, // falar com NPC de quest (MSG_STANDARDPARM2)
+  TradingItem: 0x0376, // mover item entre inventário e equipamento (C↔S; o servidor ecoa)
+  Sell: 0x037a, // vender item do inventário ao NPC (C↔S)
+  ReqTeleport: 0x0290, // pisou num tile de teleporte (só header)
+  MasterGriff: 0x0ad9, // viagem do Mestre Grifo (MSG_STANDARDPARM2: WarpID, Ty)
   Trade: 0x0383, // troca entre jogadores (C↔S; o servidor repassa a oferta ao outro lado)
   QuitTrade: 0x0384, // cancela a troca (C↔S; S→C também fecha a janela depois da troca)
   MessageChat: 0x0333,

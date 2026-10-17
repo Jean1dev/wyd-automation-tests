@@ -28,15 +28,14 @@ import type { GameClient } from '../client/GameClient.ts';
 import { Logger } from '../client/logger.ts';
 import { loadConfig, type BotConfig } from '../config.ts';
 import { grindUntil, type LevelUpRecord } from '../bot/grind.ts';
-import { selfTeleportIn, walkPath, walkTo } from '../bot/movement.ts';
-import { buyItem, NpcError, talkQuest, useItem, type Purchase, type QuestTalk } from '../bot/npc.ts';
+import { walkPath, walkTo } from '../bot/movement.ts';
+import { buyItem, talkQuest, type Purchase, type QuestTalk } from '../bot/npc.ts';
 import { Progress } from '../bot/progress.ts';
+import { probeIntruder, useDustUntil, waitForReset, type DustUse, type IntruderProbe, type ResetWait } from '../bot/quest.ts';
 import { enterWorld, login } from '../bot/session.ts';
 import { spendStatPoints } from '../bot/stats.ts';
 import { reviveAfterDeath } from '../bot/survival.ts';
-import { shownLevel, sleep } from '../bot/util.ts';
-import { Op } from '../protocol/opcodes.ts';
-import * as P from '../protocol/packets.ts';
+import { shownLevel } from '../bot/util.ts';
 import {
   ARENA_SAFE_SPOT, FAIRY_DUST_PRICE, INTRUDER_PROBE, isInCoveiroArea, ITEM, NPC, QUEST_LEVEL, resetDeadline, ROUTE_TO_ARMIA, ROUTE_TO_COVEIRO,
 } from '../world/coveiro.ts';
@@ -56,23 +55,6 @@ const ARMIA_MAX_X = 2171;
 
 type Phase = 'level40' | 'controls' | 'candle' | 'handin' | 'reset' | 'done';
 
-interface DustUse {
-  t: string;
-  from: number;
-  to: number;
-  /** Subiu exatamente um nível. */
-  ok: boolean;
-}
-
-interface IntruderProbe {
-  t: string;
-  from: { x: number; y: number };
-  target: { x: number; y: number };
-  teleport?: { from: { x: number; y: number }; to: { x: number; y: number } };
-  final: { x: number; y: number };
-  ok: boolean;
-}
-
 interface Handin extends QuestTalk {
   level: number;
   shownLevel: number;
@@ -80,21 +62,6 @@ interface Handin extends QuestTalk {
   candleConsumed: boolean;
   inArena: boolean;
   ok: boolean;
-}
-
-interface ResetWait {
-  enteredAt: string;
-  waitUntil: string;
-  /** Hipóteses cobertas pela janela de espera. */
-  covers: { legacyTenMinutes: boolean; topOfHour: boolean };
-  safeSpot?: { x: number; y: number };
-  kicked?: { t: string; utcMinute: number; utcSecond: number; secondsAfterEntry: number; from: { x: number; y: number }; to: { x: number; y: number } };
-  died?: { t: string; secondsAfterEntry: number; x: number; y: number };
-  /** Frames MSG_StartTime (contador de arena do legado) recebidos na espera. */
-  startTimeFrames: number;
-  final: { x: number; y: number; hp: number; inArena: boolean };
-  ok?: boolean;
-  interrupted?: string;
 }
 
 interface State extends CharacterState {
@@ -143,8 +110,6 @@ const clock = new PlayClock();
 
 // ---------------------------------------------------------------- helpers
 
-const here = (c: GameClient) => ({ x: c.self!.x, y: c.self!.y });
-
 function fail(state: State, msg: string): void {
   state.failures.push(msg);
   state.verdict = 'fail';
@@ -176,100 +141,14 @@ async function levelWithDust(c: GameClient, state: State): Promise<void> {
     state.dust.purchase = await buyItem(c, log, NPC.evolucao, ITEM.poeiraDeFada);
     progress.save(state);
   }
-  while (me.level < LEVEL_40) {
-    const slot = c.findItem(ITEM.poeiraDeFada);
-    if (slot < 0) throw new NpcError('a Poeira de Fada acabou antes do nível exibido 40');
-    const from = me.level;
-    const since = useItem(c, slot);
-    try {
-      await c.waitFor((f) => f.header.type === Op.UpdateScore && f.header.id === me.clientId && me.level !== from, { timeoutMs: 5000, since, what: 'level up da Poeira de Fada' });
-    } catch {
-      // sem level up: registrado abaixo
-    }
-    const use: DustUse = { t: new Date().toISOString(), from, to: me.level, ok: me.level === from + 1 };
-    state.dust.uses.push(use);
-    log.info('Poeira de Fada usada', { ...use, shownFrom: shownLevel(from), shownTo: shownLevel(me.level), left: P.itemAmount(me.carry[slot]) });
-    if (!use.ok) {
-      const texts = c.framesSince(since).filter((f) => f.header.type === Op.MessagePanel || f.header.type === Op.MessageChat).map((f) => P.parseText(f.body));
-      fail(state, `Poeira de Fada no nível exibido ${shownLevel(from)} levou ao ${shownLevel(me.level)} (esperado +1)${texts.length ? `; servidor: ${texts.join(' | ')}` : ''}`);
-      return;
-    }
-    await spendStatPoints(c, log);
+  const bad = await useDustUntil(c, log, LEVEL_40, async (use) => {
+    state.dust!.uses.push(use);
+    if (use.ok) await spendStatPoints(c, log);
     progress.save(state);
+  });
+  if (bad) {
+    fail(state, `Poeira de Fada no nível exibido ${shownLevel(bad.from)} levou ao ${shownLevel(bad.to)} (esperado +1)${bad.texts?.length ? `; servidor: ${bad.texts.join(' | ')}` : ''}`);
   }
-}
-
-/** Controle de intruso: entra a pé na arena sem QuestFlag e espera ser mandado para a cidade. */
-async function probeIntruder(c: GameClient): Promise<IntruderProbe> {
-  await walkTo(c, INTRUDER_PROBE.from.x, INTRUDER_PROBE.from.y);
-  await sleep(1500);
-  const from = here(c);
-  const since = c.mark;
-  let teleported = false;
-  const onTp = () => { teleported = true; };
-  c.on('teleport', onTp);
-  try {
-    await walkTo(c, INTRUDER_PROBE.to.x, INTRUDER_PROBE.to.y, { abort: () => teleported });
-    for (let i = 0; i < 10 && !teleported; i++) await sleep(500); // o guarda roda a cada tick de 1 s
-  } finally {
-    c.off('teleport', onTp);
-  }
-  const tp = selfTeleportIn(c, c.framesSince(since));
-  const final = here(c);
-  const r: IntruderProbe = { t: new Date().toISOString(), from, target: INTRUDER_PROBE.to, teleport: tp, final, ok: !!tp && !isInCoveiroArea(final.x, final.y) };
-  log.info('controle: intruso na arena', r as unknown as Record<string, unknown>);
-  return r;
-}
-
-/** Fica na arena até o reset (teleporte para fora) ou até o fim da janela. */
-async function waitForReset(c: GameClient, enteredAt: number): Promise<ResetWait> {
-  const me = c.self!;
-  const waitUntil = resetWaitMs !== undefined ? enteredAt + resetWaitMs : resetDeadline(enteredAt);
-  const nextHour = new Date(enteredAt);
-  nextHour.setUTCMinutes(60, 0, 0);
-  const r: ResetWait = {
-    enteredAt: new Date(enteredAt).toISOString(),
-    waitUntil: new Date(waitUntil).toISOString(),
-    covers: { legacyTenMinutes: waitUntil >= enteredAt + 10 * 60_000, topOfHour: waitUntil >= nextHour.getTime() },
-    startTimeFrames: 0,
-    final: { x: me.x, y: me.y, hp: me.hp, inArena: isInCoveiroArea(me.x, me.y) },
-  };
-  log.info('esperando o reset da quest', { waitUntil: r.waitUntil, minutes: +((waitUntil - enteredAt) / 60000).toFixed(1), covers: r.covers });
-
-  const onTp = (e: { from: { x: number; y: number }; to: { x: number; y: number } }) => {
-    if (r.kicked || isInCoveiroArea(e.to.x, e.to.y)) return;
-    const now = new Date();
-    r.kicked = { t: now.toISOString(), utcMinute: now.getUTCMinutes(), utcSecond: now.getUTCSeconds(), secondsAfterEntry: Math.round((now.getTime() - enteredAt) / 1000), from: e.from, to: e.to };
-    log.info('teleportado para fora da arena', r.kicked as unknown as Record<string, unknown>);
-  };
-  const onFrame = (f: { header: { type: number } }) => { if (f.header.type === Op.StartTime) r.startTimeFrames++; };
-  c.on('teleport', onTp);
-  c.on('frame', onFrame);
-  try {
-    // Sai do lado dos spawns da entrada para o canto mais seguro da arena.
-    await walkTo(c, ARENA_SAFE_SPOT.x, ARENA_SAFE_SPOT.y, { abort: () => !!r.kicked || me.hp <= 0 });
-    if (!r.kicked && me.hp > 0) r.safeSpot = here(c);
-    let lastLog = Date.now();
-    while (!r.kicked && Date.now() < waitUntil) {
-      if (c.isClosed) throw new Error('conexão caiu esperando o reset da quest');
-      if (me.hp <= 0 && !r.died) {
-        r.died = { t: new Date().toISOString(), secondsAfterEntry: Math.round((Date.now() - enteredAt) / 1000), x: me.x, y: me.y };
-        log.warn('morreu na arena; continua esperando o reset sem reviver', r.died as unknown as Record<string, unknown>);
-      }
-      if (Date.now() - lastLog >= 60_000) {
-        lastLog = Date.now();
-        log.info('na arena', { x: me.x, y: me.y, hp: me.hp, maxHp: me.maxHp, minutesLeft: +((waitUntil - Date.now()) / 60000).toFixed(1) });
-      }
-      await sleep(1000);
-    }
-  } finally {
-    c.off('teleport', onTp);
-    c.off('frame', onFrame);
-  }
-  r.final = { x: me.x, y: me.y, hp: me.hp, inArena: isInCoveiroArea(me.x, me.y) };
-  r.ok = !!r.kicked && !r.final.inArena;
-  if (me.hp <= 0) await reviveAfterDeath(c, log);
-  return r;
 }
 
 function writeReport(state: State, run: Record<string, unknown>): void {
@@ -360,7 +239,7 @@ async function runSession(cfg: BotConfig, state: State, deadline: number): Promi
           state.controls.noCandle = { ...noCandle, ok: !noCandle.teleport };
           if (noCandle.teleport) fail(state, `o Coveiro teleportou sem a Vela do Coveiro para (${noCandle.teleport.to.x},${noCandle.teleport.to.y})`);
           if (!isInCoveiroArea(me.x, me.y)) {
-            state.controls.intruder = await probeIntruder(c);
+            state.controls.intruder = await probeIntruder(c, log, INTRUDER_PROBE, isInCoveiroArea);
             if (!state.controls.intruder.ok) fail(state, `entrou na arena a pé sem QuestFlag e ficou em (${me.x},${me.y}) sem ser mandado para a cidade`);
           }
           state.phase = 'candle';
@@ -402,7 +281,13 @@ async function runSession(cfg: BotConfig, state: State, deadline: number): Promi
           if (!state.handin.candleConsumed) fail(state, `o Coveiro teleportou mas a Vela do Coveiro continuou no slot ${candleSlot}`);
           progress.save(state);
           state.phase = 'reset';
-          state.reset = await waitForReset(c, Date.now());
+          const enteredAt = Date.now();
+          state.reset = await waitForReset(c, log, {
+            enteredAt,
+            waitUntil: resetWaitMs !== undefined ? enteredAt + resetWaitMs : resetDeadline(enteredAt),
+            safeSpot: ARENA_SAFE_SPOT,
+            inArea: isInCoveiroArea,
+          });
           if (!state.reset.ok) {
             fail(state, state.reset.kicked
               ? `teleportado da arena para (${state.reset.kicked.to.x},${state.reset.kicked.to.y}), que ainda é dentro da arena`

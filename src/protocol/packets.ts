@@ -125,7 +125,8 @@ export function applyBonus(detail: number, bonusType = BONUS_SCORE): Buffer {
   return b;
 }
 
-/** ITEM_PLACE_CARRY: o inventário (shop.go). */
+/** ITEM_PLACE_EQUIP / ITEM_PLACE_CARRY: equipamento e inventário (shop.go). */
+export const PLACE_EQUIP = 0;
 export const PLACE_CARRY = 1;
 
 /** MSG_REQShopList (0x027B), 2 B: TargetID u16@0 (o NPC mercador). */
@@ -165,6 +166,41 @@ export function quest(npcId: number, confirm = 0): Buffer {
   const b = Buffer.alloc(8);
   b.writeInt32LE(npcId, 0);
   b.writeInt32LE(confirm, 4);
+  return b;
+}
+
+/**
+ * MSG_TradingItem (0x0376), 8 B: DestPlace u8@0 DestSlot u8@1 SrcPlace u8@2 SrcSlot u8@3
+ * WarpID i32@4 (messages.go MsgTradingItemBody). O servidor troca os dois slots e ecoa o corpo.
+ */
+export function tradingItem(src: { place: number; slot: number }, dst: { place: number; slot: number }, warpId = 0): Buffer {
+  const b = Buffer.alloc(8);
+  b[0] = dst.place;
+  b[1] = dst.slot;
+  b[2] = src.place;
+  b[3] = src.slot;
+  b.writeInt32LE(warpId, 4);
+  return b;
+}
+
+export function parseTradingItem(body: Buffer): { src: { place: number; slot: number }; dst: { place: number; slot: number } } {
+  return { dst: { place: body[0], slot: body[1] }, src: { place: body[2], slot: body[3] } };
+}
+
+/** MSG_Sell (0x037A), 6 B: TargetID u16@0 (o NPC), MyType i16@2 (1 = Carry), MyPos i16@4 (shop.go sell). */
+export function sell(npcId: number, slot: number): Buffer {
+  const b = Buffer.alloc(6);
+  b.writeUInt16LE(npcId, 0);
+  b.writeInt16LE(PLACE_CARRY, 2);
+  b.writeInt16LE(slot, 4);
+  return b;
+}
+
+/** MSG_MasterGriff (0x0AD9), MSG_STANDARDPARM2: WarpID i32@0 (1-based, misc.go masterGriffDestinations), Ty i32@4. */
+export function masterGriff(warpId: number, ty = 0): Buffer {
+  const b = Buffer.alloc(8);
+  b.writeInt32LE(warpId, 0);
+  b.writeInt32LE(ty, 4);
   return b;
 }
 
@@ -244,6 +280,9 @@ export function sameItem(a: Item | undefined, b: Item | undefined): boolean {
   return [0, 1, 2].every((i) => (a.eff[i]?.[0] ?? 0) === (b.eff[i]?.[0] ?? 0) && (a.eff[i]?.[1] ?? 0) === (b.eff[i]?.[1] ?? 0));
 }
 
+/** Equip[16] do STRUCT_MOB. O slot de destino de um item é o bit mais baixo do seu nPos (item.go canEquipSlot). */
+export const MAX_EQUIP = 16;
+
 /** Slots do Carry: 64 no STRUCT_MOB, 30 acessíveis sem bolsa (carry.go baseCarrySlots). */
 export const MAX_CARRY = 64;
 export const BASE_CARRY_SLOTS = 30;
@@ -255,21 +294,28 @@ export interface CharacterSnapshot {
   exp: bigint;
   coin: number;
   level: number;
+  ac: number;
   damage: number;
   maxHp: number;
   hp: number;
+  /** Str/Int/Dex/Con do CurrentScore (com o equipamento). */
+  attrs: Attributes;
   clientId: number;
   slot: number;
+  equip: Item[];
   carry: Item[];
 }
 
 /**
  * CNFCharacterLogin (0x0114), 1820 B: PosX@0 PosY@2, STRUCT_MOB@4 (Name@0, Coin@28, Exp@32,
- * BaseScore@44, CurrentScore@92 {Level@0 MaxHp@16 Hp@24}, Carry[64]@268), Slot@1028, ClientID@1030.
+ * BaseScore@44, CurrentScore@92 {Level@0 Ac@4 Damage@8 MaxHp@16 Hp@24 Str/Int/Dex/Con i16@32}, Equip[16]@140, Carry[64]@268), Slot@1028,
+ * ClientID@1030.
  */
 export function parseCNFCharacterLogin(body: Buffer): CharacterSnapshot {
   const mob = 4;
   const score = mob + 92;
+  const equip: Item[] = [];
+  for (let i = 0; i < MAX_EQUIP; i++) equip.push(parseItem(body, mob + 140 + i * 8));
   const carry: Item[] = [];
   for (let i = 0; i < MAX_CARRY; i++) carry.push(parseItem(body, mob + 268 + i * 8));
   return {
@@ -279,11 +325,14 @@ export function parseCNFCharacterLogin(body: Buffer): CharacterSnapshot {
     coin: body.readInt32LE(mob + 28),
     exp: body.readBigInt64LE(mob + 32),
     level: body.readInt32LE(score),
+    ac: body.readInt32LE(score + 4),
     damage: body.readInt32LE(score + 8),
     maxHp: body.readInt32LE(score + 16),
     hp: body.readInt32LE(score + 24),
+    attrs: { str: body.readInt16LE(score + 32), int: body.readInt16LE(score + 34), dex: body.readInt16LE(score + 36), con: body.readInt16LE(score + 38) },
     slot: body.readUInt16LE(1028),
     clientId: body.readUInt16LE(1030),
+    equip,
     carry,
   };
 }
@@ -301,7 +350,7 @@ export function parseShopList(body: Buffer): { shopType: number; items: (Item & 
   return { shopType: body.readInt32LE(0), items, tax: body.readInt32LE(220) };
 }
 
-/** SendItem (0x0182), 12 B: invType u16@0 (1 = Carry), Slot u16@2, STRUCT_ITEM@4 (sIndex 0 = slot vazio). */
+/** SendItem (0x0182), 12 B: invType u16@0 (0 = Equip, 1 = Carry), Slot u16@2, STRUCT_ITEM@4 (sIndex 0 = slot vazio). */
 export function parseSendItem(body: Buffer): { place: number; slot: number; item: Item } {
   return { place: body.readUInt16LE(0), slot: body.readUInt16LE(2), item: parseItem(body, 4) };
 }
@@ -383,13 +432,25 @@ export function parseAttack(body: Buffer): AttackEcho {
   };
 }
 
-/** UpdateScore (0x0336), 140 B: Level@0 Ac@4 Damage@8 MaxHp@16 Hp@24 … CurrHp@124. */
-export function parseUpdateScore(body: Buffer): { level: number; damage: number; maxHp: number; hp: number } {
+export interface Attributes {
+  str: number;
+  int: number;
+  dex: number;
+  con: number;
+}
+
+/**
+ * UpdateScore (0x0336), 140 B: Level@0 Ac@4 Damage@8 MaxHp@16 Hp@24, Str@32 Int@34 Dex@36 Con@38
+ * (i16, CurrentScore: com o equipamento) … CurrHp@124 (protocol/score.go EncodeUpdateScore).
+ */
+export function parseUpdateScore(body: Buffer): { level: number; ac: number; damage: number; maxHp: number; hp: number; attrs?: Attributes } {
   return {
     level: body.readInt32LE(0),
+    ac: body.readInt32LE(4),
     damage: body.readInt32LE(8),
     maxHp: body.readInt32LE(16),
     hp: body.length >= 128 ? body.readInt32LE(124) : body.readInt32LE(24),
+    attrs: body.length >= 40 ? { str: body.readInt16LE(32), int: body.readInt16LE(34), dex: body.readInt16LE(36), con: body.readInt16LE(38) } : undefined,
   };
 }
 

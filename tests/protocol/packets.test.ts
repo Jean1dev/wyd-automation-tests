@@ -27,6 +27,22 @@ describe('builders C→S', () => {
     expect([d.length, d.readInt32LE(0), d.subarray(20, 22).toString()]).toEqual([32, 1, 'pw']);
   });
 
+  it('TradingItem: 8 B, Dest@0..1, Src@2..3, WarpID@4 (messages.go MsgTradingItemBody)', () => {
+    const b = P.tradingItem({ place: P.PLACE_CARRY, slot: 7 }, { place: P.PLACE_EQUIP, slot: 6 });
+    expect([b.length, b[0], b[1], b[2], b[3], b.readInt32LE(4)]).toEqual([8, 0, 6, 1, 7, 0]);
+    expect(P.parseTradingItem(b)).toEqual({ src: { place: 1, slot: 7 }, dst: { place: 0, slot: 6 } });
+  });
+
+  it('Sell: 6 B, TargetID@0, MyType@2 = 1, MyPos@4 (shop.go sell)', () => {
+    const b = P.sell(1234, 9);
+    expect([b.length, b.readUInt16LE(0), b.readInt16LE(2), b.readInt16LE(4)]).toEqual([6, 1234, 1, 9]);
+  });
+
+  it('MasterGriff: STANDARDPARM2, WarpID@0, Ty@4', () => {
+    const b = P.masterGriff(2);
+    expect([b.length, b.readInt32LE(0), b.readInt32LE(4)]).toEqual([8, 2, 0]);
+  });
+
   it('Action: 40 B e ida e volta', () => {
     const a = { posX: 2100, posY: 2080, effect: 0, speed: 2, targetX: 2100, targetY: 2076 };
     const b = P.action(a);
@@ -104,6 +120,18 @@ describe('parsers S→C', () => {
     expect([P.itemAmount(s.carry[3]), P.itemAmount(s.carry[0])]).toEqual([255, 0]);
   });
 
+  it('CNFCharacterLogin: Equip[16]@mob+140, AC e atributos do CurrentScore', () => {
+    const b = Buffer.alloc(1820);
+    b.writeInt32LE(250, 4 + 92 + 4);
+    b.writeInt16LE(132, 4 + 92 + 32); b.writeInt16LE(10, 4 + 92 + 34); b.writeInt16LE(96, 4 + 92 + 36); b.writeInt16LE(80, 4 + 92 + 38);
+    b.writeUInt16LE(866, 4 + 140 + 6 * 8); // Equip[6]: Espada em Cruz
+    const s = P.parseCNFCharacterLogin(b);
+    expect(s.ac).toBe(250);
+    expect(s.attrs).toEqual({ str: 132, int: 10, dex: 96, con: 80 });
+    expect(s.equip).toHaveLength(16);
+    expect(s.equip[6].index).toBe(866);
+  });
+
   it('ShopList: List[27]@4 mapeada para o Carry do NPC (ShopSlot), Tax@220', () => {
     const b = Buffer.alloc(224);
     b.writeInt32LE(1, 0);
@@ -133,8 +161,9 @@ describe('parsers S→C', () => {
 
   it('UpdateScore e UpdateEtc', () => {
     const s = Buffer.alloc(140);
-    s.writeInt32LE(35, 0); s.writeInt32LE(57, 8); s.writeInt32LE(400, 16); s.writeInt32LE(390, 124);
-    expect(P.parseUpdateScore(s)).toEqual({ level: 35, damage: 57, maxHp: 400, hp: 390 });
+    s.writeInt32LE(35, 0); s.writeInt32LE(12, 4); s.writeInt32LE(57, 8); s.writeInt32LE(400, 16); s.writeInt32LE(390, 124);
+    s.writeInt16LE(132, 32); s.writeInt16LE(12, 34); s.writeInt16LE(96, 36); s.writeInt16LE(80, 38);
+    expect(P.parseUpdateScore(s)).toEqual({ level: 35, ac: 12, damage: 57, maxHp: 400, hp: 390, attrs: { str: 132, int: 12, dex: 96, con: 80 } });
     const e = Buffer.alloc(36);
     e.writeBigInt64LE(192215n, 4); e.writeUInt16LE(170, 20); e.writeInt32LE(1000, 28);
     expect(P.parseUpdateEtc(e)).toEqual({ exp: 192215n, scoreBonus: 170, coin: 1000 });
