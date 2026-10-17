@@ -19,7 +19,8 @@
     "scenario:quest256": "tsx src/scenarios/quest256Chain.ts",
     "scenario:arch": "tsx src/scenarios/archCreation.ts",
     "scenario:foema-black": "tsx src/scenarios/foemaSkillTree.ts --tree negra",
-    "scenario:foema-white": "tsx src/scenarios/foemaSkillTree.ts --tree branca"
+    "scenario:foema-white": "tsx src/scenarios/foemaSkillTree.ts --tree branca",
+    "scenario:foema-special": "tsx src/scenarios/foemaSkillTree.ts --tree especial"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",

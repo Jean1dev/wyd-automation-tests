@@ -1,4 +1,5 @@
-// Cenários 6 e 7: as skills de uma árvore da Foema (Magia Negra 32–39 ou Magia Branca 24–31),
+// Cenários 6, 7 e 8: as skills de uma árvore da Foema (Magia Negra 32–39, Magia Branca 24–31 ou
+// Magia Especial 40–47),
 // numa conta só para isso (WYD_ACCOUNT_FOEMA), com um personagem por árvore. Como um jogador:
 //   1. cria uma Foema e sobe de nível com a Poeira de Fada, distribuindo os atributos em Int e a
 //      maestria em Special[árvore] só até o que a próxima skill pede;
@@ -11,17 +12,19 @@
 //   - o cast volta com a mesma skill e o MP descontado pela fórmula do servidor, e faz o que a
 //     skill faz: dano (em área, em vários alvos), Relâmpagos do Trovão, cura em si mesma pela
 //     fórmula do legado, Flash e Desintoxicar sem dano, Julgamento Divino com o HP da Foema somado
-//     ao dano de cada alvo e o HP dela em HP/6 + 1;
+//     ao dano de cada alvo e o HP dela em HP/6 + 1, buffs (Velocidade, Escudo Mágico, Arma
+//     Mágica, Toque de Athena, Controle de Mana) com o affect e o efeito no score, e o Teleporte,
+//     que não pode levar a Foema para uma coordenada escolhida pelo cliente;
 //   - controles: skill não aprendida, sem MP, alvo fora do alcance, e comprar (MSG_Buy) a skill
 //     do mestre como item;
 //   - 8ª skill (Inferno / Renascimento): no nível exibido 220 com as 7 aprendidas e sem os 50M,
 //     recusa sem mexer em nada;
 //   - depois de relogar, o Learn e os pontos de skill continuam certos.
 //
-// É retomável: o estado fica em state/foema-black-magic.json ou state/foema-white-magic.json.
+// É retomável: o estado fica em state/foema-{black,white,special}-magic.json.
 //
 // Uso:
-//   npm run scenario:foema-black | scenario:foema-white          # até 60 min nesta execução
+//   npm run scenario:foema-black | scenario:foema-white | scenario:foema-special   # até 60 min
 //   npm run scenario:foema-white -- --until-done
 //   npm run scenario:foema-white -- --fresh | --cleanup
 //   npm run scenario:foema-white -- --skill 27,30   # repete o cast de skills já aprendidas (e a 8ª e o relogin)
@@ -45,15 +48,15 @@ import { Op } from '../protocol/opcodes.ts';
 import * as P from '../protocol/packets.ts';
 import { FAIRY_DUST_PRICE, NPC } from '../world/coveiro.ts';
 import {
-  CAST_SPOT, cumulativePoints, EIGHTH_SKILL_COIN, FOEMA, healAmount, judgmentHp, learnBit, learnLevel, manaCost,
+  buffGain, CAST_SPOT, cumulativePoints, EIGHTH_SKILL_COIN, FOEMA, healAmount, judgmentHp, learnBit, learnLevel, manaCost,
   ROUTE_TO_CAST_SPOT, SKILL_MASTER, skillPointsAt, TREES, type SkillDef, type SkillTree,
 } from '../world/foemaSkills.ts';
 import { cleanupScenario, ensureCharacter, flag, opt, parseDuration, PlayClock, reportDirFor, runMain, runWithReconnect, writeReportFile, type CharacterState } from './common.ts';
 
 const treeKey = opt('--tree') ?? 'negra';
-if (treeKey !== 'negra' && treeKey !== 'branca') throw new Error(`--tree inválida: ${treeKey} (use negra ou branca)`);
+if (treeKey !== 'negra' && treeKey !== 'branca' && treeKey !== 'especial') throw new Error(`--tree inválida: ${treeKey} (use negra, branca ou especial)`);
 const TREE: SkillTree = TREES[treeKey];
-const SCENARIO = treeKey === 'negra' ? 'foema-black-magic' : 'foema-white-magic';
+const SCENARIO = { negra: 'foema-black-magic', branca: 'foema-white-magic', especial: 'foema-special-magic' }[treeKey];
 const DUST_STACK = 255;
 /** As 7 primeiras skills; a 8ª só tem o controle de recusa. */
 const LEARNABLE = TREE.skills.filter((s) => s.kind !== 'eighth');
@@ -79,8 +82,15 @@ interface CastCheck {
   flash?: { attacksBefore: number; attacksAfter: number };
   /** Julgamento Divino: o HP antes, os danos por alvo e o HP depois. */
   judgment?: { hpBefore: number; hpAfter?: number; expectedHp: number[]; damage: { id: number; name: string; damage: number }[] };
+  /** Buff: o affect que chegou e o score antes/depois. */
+  buff?: { affect?: { type: number; value: number; level: number; time: number }; before: ScoreView; after: ScoreView; expectedGain: number };
+  /** Teleporte: em si mesma, na própria posição e numa coordenada escolhida pelo cliente. */
+  teleport?: { self: { from: Pt; to: Pt; moved?: Pt }; remote: { from: Pt; target: Pt; moved?: Pt } };
   note?: string;
 }
+
+type Pt = { x: number; y: number };
+interface ScoreView { ac: number; damage: number; run: number; special: number[]; maxHp: number; mp: number }
 
 interface SkillRecord {
   id: number;
@@ -489,6 +499,70 @@ async function castJudgment(c: GameClient, s: SkillDef, cc: CastCheck): Promise<
   await rest(c, 0); // volta a Armia com HP/6
 }
 
+const scoreView = (c: GameClient): ScoreView => {
+  const me = c.self!;
+  return { ac: me.ac, damage: me.damage, run: (me.attackRun ?? 0) & 0x0f, special: [...me.special], maxHp: me.maxHp, mp: me.mp };
+};
+
+/** Buff em si mesma: chega o SendAffect com o tipo e o nível (= a maestria) e o score muda pela fórmula. */
+async function castBuff(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void> {
+  const me = c.self!;
+  const fx = s.affect!;
+  await sleep(1000);
+  const before = scoreView(c);
+  const r = await castSkill(c, log, s.id, 'self');
+  cc.attempts.push(r);
+  await sleep(1000); // UpdateScore com o buff
+  const after = scoreView(c);
+  const affect = r.affects.filter((a) => a.targetId === me.clientId).flatMap((a) => a.affects).find((a) => a.type === fx.type);
+  const level = affect?.level ?? r.special;
+  const expectedGain = buffGain(fx.type, fx.value, level, me.learn);
+  cc.buff = { affect, before, after, expectedGain };
+  cc.checks = { echo: echoOk(r, s), mpCharged: mpOk(r, s), affect: !!affect, affectLevel: affect?.level === r.special };
+  switch (fx.type) {
+    case 2: cc.checks.runUp = after.run === before.run + expectedGain; break;
+    case 11: cc.checks.acUp = after.ac - before.ac === expectedGain; break;
+    case 9: cc.checks.damageUp = after.damage - before.damage === expectedGain; break;
+    case 15: cc.checks.specialUp = after.special.every((v, k) => v - before.special[k] === expectedGain); break;
+    case 18: cc.note = 'Controle de Mana: o affect 18 chegou; o dano virar gasto de MP não foi exercitado (os Gremlins não atacam)'; break;
+  }
+}
+
+/**
+ * Teleporte (InstanceType 9) em si mesma. O legado puxa o alvo para a posição da Foema no
+ * servidor (DoSummon(idx, pMob[conn].TargetX, pMob[conn].TargetY), _MSG_Attack.cpp:781), então
+ * nela mesma não sai do lugar, nem quando o pacote traz outra coordenada.
+ */
+async function castTeleport(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void> {
+  const me = c.self!;
+  const movedTo = async (since: number): Promise<Pt | undefined> => {
+    await sleep(1500);
+    const tp = c.framesSince(since).find((f) => f.header.type === Op.Action && f.header.id === me.clientId && f.body.length >= 40 && f.body.readInt32LE(4) === 1);
+    return tp ? { x: P.parseAction(tp.body).targetX, y: P.parseAction(tp.body).targetY } : undefined;
+  };
+  const from1 = { x: me.x, y: me.y };
+  let since = c.mark;
+  const r1 = await castSkill(c, log, s.id, 'self');
+  cc.attempts.push(r1);
+  const moved1 = await movedTo(since);
+  // Agora com o destino do pacote 15 tiles a sudeste, ainda no campo dos Gremlins.
+  const from2 = { x: me.x, y: me.y };
+  const target = { x: from2.x + 15, y: from2.y + 10 };
+  since = c.mark;
+  const r2 = await castSkill(c, log, s.id, 'self', 3000, target);
+  cc.attempts.push(r2);
+  const moved2 = await movedTo(since);
+  cc.teleport = { self: { from: from1, to: from1, moved: moved1 }, remote: { from: from2, target, moved: moved2 } };
+  const far = (a: Pt, b?: Pt) => !!b && tiles(a, b) > 2;
+  cc.checks = {
+    echo: echoOk(r1, s),
+    mpCharged: mpOk(r1, s),
+    staysInPlace: !far(from1, moved1),
+    noRemoteTeleport: !far(from2, moved2),
+  };
+  if (moved2 && far(from2, moved2)) await walkTo(c, from2.x, from2.y);
+}
+
 async function castStep(c: GameClient, state: State, s: SkillDef): Promise<void> {
   const me = c.self!;
   const rec = state.skills[s.id];
@@ -503,6 +577,8 @@ async function castStep(c: GameClient, state: State, s: SkillDef): Promise<void>
     case 'detox': await castDetox(c, s, cc); break;
     case 'flash': await castFlash(c, s, cc); break;
     case 'judgment': await castJudgment(c, s, cc); break;
+    case 'buff': await castBuff(c, s, cc); break;
+    case 'teleport': await castTeleport(c, s, cc); break;
     default: {
       const within = s.range - 2; // a distância do servidor é a da tabela; 2 tiles de folga
       for (let i = 0; i < 4; i++) {
@@ -540,7 +616,7 @@ async function castStep(c: GameClient, state: State, s: SkillDef): Promise<void>
   rec.cast = cc;
   if (!cc.ok) {
     const last = cc.attempts.at(-1);
-    const extra = cc.heal ? `, cura ${cc.heal.got}/${cc.heal.expected}, HP ${cc.heal.hpBefore}→${cc.heal.hpAfter}` : cc.judgment ? `, HP ${cc.judgment.hpBefore}→${cc.judgment.hpAfter} (esperado ${cc.judgment.expectedHp.join(' ou ')}), danos ${cc.judgment.damage.map((d) => d.damage).join('/')}` : '';
+    const extra = cc.buff ? `, affect ${JSON.stringify(cc.buff.affect)}, score ${JSON.stringify(cc.buff.before)}→${JSON.stringify(cc.buff.after)} (ganho esperado ${cc.buff.expectedGain})` : cc.teleport ? `, teleporte ${JSON.stringify(cc.teleport)}` : cc.heal ? `, cura ${cc.heal.got}/${cc.heal.expected}, HP ${cc.heal.hpBefore}→${cc.heal.hpAfter}` : cc.judgment ? `, HP ${cc.judgment.hpBefore}→${cc.judgment.hpAfter} (esperado ${cc.judgment.expectedHp.join(' ou ')}), danos ${cc.judgment.damage.map((d) => d.damage).join('/')}` : '';
     fail(state, `conjurar ${s.name} (${s.id}) no nível exibido ${shownLevel(me.level)}: falhou ${failedChecks(cc.checks).join(', ')} (eco ${last?.echo ? `skill ${last.echo.skillIndex}, dano ${last.echo.dam.map((d) => d.damage).join('/')}, MP ${last.mpBefore}→${last.echo.currentMp} (esperado −${manaCost(s.mana, last.special)})` : 'nenhum'}${extra}, SetHpMp ${last?.setHpMp.length ?? 0}, avisos ${last?.notices.join(',') || 'nenhum'})`);
   }
   progress.save(state);

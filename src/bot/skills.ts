@@ -114,7 +114,7 @@ let lastCastTick = 0;
  * Conjura a skill nos alvos (o primeiro é o alvo principal; para skill em si mesma, passe o
  * próprio id) e espera o eco. Um alvo usa MSG_AttackOne; mais de um, MSG_Attack.
  */
-export async function castSkill(c: GameClient, log: Logger, skill: number, targets: Mob[] | 'self', waitMs = 3000): Promise<CastResult> {
+export async function castSkill(c: GameClient, log: Logger, skill: number, targets: Mob[] | 'self', waitMs = 3000, at?: { x: number; y: number }): Promise<CastResult> {
   const me = c.self!;
   const list = targets === 'self'
     ? [{ id: me.clientId, name: me.name, x: me.x, y: me.y, hp: me.hp }]
@@ -143,7 +143,7 @@ export async function castSkill(c: GameClient, log: Logger, skill: number, targe
   const since = c.mark;
   r.t = new Date().toISOString();
   c.send(op, P.attack({
-    attackerId: me.clientId, posX: me.x, posY: me.y, targetId: main.id, targetX: main.x, targetY: main.y,
+    attackerId: me.clientId, posX: me.x, posY: me.y, targetId: main.id, targetX: at?.x ?? main.x, targetY: at?.y ?? main.y,
     skillIndex: skill, currentMp: me.mp, reqMp: 0, moreTargets: list.slice(1).map((m) => m.id),
   }), { tick });
   try {

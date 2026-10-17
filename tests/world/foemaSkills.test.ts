@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  BLACK_MAGIC, cumulativePoints, healAmount, judgmentHp, learnBit, learnLevel, manaCost, masteryCapAt, skillIn, skillPointsAt, WHITE_MAGIC,
+  BLACK_MAGIC, buffGain, cumulativePoints, healAmount, judgmentHp, learnBit, learnLevel, manaCost, masteryCapAt, skillIn, skillPointsAt, SPECIAL_MAGIC, WHITE_MAGIC,
 } from '../../src/world/foemaSkills.ts';
 
 describe('árvores de skills da Foema', () => {
@@ -28,6 +28,17 @@ describe('árvores de skills da Foema', () => {
   it('nível armazenado em que cada skill fica disponível, na ordem da árvore', () => {
     expect(BLACK_MAGIC.skills.map((s) => learnLevel(BLACK_MAGIC, s.id))).toEqual([6, 23, 46, 70, 94, 124, 151, 219]);
     expect(WHITE_MAGIC.skills.map((s) => learnLevel(WHITE_MAGIC, s.id))).toEqual([4, 19, 40, 56, 82, 98, 132, 219]);
+    expect(SPECIAL_MAGIC.skills.map((s) => learnLevel(SPECIAL_MAGIC, s.id))).toEqual([8, 21, 39, 60, 85, 109, 140, 219]);
+    expect(cumulativePoints(SPECIAL_MAGIC, 47)).toBe(677);
+    expect(SPECIAL_MAGIC.skills.reduce((m, s) => m | learnBit(s.id), 0)).toBe(0xff0000);
+  });
+
+  it('ganho dos buffs da Magia Especial (BASE_GetCurrentScore)', () => {
+    expect(buffGain(2, 1, 0)).toBe(1);
+    expect(buffGain(11, 15, 60)).toBe(35);
+    expect(buffGain(9, 90, 60)).toBe(157); // (15 + 90) × 3/2
+    expect(buffGain(9, 90, 60, 1 << 19)).toBe(471); // ×3 com o Escudo Mágico aprendido
+    expect(buffGain(15, 7, 76)).toBe(14);
   });
 
   it('cura de mortal (_MSG_Attack.cpp:624-645): Cura 2×Special + 100, Recuperar 3×Special/2 + 150, teto 1100', () => {

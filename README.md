@@ -408,13 +408,63 @@ Execuções de 2026-10-17 entre 17:50 e 18:22 UTC (`--until-done` e duas vezes `
 
 Na primeira execução, os mobs não tiraram HP e só um Gremlin ficou colado. O bot passou a derrubar o HP com o Julgamento e a procurar dois Gremlins juntos. Na segunda tentativa, o filtro de alvos usava o nome igual ao do primeiro ("Gremlin" e "Gremlin_" são nomes diferentes); agora usa a mesma AC.
 
+## Cenário 8 — Skills de Magia Especial da Foema
+
+`npm run scenario:foema-special` (a mesma conta dos cenários 6 e 7, com uma terceira Foema)
+
+O mesmo cenário dos 6 e 7 (`src/scenarios/foemaSkillTree.ts --tree especial`), agora na árvore 3: skills 40–47, bits 16–23 do `LearnedSkill`, com maestria em `Special[3]`. O SkillData troca os nomes de 41 e 42. Os dados e o ItemList (5041 Velocidade, 5042 Teleporte) mostram que a 41 é a Velocidade (affect 2, grupo) e a 42 é o Teleporte (InstanceType 9, sem MP).
+
+| id | Skill | Pontos | Requisito (nível exibido / Special[3]) | Como o bot testa |
+|---|---|---|---|---|
+| 40 | Névoa Venenosa | 24 | 1 / 0 | dano num mob |
+| 41 | Velocidade | 39 | 22 / 0 | em si mesma: affect 2 e corrida + 1 |
+| 42 | Teleporte | 54 | 1 / 0 | em si mesma: com a própria posição e com outra coordenada no pacote, não pode sair do lugar |
+| 43 | Escudo Mágico | 63 | 34 / 0 | affect 11 e AC + Level/3 + 15 |
+| 44 | Arma Mágica | 75 | 61 / 60 | affect 9 e dano + (Level×5/20 + 90)×3/2, ×3 com o Escudo aprendido |
+| 45 | Toque de Athena | 72 | 77 / 76 | affect 15 e as 4 maestrias + Level/10 + 7 |
+| 46 | Controle de Mana | 81 | 141 / 0 | affect 18 |
+| 47 | Cancelamento (8ª) | 269 | 220 / 200, mais as 7 anteriores e 50M de gold | só a recusa sem o gold |
+
+O Level do affect é a maestria da Foema no cast. As fórmulas são as do `BASE_GetCurrentScore` (`Basedef.cpp:3950-4090`), que o Go repete em `handler/affect_score.go`. O estado fica em `state/foema-special-magic.json` e os relatórios em `reports/<data>-foema-special-magic/`.
+
+### Situação (2026-10-17): falha no Teleporte
+
+Execuções de 2026-10-17 entre 18:32 e 18:50 UTC (`--until-done` e `--skill 41`), com a Foema `bot06f6ashwa`: 16,5 min de jogo e 219 Poeiras de Fada.
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast |
+|---|---|---|---|
+| 40 Névoa Venenosa | ✅ recusada no 8 | 9 | ✅ 78 de dano / MP 9 (9) |
+| 41 Velocidade | ✅ no 21 | 22 | ✅ corrida 4 → 5 |
+| 42 Teleporte | ✅ no 39 | 40 | ❌ foi para a coordenada do pacote (abaixo) |
+| 43 Escudo Mágico | ✅ no 60 | 61 | ✅ AC +15 |
+| 44 Arma Mágica | ✅ no 85 | 86 | ✅ dano +471 |
+| 45 Toque de Athena | ✅ no 109 | 110 | ✅ as 4 maestrias +14 |
+| 46 Controle de Mana | ✅ `ReqNotMet` no 140 | 141 | ✅ affect 18 |
+
+O MP de todos os casts bateu com a fórmula.
+
+- **Controles:** Velocidade não aprendida, sem MP e alvo fora do alcance. ✅
+- **Compra da skill como item:** ❌ o Foema_Ancian deu a skill 5041 ([#391](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391)).
+- **Reaprender e Cancelamento:**
+  - Reaprender com 269 pontos livres: `AlreadyLearned`. ✅
+  - Cancelamento sem os 50M: `NotEnoughCoin`. ✅
+- **Relogin:** `Learn` 0x7F0000 e `SkillBonus` 269. ✅
+- **Teleporte:** ❌ em si mesma, de (2195,2108) e com (2210,2118) no pacote, a Foema foi teleportada para (2210,2118).
+  - O legado puxa o alvo para a posição da Foema no servidor (`_MSG_Attack.cpp:781`); o Go usa o `TargetX/TargetY` do cliente (`combat.go:915`).
+  - Issue: [Jean1dev/w2pp-OpenWYD#393](https://github.com/Jean1dev/w2pp-OpenWYD/issues/393). Veja [docs/findings/005-teleporte-foema-coordenada-do-cliente.md](docs/findings/005-teleporte-foema-coordenada-do-cliente.md).
+- **Diferenças vistas só na leitura do código** (não observáveis no cenário):
+  - a Arma Mágica do Go não soma o `DAMAGEMULTI`;
+  - o teto do Toque de Athena é 400 no Go e 200/255 no legado.
+
+Na primeira execução, a Velocidade falhou por erro do bot: ele lia a corrida no nibble alto do `AttackRun`, que é o ataque. O `AttackRun` é `ataque × 16 + corrida` (`Basedef.cpp:4711`). Corrigido, o `--skill 41` passou.
+
 ## Estrutura
 
 ```
 src/protocol/   codec CPSock (keytable, encode/decode, framer), opcodes e pacotes no layout do servidor Go
 src/client/     GameClient (TCP, relógio de ClientTick, estado do mundo, waitFor) e logger
 src/bot/        sessão (login/PIN/personagem), movimento, viagens (Grifo, tiles), combate, grind, sobrevivência, NPCs (loja, itens, quest), quests de arena, build de atributos e maestria, skills (aprender e conjurar), equipamento, troca entre jogadores e progresso
-src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento), criação do Arch e as árvores de Magia Negra e Branca da Foema (skills, mestre e campo de teste)
+src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento), criação do Arch e as três árvores de skills da Foema (Negra, Branca e Especial) (skills, mestre e campo de teste)
 src/scenarios/  cenários de teste e peças comuns (common.ts)
 scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja, equipamento/Grifo, lista de personagens)
 tests/          testes unitários (vitest)

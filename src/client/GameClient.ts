@@ -44,6 +44,8 @@ export interface SelfState {
   attrs: P.Attributes;
   mp: number;
   maxMp: number;
+  /** AttackRun do último UpdateScore: (ataque << 4) | corrida. */
+  attackRun?: number;
   /** CurrentScore.Special[4]: maestria de cada árvore (com equipamento e buffs). */
   special: number[];
   /** LearnedSkill: bit (skill % 24) de cada skill aprendida. */
@@ -339,6 +341,7 @@ export class GameClient extends EventEmitter {
           if (s.mp !== undefined) me.mp = s.mp;
           if (s.maxMp !== undefined) me.maxMp = s.maxMp;
           if (s.special) me.special = s.special;
+          if (s.attackRun !== undefined) me.attackRun = s.attackRun;
         }
         break;
       case Op.UpdateEtc:

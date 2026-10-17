@@ -3,6 +3,7 @@
 //
 // - Magia Branca (árvore 1): skills 24–31, bits 0–7 do LearnedSkill, maestria Special[1].
 // - Magia Negra (árvore 2): skills 32–39, bits 8–15, maestria Special[2].
+// - Magia Especial (árvore 3): skills 40–47, bits 16–23, maestria Special[3].
 // - Dados: Release/Common/SkillData.csv. Requisitos para aprender: ItemList.csv 5000 + skill,
 //   "ReqLvl.ReqStr.ReqInt.ReqDex.ReqCon", em que ReqInt/ReqDex/ReqCon são comparados com
 //   Special[1]/[2]/[3] (handler/skill.go learnSkill; legado _MSG_ApplyBonus.cpp:131-249). A 8ª
@@ -21,9 +22,11 @@ export const FOEMA = 1;
  * - detox: tira debuffs (InstanceType 8) — em si mesma;
  * - flash: tira os mobs de combate (InstanceType 7), sem dano;
  * - judgment: dano + o HP da Foema, que fica com HP/6 + 1 (Julgamento Divino);
+ * - buff: affect em si mesma (SendAffect) e o efeito dele no score (velocidade, AC, dano, maestria);
+ * - teleport: puxa o alvo para a posição da Foema (InstanceType 9);
  * - eighth: a 8ª skill, que só tem a recusa sem os 50M de gold.
  */
-export type SkillKind = 'damage' | 'area' | 'thunder' | 'heal' | 'detox' | 'flash' | 'judgment' | 'eighth';
+export type SkillKind = 'damage' | 'area' | 'thunder' | 'heal' | 'detox' | 'flash' | 'judgment' | 'buff' | 'teleport' | 'eighth';
 
 export interface SkillDef {
   id: number;
@@ -41,10 +44,12 @@ export interface SkillDef {
   reqSpecial: number;
   /** InstanceValue: a base da fórmula de dano ou de cura. */
   base: number;
+  /** AffectType e AffectValue do SkillData, para as skills de buff. */
+  affect?: { type: number; value: number };
 }
 
 export interface SkillTree {
-  key: 'negra' | 'branca';
+  key: 'negra' | 'branca' | 'especial';
   label: string;
   /** Índice da árvore: Special[tree] e (skill % 24) ÷ 8 + 1. */
   tree: number;
@@ -83,7 +88,49 @@ export const WHITE_MAGIC: SkillTree = {
   ],
 };
 
-export const TREES: Record<SkillTree['key'], SkillTree> = { negra: BLACK_MAGIC, branca: WHITE_MAGIC };
+/**
+ * Magia Especial. O SkillData troca os nomes de 41 e 42 ("Teleporte"/"Velocidade"); o ItemList
+ * (5041 Velocidade, 5042 Teleporte) e os dados batem com a 41 = Velocidade (AffectType 2, grupo) e
+ * a 42 = Teleporte (InstanceType 9, sem MP). Os requisitos vêm do ItemList 5000 + skill.
+ */
+export const SPECIAL_MAGIC: SkillTree = {
+  key: 'especial',
+  label: 'Magia Especial',
+  tree: 3,
+  skills: [
+    { id: 40, name: 'Névoa Venenosa', points: 24, mana: 9, range: 6, kind: 'damage', maxTarget: 1, reqLevel: 0, reqSpecial: 0, base: 20 },
+    { id: 41, name: 'Velocidade', points: 39, mana: 52, range: 5, kind: 'buff', maxTarget: 13, reqLevel: 21, reqSpecial: 0, base: 0, affect: { type: 2, value: 1 } },
+    { id: 42, name: 'Teleporte', points: 54, mana: 0, range: 0, kind: 'teleport', maxTarget: 1, reqLevel: 0, reqSpecial: 0, base: 0 },
+    { id: 43, name: 'Escudo Mágico', points: 63, mana: 52, range: 6, kind: 'buff', maxTarget: 1, reqLevel: 33, reqSpecial: 0, base: 0, affect: { type: 11, value: 15 } },
+    { id: 44, name: 'Arma Mágica', points: 75, mana: 78, range: 5, kind: 'buff', maxTarget: 13, reqLevel: 60, reqSpecial: 60, base: 0, affect: { type: 9, value: 90 } },
+    { id: 45, name: 'Toque de Athena', points: 72, mana: 98, range: 6, kind: 'buff', maxTarget: 1, reqLevel: 76, reqSpecial: 76, base: 0, affect: { type: 15, value: 7 } },
+    { id: 46, name: 'Controle de Mana', points: 81, mana: 130, range: 0, kind: 'buff', maxTarget: 1, reqLevel: 140, reqSpecial: 0, base: 0, affect: { type: 18, value: 0 } },
+    { id: 47, name: 'Cancelamento', points: 269, mana: 34, range: 5, kind: 'eighth', maxTarget: 5, reqLevel: 219, reqSpecial: 200, base: 0 },
+  ],
+};
+
+export const TREES: Record<SkillTree['key'], SkillTree> = { negra: BLACK_MAGIC, branca: WHITE_MAGIC, especial: SPECIAL_MAGIC };
+
+/**
+ * O que um buff muda no score (BASE_GetCurrentScore, Basedef.cpp:3950-4090; handler/affect_score.go),
+ * com `level` = a maestria da Foema no cast (o Level do affect):
+ * - 2 Velocidade: corrida + Value;
+ * - 11 Escudo Mágico: AC + Level/3 + Value;
+ * - 9 Arma Mágica: dano + (Level×5/20 + Value)×3/2, ×3 numa Foema com o bit 19 (Escudo Mágico);
+ * - 15 Toque de Athena: cada Special + Level/10 + Value.
+ */
+export function buffGain(type: number, value: number, level: number, learn = 0): number {
+  switch (type) {
+    case 2: return value;
+    case 11: return Math.trunc(level / 3) + value;
+    case 9: {
+      const add = Math.trunc(((Math.trunc((level * 5) / 20) + value) * 3) / 2);
+      return learn & 0x80000 ? add * 3 : add;
+    }
+    case 15: return Math.trunc(level / 10) + value;
+    default: return 0;
+  }
+}
 
 /** Gold que a 8ª skill de uma árvore custa (handler/skill.go eighthSkillCoin). */
 export const EIGHTH_SKILL_COIN = 50_000_000;

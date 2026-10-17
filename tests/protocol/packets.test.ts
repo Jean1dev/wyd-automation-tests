@@ -196,7 +196,7 @@ describe('parsers S→C', () => {
     s.writeInt16LE(132, 32); s.writeInt16LE(12, 34); s.writeInt16LE(96, 36); s.writeInt16LE(80, 38);
     s.writeInt32LE(250, 20); s.writeInt32LE(180, 128); s.writeInt16LE(112, 44); s.writeUInt16LE((22 << 8) | 150, 50);
     expect(P.parseUpdateScore(s)).toEqual({
-      level: 35, ac: 12, damage: 57, maxHp: 400, hp: 390, maxMp: 250, mp: 180, attrs: { str: 132, int: 12, dex: 96, con: 80 },
+      level: 35, ac: 12, damage: 57, maxHp: 400, hp: 390, maxMp: 250, mp: 180, attackRun: 0, attrs: { str: 132, int: 12, dex: 96, con: 80 },
       special: [0, 0, 112, 0], affects: [(22 << 8) | 150],
     });
     const e = Buffer.alloc(36);
