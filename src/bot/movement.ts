@@ -1,7 +1,7 @@
 // Movimento em passos curtos via MSG_Action (0x036C), como o cliente faz ao clicar no chão.
 // O servidor Go aceita o destino sem validar o caminho, mas andamos em passos de poucos
 // tiles e no ritmo de um jogador, para continuar válidos se a validação vier.
-import type { GameClient } from '../client/GameClient.ts';
+import type { GameClient, Received } from '../client/GameClient.ts';
 import { Op } from '../protocol/opcodes.ts';
 import * as P from '../protocol/packets.ts';
 import { sleep } from './util.ts';
@@ -67,4 +67,17 @@ export async function walkTo(c: GameClient, tx: number, ty: number, opts: WalkOp
 export async function walkPath(c: GameClient, pts: { x: number; y: number }[], opts: WalkOptions = {}): Promise<boolean> {
   for (const p of pts) if (!(await walkTo(c, p.x, p.y, opts))) return false;
   return true;
+}
+
+/** MSG_Action com Effect=1 para o próprio personagem: teleporte forçado pelo servidor. */
+export function isSelfTeleport(c: GameClient, f: Received): boolean {
+  return f.header.type === Op.Action && f.header.id === c.self?.clientId && f.body.length >= 40 && f.body.readInt32LE(4) === 1;
+}
+
+/** Primeiro teleporte forçado do próprio personagem entre os frames. */
+export function selfTeleportIn(c: GameClient, frames: Received[]): { from: { x: number; y: number }; to: { x: number; y: number } } | undefined {
+  const f = frames.find((x) => isSelfTeleport(c, x));
+  if (!f) return undefined;
+  const a = P.parseAction(f.body);
+  return { from: { x: a.posX, y: a.posY }, to: { x: a.targetX, y: a.targetY } };
 }

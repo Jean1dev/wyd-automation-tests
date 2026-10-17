@@ -3,7 +3,8 @@
 //   - AttributeMap.dat: grade 1024×1024, um byte por bloco de 4×4 tiles,
 //     lido como attr[y/4][x/4]. O bit 0x80 marca a "Newbie Zone" (Campo de Treino).
 //   - NPCGener.txt: geradores de mobs; guardamos os que nascem dentro da zona.
-//   - npc/<Nome>: template STRUCT_MOB (816 B). Exp i64 @32, Level i32 @92 (CurrentScore).
+//   - npc/<Nome>: template STRUCT_MOB (816 B). Exp i64 @32; CurrentScore @92:
+//     Level i32 @+0, Ac i32 @+4, MaxHp i32 @+16.
 //
 // Uso: npm run zone:extract -- <caminho/para/Release/TMsrv/run>
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -49,6 +50,19 @@ const inZone = (x: number, y: number) => {
 
 // Geradores cujo ponto de nascimento cai dentro da zona.
 type Spawn = { gen: number; leader: string; follower: string; x: number; y: number; range: number; maxNumMob: number; level?: number; exp?: number };
+type MobStats = { level: number; exp: number; ac: number; maxHp: number };
+// Atributos dos mobs (líder e seguidor) dos geradores da zona, para o bot estimar quanto
+// tempo leva cada kill. undefined se o template não existir; null se for NPC (Merchant != 0).
+const mobs: Record<string, MobStats> = {};
+function readMob(name: string): MobStats | null | undefined {
+  const tmpl = join(runDir, 'npc', name);
+  if (!name || !existsSync(tmpl)) return undefined;
+  const b = readFileSync(tmpl);
+  if (b.length < 112) return undefined;
+  if ((b[17] ?? 0) !== 0) return null;
+  const cs = 92;
+  return { level: b.readInt32LE(cs), exp: Number(b.readBigInt64LE(32)), ac: b.readInt32LE(cs + 4), maxHp: b.readInt32LE(cs + 16) };
+}
 const gener = readFileSync(join(runDir, 'NPCGener.txt'), 'utf8');
 const spawns: Spawn[] = [];
 for (const block of gener.split(/^#\s*\[/m).slice(1)) {
@@ -59,15 +73,15 @@ for (const block of gener.split(/^#\s*\[/m).slice(1)) {
   const leader = field('Leader') ?? '';
   if (!Number.isFinite(x) || !Number.isFinite(y) || max <= 0 || !inZone(x, y)) continue;
   const s: Spawn = { gen, leader, follower: field('Follower') ?? '', x, y, range: Number(field('StartRange') ?? '0'), maxNumMob: max };
-  const tmpl = join(runDir, 'npc', leader);
-  if (existsSync(tmpl)) {
-    const b = readFileSync(tmpl);
-    if (b.length >= 96) {
-      s.exp = Number(b.readBigInt64LE(32));
-      s.level = b.readInt32LE(92);
-      if ((b[17] ?? 0) !== 0) continue; // Merchant != 0 → NPC, não é mob
-    }
+  const lead = readMob(leader);
+  if (lead === null) continue; // NPC, não é mob
+  if (lead) {
+    s.exp = lead.exp;
+    s.level = lead.level;
+    mobs[leader] = lead;
   }
+  const fol = readMob(s.follower);
+  if (fol) mobs[s.follower] = fol;
   spawns.push(s);
 }
 spawns.sort((a, b) => (a.level ?? 0) - (b.level ?? 0) || a.gen - b.gen);
@@ -79,7 +93,8 @@ const out = {
   bbox: { minX, minY, maxX, maxY },
   rows,
   spawns,
+  mobs: Object.fromEntries(Object.entries(mobs).sort(([a], [b]) => a.localeCompare(b))),
 };
 const dest = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'world', 'data', 'newbie-zone.json');
 writeFileSync(dest, JSON.stringify(out, null, 1) + '\n');
-console.log(`zona: ${cells} células, bbox ${JSON.stringify(out.bbox)}; ${spawns.length} geradores de mob dentro → ${dest}`);
+console.log(`zona: ${cells} células, bbox ${JSON.stringify(out.bbox)}; ${spawns.length} geradores de mob dentro, ${Object.keys(mobs).length} tipos de mob → ${dest}`);

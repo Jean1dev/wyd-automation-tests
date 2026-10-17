@@ -1071,7 +1071,7 @@
    "x": 2082,
    "y": 2028,
    "range": 1,
-   "maxNumMob": 1,
+   "maxNumMob": 3,
    "exp": 1313,
    "level": 18
   },
@@ -1082,7 +1082,7 @@
    "x": 2147,
    "y": 2005,
    "range": 1,
-   "maxNumMob": 1,
+   "maxNumMob": 3,
    "exp": 1936,
    "level": 23
   },
@@ -1093,7 +1093,7 @@
    "x": 2138,
    "y": 1941,
    "range": 1,
-   "maxNumMob": 1,
+   "maxNumMob": 3,
    "exp": 2212,
    "level": 25
   },
@@ -1104,7 +1104,7 @@
    "x": 2079,
    "y": 1976,
    "range": 1,
-   "maxNumMob": 1,
+   "maxNumMob": 3,
    "exp": 9415,
    "level": 34
   },
@@ -1185,5 +1185,103 @@
    "exp": 8854,
    "level": 60
   }
- ]
+ ],
+ "mobs": {
+  "Aguia": {
+   "level": 2,
+   "exp": 65,
+   "ac": 2,
+   "maxHp": 60
+  },
+  "Chefe_Krill": {
+   "level": 17,
+   "exp": 1208,
+   "ac": 100,
+   "maxHp": 400
+  },
+  "Chefe_Krill_": {
+   "level": 40,
+   "exp": 4895,
+   "ac": 100,
+   "maxHp": 800
+  },
+  "Gremlin": {
+   "level": 4,
+   "exp": 322,
+   "ac": 4,
+   "maxHp": 100
+  },
+  "Gremlin_": {
+   "level": 4,
+   "exp": 322,
+   "ac": 4,
+   "maxHp": 110
+  },
+  "Gremlin_Artif": {
+   "level": 18,
+   "exp": 1313,
+   "ac": 40,
+   "maxHp": 600
+  },
+  "Krill": {
+   "level": 8,
+   "exp": 432,
+   "ac": 20,
+   "maxHp": 130
+  },
+  "Krill_": {
+   "level": 8,
+   "exp": 432,
+   "ac": 20,
+   "maxHp": 130
+  },
+  "Krill_Gigante": {
+   "level": 23,
+   "exp": 1936,
+   "ac": 40,
+   "maxHp": 2000
+  },
+  "Orc_Arqueiro_": {
+   "level": 25,
+   "exp": 2212,
+   "ac": 130,
+   "maxHp": 520
+  },
+  "Orc_Guerreiro": {
+   "level": 60,
+   "exp": 8854,
+   "ac": 80,
+   "maxHp": 2000
+  },
+  "Orc_Sniper": {
+   "level": 34,
+   "exp": 9415,
+   "ac": 60,
+   "maxHp": 2500
+  },
+  "Porco": {
+   "level": 3,
+   "exp": 295,
+   "ac": 2,
+   "maxHp": 70
+  },
+  "Rei_Gremlin": {
+   "level": 15,
+   "exp": 1005,
+   "ac": 60,
+   "maxHp": 200
+  },
+  "Rei_Gremlin_": {
+   "level": 15,
+   "exp": 1005,
+   "ac": 60,
+   "maxHp": 250
+  },
+  "Serpente": {
+   "level": 11,
+   "exp": 630,
+   "ac": 18,
+   "maxHp": 170
+  }
+ }
 }
