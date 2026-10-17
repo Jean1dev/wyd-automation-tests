@@ -27,6 +27,8 @@ export interface Mob extends P.MobView {
 
 export interface SelfState {
   name: string;
+  /** Classe (STRUCT_MOB.Class): 0 TK, 1 FM, 2 BM, 3 HT. */
+  cls: number;
   clientId: number;
   x: number;
   y: number;
@@ -262,7 +264,7 @@ export class GameClient extends EventEmitter {
         this.mobs.clear();
         this.connId = s.clientId;
         this.self = {
-          name: s.name, clientId: s.clientId, x: s.x, y: s.y, level: s.level, exp: s.exp, hp: s.hp, maxHp: s.maxHp,
+          name: s.name, cls: s.cls, clientId: s.clientId, x: s.x, y: s.y, level: s.level, exp: s.exp, hp: s.hp, maxHp: s.maxHp,
           damage: s.damage, ac: s.ac, attrs: s.attrs, coin: s.coin, carry: s.carry, equip: s.equip,
         };
         break;

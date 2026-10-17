@@ -56,3 +56,11 @@ describe('build de atributos', () => {
     expect(nextStat(a(500, 10, 10), ALL_STR)).toBe('str');
   });
 });
+
+describe('Arch', () => {
+  it('corpo do Arch = rosto do mortal + 5 + classe (DBSrv _MSG_DBCreateArchCharacter)', async () => {
+    const { archFace, MORTAL_FACE } = await import('../../src/world/arch.ts');
+    expect(archFace(MORTAL_FACE[0], 2)).toBe(8); // TK mortal → BM Arch
+    expect([0, 1, 2, 3].map((c) => archFace(1, c))).toEqual([6, 7, 8, 9]);
+  });
+});

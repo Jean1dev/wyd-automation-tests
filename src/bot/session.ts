@@ -63,19 +63,22 @@ export async function createCharacter(c: GameClient, name: string, cls: number, 
   return created.slot;
 }
 
-export async function deleteCharacter(c: GameClient, name: string, password: string, log: Logger): Promise<void> {
-  const ch = c.selChars.find((s) => s.name === name);
+export async function deleteCharacter(c: GameClient, name: string, password: string, log: Logger, slot?: number): Promise<void> {
+  const ch = c.selChars.find((s) => s.name === name && (slot === undefined || s.slot === slot));
   if (!ch) return;
   const since = c.mark;
   c.send(Op.DeleteCharacter, P.deleteCharacter(ch.slot, name, password), { id: 0 });
   const r = await c.waitType([Op.CNFDeleteCharacter, Op.DeleteCharacterFail, Op.MessageBoxOk], { timeoutMs: 15_000, since });
   if (r.header.type !== Op.CNFDeleteCharacter) throw new SessionError(`exclusão de "${name}" recusada (${opName(r.header.type)})`);
-  log.info('personagem apagado', { name });
+  log.info('personagem apagado', { name, slot: ch.slot });
 }
 
-/** Entra no mundo com o personagem e espera o snapshot (CNFCharacterLogin). */
-export async function enterWorld(c: GameClient, name: string, log: Logger): Promise<void> {
-  const ch = c.selChars.find((s) => s.name === name);
+/**
+ * Entra no mundo com o personagem e espera o snapshot (CNFCharacterLogin). `slot` escolhe entre
+ * personagens de mesmo nome (o Arch tem o nome do mortal).
+ */
+export async function enterWorld(c: GameClient, name: string, log: Logger, slot?: number): Promise<void> {
+  const ch = c.selChars.find((s) => s.name === name && (slot === undefined || s.slot === slot));
   if (!ch) throw new SessionError(`personagem "${name}" não está na conta`);
   const since = c.mark;
   c.send(Op.CharacterLogin, P.characterLogin(ch.slot), { id: 0 });

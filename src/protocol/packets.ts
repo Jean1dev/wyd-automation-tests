@@ -219,9 +219,14 @@ export interface SelCharSlot {
   /** Nível armazenado (o cliente exibe +1). */
   level: number;
   exp: bigint;
+  /** Equip[0] (rosto/corpo): o Arch recebe MortalFace + 5 + classe (DBSrv _MSG_DBCreateArchCharacter). */
+  face: number;
 }
 
-/** STRUCT_SELCHAR (840 B): Name[4][16]@16, Score[4]@80 (48 B cada, Level@0), Exp[4]@808. */
+/**
+ * STRUCT_SELCHAR (840 B): Name[4][16]@16, Score[4]@80 (48 B cada, Level@0), Equip[4][16]@272
+ * (128 B por slot), Exp[4]@808 (protocol/selchar.go).
+ */
 function parseSelChar(b: Buffer, base: number): SelCharSlot[] {
   const out: SelCharSlot[] = [];
   for (let s = 0; s < 4; s++) {
@@ -232,6 +237,7 @@ function parseSelChar(b: Buffer, base: number): SelCharSlot[] {
       name,
       level: b.readInt32LE(base + 80 + s * 48),
       exp: b.readBigInt64LE(base + 808 + s * 8),
+      face: b.readUInt16LE(base + 272 + s * 128),
     });
   }
   return out;
@@ -291,6 +297,8 @@ export interface CharacterSnapshot {
   x: number;
   y: number;
   name: string;
+  /** STRUCT_MOB.Class @20 (0 TK, 1 FM, 2 BM, 3 HT). */
+  cls: number;
   exp: bigint;
   coin: number;
   level: number;
@@ -307,7 +315,7 @@ export interface CharacterSnapshot {
 }
 
 /**
- * CNFCharacterLogin (0x0114), 1820 B: PosX@0 PosY@2, STRUCT_MOB@4 (Name@0, Coin@28, Exp@32,
+ * CNFCharacterLogin (0x0114), 1820 B: PosX@0 PosY@2, STRUCT_MOB@4 (Name@0, Class@20, Coin@28, Exp@32,
  * BaseScore@44, CurrentScore@92 {Level@0 Ac@4 Damage@8 MaxHp@16 Hp@24 Str/Int/Dex/Con i16@32}, Equip[16]@140, Carry[64]@268), Slot@1028,
  * ClientID@1030.
  */
@@ -322,6 +330,7 @@ export function parseCNFCharacterLogin(body: Buffer): CharacterSnapshot {
     x: body.readInt16LE(0),
     y: body.readInt16LE(2),
     name: cstr(body, mob, 12),
+    cls: body[mob + 20],
     coin: body.readInt32LE(mob + 28),
     exp: body.readBigInt64LE(mob + 32),
     level: body.readInt32LE(score),

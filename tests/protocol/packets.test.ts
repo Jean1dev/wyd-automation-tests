@@ -96,7 +96,7 @@ describe('parsers S→C', () => {
     body.write('botxyz', sel + 16 + 1 * 16, 'latin1');
     body.writeInt32LE(34, sel + 80 + 1 * 48);
     body.writeBigInt64LE(175915n, sel + 808 + 1 * 8);
-    expect(P.parseCNFAccountLogin(body)).toEqual([{ slot: 1, name: 'botxyz', level: 34, exp: 175915n }]);
+    expect(P.parseCNFAccountLogin(body)).toEqual([{ slot: 1, name: 'botxyz', level: 34, exp: 175915n, face: 0 }]);
     const nc = Buffer.alloc(844);
     nc.write('abcd', 4 + 16, 'latin1');
     expect(P.parseCNFNewCharacter(nc).map((s) => s.name)).toEqual(['abcd']);
@@ -157,6 +157,13 @@ describe('parsers S→C', () => {
     b.write('Porco', 6, 'latin1');
     b.writeInt32LE(3, 124); b.writeInt32LE(2, 124 + 4); b.writeInt32LE(80, 124 + 16); b.writeInt32LE(80, 124 + 24);
     expect(P.parseCreateMob(b)).toMatchObject({ id: 1500, name: 'Porco', x: 2120, y: 2020, level: 3, ac: 2, hp: 80, merchant: 0, isPlayer: false });
+  });
+
+  it('SELCHAR: rosto do slot em Equip[4][16]@272 (128 B por slot)', () => {
+    const b = Buffer.alloc(4 + 840);
+    b.write('botarch', 4 + 16 + 2 * 16, 'latin1');
+    b.writeUInt16LE(8, 4 + 272 + 2 * 128);
+    expect(P.parseCNFNewCharacter(b)).toEqual([{ slot: 2, name: 'botarch', level: 0, exp: 0n, face: 8 }]);
   });
 
   it('UpdateScore e UpdateEtc', () => {

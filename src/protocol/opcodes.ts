@@ -57,6 +57,7 @@ export const Op = {
   UpdateCarry: 0x0185, // inventário inteiro (Carry[64]) + gold, depois da troca
   CNFCheck: 0x0386, // troca: o servidor aceitou a minha confirmação
   StartTime: 0x03a1, // contador das arenas de quest (legado)
+  SendArchEffect: 0x03b4, // Arch criado: STANDARDPARM com o slot do novo personagem
 } as const;
 
 export function opName(type: number): string {

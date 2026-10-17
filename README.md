@@ -14,6 +14,7 @@ npm install
 cp .env.example .env
 npm run account:create     # cria uma conta no portal e preenche WYD_ACCOUNT/WYD_PASSWORD/WYD_PIN
 npm run account:create -- --second   # segunda conta (WYD_ACCOUNT_B/WYD_PASSWORD_B), só para o cenário de troca
+npm run account:create -- --arch     # conta do cenário do Arch (WYD_ACCOUNT_ARCH/WYD_PASSWORD_ARCH)
 ```
 
 O `.env` aponta por padrão para o tm-server do Railway (`reseau.proxy.rlwy.net:56950`, versão de cliente 12000). Ele nunca vai para o Git.
@@ -223,13 +224,62 @@ Execução de 2026-10-17 14:23–15:01 UTC (`--adopt botq5cm1l --until-done`, Tr
   - As Botas e a Armadura Melpômene levaram a AC a 4399.
   - A Calça ficou de fora por gold (sobraram 156k de 1M). As peças antigas foram vendidas.
 
+## Cenário 5 — Criação do Arch
+
+`npm run scenario:arch` (exige a conta do Arch no `.env`: `npm run account:create -- --arch`)
+
+O Arch nasce de um mortal nível 400. Ele mantém o nome e o corpo e ganha a classe da Sephirot escolhida. Isso segue os guias do WYD ([Wyd 2.0 Tutorials: Criando Arch](https://wydtutoriais.wordpress.com/criando-arch/), [WYD BR Loucos: Criando a classe Arch](http://wydbrloucos.blogspot.com/p/criando-classe-arch.html)) e o servidor:
+- o Rei (`handler/misc.go` `kingQuest`/`kingArch`) exige mortal com nível armazenado ≥ 299, a Pedra da Imortalidade (1742) no Equip[10] e a Sephirot (1760 + classe) no Equip[11];
+- o DB (`dbserver` `CreateArchCharacter`) cria o Arch no primeiro slot livre, com o mesmo nome, nível 0, sem itens e `Equip[0] = rosto do mortal + 5 + classe`.
+
+O cenário roda numa conta só dele, porque o Arch precisa de um slot livre. Os passos são:
+
+1. Cria um mortal (`WYD_CHAR_CLASS`) e o leva ao nível exibido 400 com a Poeira de Fada, distribuindo os pontos pela build da classe.
+2. Compra na Evolução a Pedra da Imortalidade (5.000) e a Sephirot da classe do Arch (7.000). O caminho dos guias (Oráculo com as Almas e Safiras; Mestre de Skills com as 8 Pedras Arch e 30M) não serve para um jogador comum neste conteúdo, porque as Pedras 1744–1751 não são vendidas nem caem de nenhum mob.
+3. **Controles** no Rei_Glantuar (1750,1880), cada um sem criar Arch:
+   - com a Pedra e a Sephirot só no inventário;
+   - com tudo equipado, mas a conta cheia (o bot cria 3 personagens extras e depois os apaga): também precisa manter os itens equipados;
+   - na pergunta (confirmação 0).
+4. **Verificação A:** no "sim" (confirmação 1) o servidor volta para a seleção de personagem, lista o Arch num slot livre, manda `SendArchEffect` com esse slot e tira a Pedra e a Sephirot do mortal.
+5. **Verificação B:** o Arch entra no mundo com:
+   - o mesmo nome;
+   - a classe da Sephirot;
+   - nível exibido 1;
+   - só o corpo equipado (o mesmo rosto na seleção e no login) e o inventário vazio.
+6. **Verificação C:** o mortal continua no slot dele, no nível exibido 400, com o mesmo rosto e sem a Pedra e a Sephirot.
+
+| Opção | Efeito |
+|---|---|
+| `--arch-class 2` | Classe do Arch: 0 TK, 1 FM, 2 BM (padrão), 3 HT. |
+| `--budget` / `--until-done` / `--fresh` / `--cleanup` | Como no cenário 1. A limpeza apaga o mortal, o Arch e os extras. |
+
+O estado fica em `state/arch-creation.json`. Cada execução grava `reports/<data>-arch-creation/`.
+
+### Situação (2026-10-17): passa
+
+Execução de 2026-10-17 15:54–16:10 UTC (`--until-done`): um TransKnight virou Arch BeastMaster. O veredito foi **passou**.
+
+| Verificação | Resultado |
+|---|---|
+| Mortal no nível exibido 400 | ✅ 399 Poeiras em 12 min. Build TK: Str 2115, Dex 400, Con 600 |
+| Pedra e Sephirot só no inventário | ✅ sem Arch. O Rei responde com o serviço de capa: "Sao necessarias 14 safiras em pagamento exato." |
+| Conta cheia | ✅ sem Arch, aviso 31 (sem slot livre), Pedra e Sephirot continuam equipadas |
+| Pergunta (confirmação 0) | ✅ sem Arch: "Sao necessarias 14 safiras." |
+| A: criação | ✅ CNFCharacterLogout + CNFNewCharacter, Arch no slot 1, `SendArchEffect(1)`, Equip[10]/[11] do mortal vazios |
+| B: Arch | ✅ mesmo nome, classe 2 (BM), nível exibido 1, rosto 8 (= 1 + 5 + 2), só o corpo, inventário vazio |
+| C: mortal | ✅ slot 0, nível exibido 400, rosto 1, sem a Pedra e a Sephirot |
+
+Duas diferenças do legado, que o cenário não reprova:
+- **Gold do Arch:** ele nasce com 1.000.000 de gold. No legado o BaseSet dá 5.000.000; o Go usa 1.000.000 para todo personagem novo (valor provisório em `dbserver` `server.go`).
+- **Sephirot do Mestre de Skills:** pela leitura do código, o `compSephi` do Go dá `1760 + Class`, enquanto o legado (`_MSG_Quest.cpp:2149`) dá `1759 + Class`. Isso daria a Sephirot de outra classe. Não dá para testar sem as 8 Pedras Arch.
+
 ## Estrutura
 
 ```
 src/protocol/   codec CPSock (keytable, encode/decode, framer), opcodes e pacotes no layout do servidor Go
 src/client/     GameClient (TCP, relógio de ClientTick, estado do mundo, waitFor) e logger
 src/bot/        sessão (login/PIN/personagem), movimento, viagens (Grifo, tiles), combate, grind, sobrevivência, NPCs (loja, itens, quest), quests de arena, build de atributos, equipamento, troca entre jogadores e progresso
-src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro e Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento)
+src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento) e criação do Arch
 src/scenarios/  cenários de teste e peças comuns (common.ts)
 scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja, equipamento/Grifo, lista de personagens)
 tests/          testes unitários (vitest)
