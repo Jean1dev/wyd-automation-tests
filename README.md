@@ -66,15 +66,55 @@ Execução de 2026-10-16 22:06–22:15 UTC (`--fresh --until-done`), com o multi
 - **Exp do campo:** resolvida com o #384 junto com uma correção no bot. Na execução anterior, das 21:07, o nível 35 levou 25,5 min. O bot não distribuía os pontos de atributo, então terminou com dano 57 e gastou ~15 min em lutas abandonadas (40 golpes sem matar) contra Chefe_Krill e Orc_Arqueiro_, que têm AC alta. Distribuindo os pontos, o dano chega a ~126 no nível 35, e a escolha de alvo pela exp por segundo eliminou as desistências. Foram 60 kills e nenhuma desistência.
 - **Trava ausente:** confirmada no Railway. Issue aberta: [Jean1dev/w2pp-OpenWYD#385](https://github.com/Jean1dev/w2pp-OpenWYD/issues/385). Veja [docs/findings/001-campo-de-treino-sem-trava.md](docs/findings/001-campo-de-treino-sem-trava.md).
 
+## Cenário 2 — Quest do Coveiro
+
+`npm run scenario:coveiro`
+
+1. **Nível 40.** Cria um personagem novo e o leva ao nível exibido 40 com a **Poeira de Fada**, que dá +1 nível por uso. A pilha de 255 custa 5000 gold na NPC Evolução, em Armia. O personagem novo já nasce com gold suficiente. Se faltar gold, o bot faz grind no Campo de Treino até juntar.
+2. **Controles**, antes da entrega:
+   - falar com o Coveiro (2375,2104) **sem** a vela não pode teleportar;
+   - entrar a pé na arena, sem QuestFlag, deve mandar o personagem para a cidade.
+3. Compra a **Vela do Coveiro** na Aki, em Armia. O preço é 0.
+4. **Verificação A:** entrega a vela ao Coveiro. O personagem deve ser teleportado para dentro da arena, (2379,2076)–(2426,2133), e a vela deve sumir do inventário.
+5. **Verificação B:** fica na arena até o reset da quest, que deve mandá-lo de volta para a cidade.
+   - No legado o reset vem a cada 10 min contados do boot do servidor, não no minuto 00 (finding 002).
+   - O bot espera até o maior entre a entrada + 12 min e a próxima hh:00 + 2 min, para cobrir as duas hipóteses.
+   - A arena tem Aparição (nv 98) e Esqueleto (nv 84). O bot espera no canto mais longe dos spawns, em (2403,2131). Se morrer, continua lá sem reviver, porque o reset legado também revive e expulsa quem está morto.
+
+O cenário é retomável (`state/coveiro-quest.json`), mas a espera do reset não: se a conexão cair dentro da arena, a tentativa recomeça na compra da vela. Isso acontece porque o QuestFlag não sobrevive ao relogin.
+
+| Opção | Efeito |
+|---|---|
+| `--budget 2h` / `--until-done` / `--stall 10m` / `--fresh` / `--cleanup` | Como no cenário 1. A espera do reset sempre vai até o fim da janela. |
+| `--phase handin` | Repete vela + entrega + reset (exige nível exibido ≥ 40). `--phase controls` repete também os controles. |
+| `--reset-wait 20m` | Espera fixa pelo reset, contada da entrada na arena. |
+
+Cada execução grava `reports/<data>-coveiro-quest/` com `report.json` (veredito e verificações; no reset, o horário UTC, o minuto e os segundos desde a entrada) e `events.jsonl`.
+
+### Situação (2026-10-16): entrega funciona, reset ausente
+
+Execução de 2026-10-16 22:58–23:32 UTC (`--until-done`). O processo foi encerrado por falta de memória na máquina de teste aos 30 min de espera, antes da virada da hora. Por isso não há `report.json`, só o `events.jsonl`.
+
+| Verificação | Resultado |
+|---|---|
+| Nível exibido 40 com Poeira de Fada (+1 por uso) | ✅ em 0,9 min de jogo |
+| Coveiro sem vela não teleporta | ✅ MessageBoxOk 15 |
+| Intruso na arena volta para a cidade | ✅ teleportado para (2100,2095) |
+| Vela do Coveiro de graça na Aki | ✅ |
+| A: a entrega teleporta para a arena | ✅ (2398,2105), vela consumida |
+| B: o reset manda de volta | ❌ 30 min vivo na arena, sem teleporte (o legado teria resetado 3 vezes) |
+
+O servidor Go não tem o reset das áreas de quest. Issue aberta: [Jean1dev/w2pp-OpenWYD#386](https://github.com/Jean1dev/w2pp-OpenWYD/issues/386). Veja [docs/findings/002-quest-coveiro-sem-reset.md](docs/findings/002-quest-coveiro-sem-reset.md).
+
 ## Estrutura
 
 ```
 src/protocol/   codec CPSock (keytable, encode/decode, framer), opcodes e pacotes no layout do servidor Go
 src/client/     GameClient (TCP, relógio de ClientTick, estado do mundo, waitFor) e logger
-src/bot/        sessão (login/PIN/personagem), movimento, combate, grind, sobrevivência e progresso
-src/world/      Campo de Treino (zona 0x80 e spawns extraídos dos dados do servidor)
-src/scenarios/  cenários de teste
-scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev
+src/bot/        sessão (login/PIN/personagem), movimento, combate, grind, sobrevivência, NPCs (loja, itens, quest) e progresso
+src/world/      Campo de Treino (zona 0x80 e spawns) e Quest do Coveiro (NPCs, arena, rotas)
+src/scenarios/  cenários de teste e peças comuns (common.ts)
+scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja)
 tests/          testes unitários (vitest)
 ```
 

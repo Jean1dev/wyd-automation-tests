@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "zone:extract": "tsx scripts/extract-newbie-zone.ts",
     "account:create": "tsx scripts/create-account.ts",
-    "scenario:training-field": "tsx src/scenarios/trainingFieldLv35.ts"
+    "scenario:training-field": "tsx src/scenarios/trainingFieldLv35.ts",
+    "scenario:coveiro": "tsx src/scenarios/coveiroQuest.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",

@@ -15,19 +15,21 @@
 //   npm run scenario:training-field -- --cleanup          # apaga personagem/estado e sai
 //
 // Saída: 0 = passou ou ainda em progresso · 1 = falhou (regra violada) · 3 = erro de execução.
-import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { GameClient, Received } from '../client/GameClient.ts';
 import { Logger } from '../client/logger.ts';
 import { loadConfig, type BotConfig } from '../config.ts';
-import { grindUntil, StallError, type LevelUpRecord } from '../bot/grind.ts';
-import { walkPath } from '../bot/movement.ts';
-import { Progress, REPORTS_DIR } from '../bot/progress.ts';
-import { createCharacter, deleteCharacter, enterWorld, login, SessionError } from '../bot/session.ts';
+import { grindUntil, type LevelUpRecord } from '../bot/grind.ts';
+import { selfTeleportIn, walkPath } from '../bot/movement.ts';
+import { Progress } from '../bot/progress.ts';
+import { enterWorld, login } from '../bot/session.ts';
 import { shownLevel, sleep } from '../bot/util.ts';
 import { Op } from '../protocol/opcodes.ts';
 import * as P from '../protocol/packets.ts';
 import { isInTrainingField, isLegacyKickSpot, isNewbieZoneMessage, ROUTE } from '../world/trainingField.ts';
+import {
+  cleanupScenario, ensureCharacter, flag, opt, parseDuration, PlayClock, reportDirFor, runMain, runWithReconnect, writeReportFile,
+} from './common.ts';
 
 const SCENARIO = 'training-field-lv35';
 /** Nível ARMAZENADO equivalente ao exibido 35. */
@@ -111,33 +113,16 @@ const progress = new Progress<State>(SCENARIO, () => ({
 
 // ---------------------------------------------------------------- CLI
 
-function parseDuration(s: string): number {
-  const m = /^(\d+(?:\.\d+)?)\s*(h|m|s)?$/.exec(s.trim());
-  if (!m) throw new Error(`duração inválida: ${s}`);
-  const n = Number(m[1]);
-  return n * (m[2] === 'h' ? 3_600_000 : m[2] === 's' ? 1000 : 60_000);
-}
-
-const argv = process.argv.slice(2);
-const flag = (f: string) => argv.includes(f);
-const opt = (f: string) => { const i = argv.indexOf(f); return i >= 0 ? argv[i + 1] : undefined; };
 const budgetMs = flag('--until-done') ? Infinity : parseDuration(opt('--budget') ?? '60m');
 const stallMs = parseDuration(opt('--stall') ?? '10m');
 /** Meta de tempo de jogo para ir do nível exibido 1 ao 35 no campo. */
 const targetTimeMs = parseDuration(opt('--target-time') ?? '15m');
 const onlyPhase = opt('--phase') as Phase | undefined;
 
-const runStamp = new Date().toISOString().replace(/[:.]/g, '-');
-const reportDir = join(REPORTS_DIR, `${runStamp}-${SCENARIO}`);
+const reportDir = reportDirFor(SCENARIO);
 const log = new Logger(SCENARIO, process.env.DEBUG ? 'debug' : 'info', join(reportDir, 'events.jsonl'));
 
 // ---------------------------------------------------------------- helpers
-
-function newCharName(prefix: string): string {
-  const base = prefix.replace(/[^A-Za-z0-9]/g, '').slice(0, 6) || 'bot';
-  const rnd = Math.random().toString(36).replace(/[^a-z0-9]/g, '').slice(0, 12 - base.length);
-  return (base + rnd).slice(0, 12).padEnd(4, '0');
-}
 
 function newbieMessageIn(frames: Received[]): string | undefined {
   for (const f of frames) {
@@ -149,14 +134,8 @@ function newbieMessageIn(frames: Received[]): string | undefined {
 }
 
 function forcedTeleportIn(c: GameClient, frames: Received[]): ProbeResult['forcedTeleport'] {
-  const me = c.self!;
-  for (const f of frames) {
-    if (f.header.type !== Op.Action || f.header.id !== me.clientId || f.body.length < 40) continue;
-    const a = P.parseAction(f.body);
-    if (a.effect !== 1) continue;
-    return { from: { x: a.posX, y: a.posY }, to: { x: a.targetX, y: a.targetY }, toLegacyKickSpot: isLegacyKickSpot(a.targetX, a.targetY) };
-  }
-  return undefined;
+  const tp = selfTeleportIn(c, frames);
+  return tp && { ...tp, toLegacyKickSpot: isLegacyKickSpot(tp.to.x, tp.to.y) };
 }
 
 /** Sai do campo para Armia (se estiver dentro) e tenta entrar de novo, observando a reação do servidor. */
@@ -202,7 +181,6 @@ async function probeEntry(c: GameClient, label: string): Promise<ProbeResult> {
 }
 
 function writeReport(state: State, run: Record<string, unknown>): void {
-  mkdirSync(reportDir, { recursive: true });
   const levels = state.levelUps;
   const report = {
     scenario: SCENARIO,
@@ -225,40 +203,16 @@ function writeReport(state: State, run: Record<string, unknown>): void {
     },
     levelTimes: state.levelTimes,
   };
-  writeFileSync(join(reportDir, 'report.json'), JSON.stringify(report, null, 2) + '\n');
-  log.info('relatório gravado', { dir: reportDir });
+  writeReportFile(reportDir, report, log);
 }
 
 // ---------------------------------------------------------------- execução
-
-async function cleanup(cfg: BotConfig, state: State): Promise<void> {
-  if (state.charName) {
-    const c = await login(cfg, log);
-    try {
-      await deleteCharacter(c, state.charName, cfg.password, log);
-    } finally {
-      c.close();
-    }
-  }
-  progress.clear();
-  log.info('personagem e estado removidos', { char: state.charName });
-}
 
 /** Uma sessão de jogo: entra e avança as fases até concluir ou estourar o orçamento. */
 async function runSession(cfg: BotConfig, state: State, deadline: number): Promise<'done' | 'in-progress'> {
   const c = await login(cfg, log);
   try {
-    if (!state.charName) {
-      const name = newCharName(cfg.charPrefix);
-      await createCharacter(c, name, cfg.charClass, log);
-      Object.assign(state, { charName: name, charClass: cfg.charClass, createdAt: new Date().toISOString(), phase: 'grind35' as Phase });
-      progress.save(state);
-      const created = c.selChars.find((s) => s.name === name)!;
-      if (created.level !== 0) throw new Error(`personagem novo com nível armazenado ${created.level} (esperado 0 = exibido 1)`);
-    }
-    if (!c.selChars.some((s) => s.name === state.charName)) {
-      throw new SessionError(`personagem "${state.charName}" não existe mais na conta; rode com --fresh`);
-    }
+    await ensureCharacter(c, state, cfg, log, () => { state.phase = 'grind35'; progress.save(state); });
     await enterWorld(c, state.charName!, log);
     const me = c.self!;
     // Sessões anteriores à medição de tempo: estima pelo intervalo criação → último level up.
@@ -266,8 +220,7 @@ async function runSession(cfg: BotConfig, state: State, deadline: number): Promi
       state.playMs = Date.parse(state.levelUps.at(-1)!.t) - Date.parse(state.createdAt);
       state.playEstimated = true;
     }
-    sessionStartedAt = Date.now();
-    playBase = state.playMs;
+    clock.start(state.playMs);
 
     if (onlyPhase) {
       if (onlyPhase === 'negative' && me.level < LEVEL_BLOCKED) throw new Error(`--phase negative exige nível exibido >= ${LEVEL_BLOCKED + 1}; está em ${shownLevel(me.level)}`);
@@ -382,24 +335,21 @@ async function runSession(cfg: BotConfig, state: State, deadline: number): Promi
     }
     return 'done';
   } finally {
-    if (sessionStartedAt) state.playMs = playMs();
-    sessionStartedAt = 0;
+    if (clock.running) state.playMs = clock.stop();
     progress.save(state);
     c.close();
   }
 }
 
-// Relógio de jogo: tempo acumulado das sessões anteriores + o da sessão atual.
-let sessionStartedAt = 0;
-let playBase = 0;
-const playMs = () => playBase + (sessionStartedAt ? Date.now() - sessionStartedAt : 0);
+const clock = new PlayClock();
+const playMs = () => clock.ms();
 
 async function main(): Promise<number> {
   const cfg = loadConfig();
   let state = progress.load();
 
   if (flag('--cleanup') || flag('--fresh')) {
-    await cleanup(cfg, state);
+    await cleanupScenario(cfg, state, progress, log);
     if (flag('--cleanup')) return 0;
     state = progress.load();
   }
@@ -413,21 +363,7 @@ async function main(): Promise<number> {
   state.runs++;
   const startedAt = new Date().toISOString();
   const deadline = Date.now() + budgetMs;
-  let outcome: 'done' | 'in-progress' | 'error' = 'error';
-  let error: string | undefined;
-  for (let attempt = 1; attempt <= 6; attempt++) {
-    try {
-      outcome = await runSession(cfg, state, deadline);
-      break;
-    } catch (e) {
-      error = e instanceof Error ? e.message : String(e);
-      const fatal = e instanceof StallError || e instanceof SessionError || /exige|não existe|inválid/.test(error);
-      log.error('sessão interrompida', { err: error, attempt, fatal });
-      if (fatal || attempt === 6 || Date.now() >= deadline) break;
-      await sleep(10_000 * attempt);
-      log.info('reconectando');
-    }
-  }
+  const { outcome, error } = await runWithReconnect(log, deadline, () => runSession(cfg, state, deadline));
   writeReport(state, { startedAt, endedAt: new Date().toISOString(), budget: Number.isFinite(budgetMs) ? `${budgetMs / 60000} min` : 'until-done', outcome, error });
 
   if (outcome === 'error') return 3;
@@ -443,10 +379,4 @@ async function main(): Promise<number> {
   return 0;
 }
 
-main().then(
-  (code) => process.exit(code),
-  (e) => {
-    log.error('erro', { err: e instanceof Error ? e.stack : String(e) });
-    process.exit(3);
-  },
-);
+runMain(main, log);

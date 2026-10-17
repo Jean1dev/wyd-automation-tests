@@ -37,6 +37,8 @@ export interface GrindOptions {
   deadline: number;
   /** Falha se ficar este tempo sem ganhar exp. */
   stallMs: number;
+  /** Para antes do nível alvo quando isto ficar verdadeiro (ex.: gold suficiente). */
+  until?: () => boolean;
   onKill?: (k: KillRecord) => void;
   onLevelUp?: (l: LevelUpRecord) => void | Promise<void>;
 }
@@ -88,7 +90,7 @@ export async function grindUntil(c: GameClient, log: Logger, opts: GrindOptions)
     await enterTrainingField(c);
     await spendStatPoints(c, log); // descobre o saldo: o login não manda UpdateEtc
     while (true) {
-      if (me.level >= opts.targetLevel) return 'reached';
+      if (me.level >= opts.targetLevel || opts.until?.()) return 'reached';
       if (Date.now() >= opts.deadline) return 'budget';
       if (c.isClosed) throw new Error('conexão caiu durante o grind');
       if (me.exp > lastExp) { lastExp = me.exp; lastGainAt = Date.now(); }

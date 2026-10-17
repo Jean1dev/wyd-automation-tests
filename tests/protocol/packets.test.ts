@@ -44,6 +44,28 @@ describe('builders C→S', () => {
     expect(b.readInt16LE(44)).toBe(-1);
   });
 
+  it('REQShopList: 2 B, TargetID@0', () => {
+    const b = P.reqShopList(1234);
+    expect([b.length, b.readUInt16LE(0)]).toEqual([2, 1234]);
+  });
+
+  it('Buy: 12 B, TargetID@0, TargetInvenPos@2, MyInvenPos@4, Coin@8', () => {
+    const b = P.buy(1234, 28, 5);
+    expect([b.length, b.readUInt16LE(0), b.readInt16LE(2), b.readInt16LE(4), b.readInt32LE(8)]).toEqual([12, 1234, 28, 5, 0]);
+    b.writeInt32LE(4321, 8);
+    expect(P.parseBuy(b)).toEqual({ npcId: 1234, npcSlot: 28, myPos: 5, coin: 4321 });
+  });
+
+  it('UseItem: 22 B, SourType=1 (Carry)@0, SourPos@4, GridX@16, GridY@18', () => {
+    const b = P.useItem(7, 2100, 2080);
+    expect([b.length, b.readInt32LE(0), b.readInt32LE(4), b.readInt32LE(8), b.readUInt16LE(16), b.readUInt16LE(18), b.readUInt16LE(20)]).toEqual([22, 1, 7, 0, 2100, 2080, 0]);
+  });
+
+  it('Quest: 8 B, Parm1 = NPC@0, Parm2 = confirmação@4', () => {
+    const b = P.quest(2001, 1);
+    expect([b.length, b.readInt32LE(0), b.readInt32LE(4)]).toEqual([8, 2001, 1]);
+  });
+
   it('ApplyBonus: 6 B, BonusType@0, Detail@2', () => {
     const b = P.applyBonus(P.STAT.str);
     expect(b.length).toBe(6);
@@ -71,7 +93,34 @@ describe('parsers S→C', () => {
     b.writeBigInt64LE(500n, 4 + 32);
     b.writeInt32LE(1, 4 + 92); b.writeInt32LE(12, 4 + 92 + 8); b.writeInt32LE(105, 4 + 92 + 16); b.writeInt32LE(100, 4 + 92 + 24);
     b.writeUInt16LE(3, 1030);
-    expect(P.parseCNFCharacterLogin(b)).toMatchObject({ x: 2090, y: 2095, name: 'botq', exp: 500n, level: 1, damage: 12, maxHp: 105, hp: 100, clientId: 3 });
+    b.writeInt32LE(7300, 4 + 28);
+    // Carry[3] = Poeira de Fada com EF_AMOUNT 255 no segundo efeito.
+    const slot3 = 4 + 268 + 3 * 8;
+    b.writeUInt16LE(4142, slot3); b[slot3 + 4] = P.EF_AMOUNT; b[slot3 + 5] = 255;
+    const s = P.parseCNFCharacterLogin(b);
+    expect(s).toMatchObject({ x: 2090, y: 2095, name: 'botq', exp: 500n, coin: 7300, level: 1, damage: 12, maxHp: 105, hp: 100, clientId: 3 });
+    expect(s.carry).toHaveLength(64);
+    expect(s.carry[3]).toEqual({ index: 4142, eff: [[0, 0], [P.EF_AMOUNT, 255], [0, 0]] });
+    expect([P.itemAmount(s.carry[3]), P.itemAmount(s.carry[0])]).toEqual([255, 0]);
+  });
+
+  it('ShopList: List[27]@4 mapeada para o Carry do NPC (ShopSlot), Tax@220', () => {
+    const b = Buffer.alloc(224);
+    b.writeInt32LE(1, 0);
+    b.writeUInt16LE(4038, 4 + 10 * 8); // posição 10 da lista = Carry[28] (Aki)
+    b.writeUInt16LE(4142, 4 + 19 * 8); // posição 19 = Carry[55] (Evolução)
+    b.writeInt32LE(0, 220);
+    const l = P.parseShopList(b);
+    expect(l.shopType).toBe(1);
+    expect(l.items.map((it) => [it.index, it.npcSlot])).toEqual([[4038, 28], [4142, 55]]);
+    expect([P.shopSlot(0), P.shopSlot(8), P.shopSlot(9), P.shopSlot(26)]).toEqual([0, 8, 27, 62]);
+  });
+
+  it('SendItem: invType@0, Slot@2, STRUCT_ITEM@4', () => {
+    const b = Buffer.alloc(12);
+    b.writeUInt16LE(P.PLACE_CARRY, 0); b.writeUInt16LE(4, 2); b.writeUInt16LE(4038, 4);
+    expect(P.parseSendItem(b)).toEqual({ place: 1, slot: 4, item: { index: 4038, eff: [[0, 0], [0, 0], [0, 0]] } });
+    expect(P.parseNotice(Buffer.from([7, 0, 0, 0]))).toBe(7);
   });
 
   it('CreateMob: id@4, nome@6, score@124', () => {

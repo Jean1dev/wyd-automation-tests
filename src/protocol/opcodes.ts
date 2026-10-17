@@ -15,6 +15,10 @@ export const Op = {
   AttackTwo: 0x039e,
   Restart: 0x0289, // reviver após a morte
   ApplyBonus: 0x0277, // distribuir ponto de atributo
+  ReqShopList: 0x027b, // clicar num NPC mercador
+  Buy: 0x0379, // comprar do NPC (C↔S; o eco S→C traz o gold novo)
+  UseItem: 0x0373, // usar item do inventário (clique direito)
+  Quest: 0x028b, // falar com NPC de quest (MSG_STANDARDPARM2)
   MessageChat: 0x0333,
   MessageWhisper: 0x0334,
   Ping: 0x03a0,
@@ -42,6 +46,9 @@ export const Op = {
   SetHpDam: 0x018a,
   Motion: 0x036a,
   ExpPanel: 0x5000,
+  ShopList: 0x017c, // lista da loja (o Carry do NPC)
+  SendItem: 0x0182, // atualiza um slot do inventário
+  StartTime: 0x03a1, // contador das arenas de quest (legado)
 } as const;
 
 export function opName(type: number): string {

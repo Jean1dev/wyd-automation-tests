@@ -40,6 +40,8 @@ export interface SelfState {
   /** Pontos de atributo livres; undefined até o servidor mandar um UpdateEtc. */
   scoreBonus?: number;
   coin: number;
+  /** Inventário (Carry[64]) do CNFCharacterLogin, atualizado a cada SendItem. */
+  carry: P.Item[];
 }
 
 const HISTORY = 4000;
@@ -174,6 +176,20 @@ export class GameClient extends EventEmitter {
     return this.history.filter((f) => f.seq > since);
   }
 
+  /** Primeiro slot acessível do inventário com o item `index`, ou -1. */
+  findItem(index: number): number {
+    const carry = this.self?.carry ?? [];
+    for (let i = 0; i < P.BASE_CARRY_SLOTS; i++) if (carry[i]?.index === index) return i;
+    return -1;
+  }
+
+  /** Primeiro slot acessível vazio do inventário, ou -1. */
+  freeCarrySlot(): number {
+    const carry = this.self?.carry ?? [];
+    for (let i = 0; i < P.BASE_CARRY_SLOTS; i++) if (!carry[i]?.index) return i;
+    return -1;
+  }
+
   /** Mobs vivos à vista (exclui jogadores e NPCs com Merchant). */
   liveMobs(): Mob[] {
     return [...this.mobs.values()].filter((m) => !m.isPlayer && m.merchant === 0 && m.hp > 0);
@@ -232,7 +248,7 @@ export class GameClient extends EventEmitter {
         const s = P.parseCNFCharacterLogin(b);
         this.mobs.clear();
         this.connId = s.clientId;
-        this.self = { name: s.name, clientId: s.clientId, x: s.x, y: s.y, level: s.level, exp: s.exp, hp: s.hp, maxHp: s.maxHp, damage: s.damage, coin: 0 };
+        this.self = { name: s.name, clientId: s.clientId, x: s.x, y: s.y, level: s.level, exp: s.exp, hp: s.hp, maxHp: s.maxHp, damage: s.damage, coin: s.coin, carry: s.carry };
         break;
       }
       case Op.CreateMob:
@@ -301,6 +317,15 @@ export class GameClient extends EventEmitter {
       case Op.SetHpMp:
       case Op.SetHpDam:
         if (me && (f.header.id === me.clientId || f.header.id === this.connId) && b.length >= 4) me.hp = P.parseHp(b);
+        break;
+      case Op.SendItem:
+        if (me && b.length >= 12) {
+          const it = P.parseSendItem(b);
+          if (it.place === P.PLACE_CARRY && it.slot < P.MAX_CARRY) me.carry[it.slot] = it.item;
+        }
+        break;
+      case Op.Buy:
+        if (me && b.length >= 12) me.coin = P.parseBuy(b).coin;
         break;
       case Op.MessagePanel:
       case Op.MessageChat:
