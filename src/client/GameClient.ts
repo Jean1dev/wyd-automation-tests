@@ -46,6 +46,10 @@ export interface SelfState {
   maxMp: number;
   /** AttackRun do último UpdateScore: (ataque << 4) | corrida. */
   attackRun?: number;
+  /** Resist[4] do último UpdateScore. */
+  resist?: number[];
+  /** Affects ativos do último SendAffect do próprio personagem. */
+  affects: { type: number; value: number; level: number; time: number }[];
   /** CurrentScore.Special[4]: maestria de cada árvore (com equipamento e buffs). */
   special: number[];
   /** LearnedSkill: bit (skill % 24) de cada skill aprendida. */
@@ -277,7 +281,7 @@ export class GameClient extends EventEmitter {
         this.self = {
           name: s.name, cls: s.cls, clientId: s.clientId, x: s.x, y: s.y, level: s.level, exp: s.exp, hp: s.hp, maxHp: s.maxHp,
           damage: s.damage, ac: s.ac, attrs: s.attrs, coin: s.coin, carry: s.carry, equip: s.equip,
-          mp: s.mp, maxMp: s.maxMp, special: s.special, learn: s.learn, skillBonus: s.skillBonus, specialBonus: s.specialBonus,
+          mp: s.mp, maxMp: s.maxMp, special: s.special, learn: s.learn, skillBonus: s.skillBonus, specialBonus: s.specialBonus, affects: [],
         };
         break;
       }
@@ -342,6 +346,7 @@ export class GameClient extends EventEmitter {
           if (s.maxMp !== undefined) me.maxMp = s.maxMp;
           if (s.special) me.special = s.special;
           if (s.attackRun !== undefined) me.attackRun = s.attackRun;
+          if (s.resist) me.resist = s.resist;
         }
         break;
       case Op.UpdateEtc:
@@ -359,6 +364,9 @@ export class GameClient extends EventEmitter {
         break;
       case Op.SetHpDam:
         if (me && (f.header.id === me.clientId || f.header.id === this.connId) && b.length >= 4) me.hp = P.parseHp(b);
+        break;
+      case Op.SendAffect:
+        if (me && f.header.id === me.clientId) me.affects = P.parseSendAffect(b);
         break;
       case Op.SendItem:
         if (me && b.length >= 12) {

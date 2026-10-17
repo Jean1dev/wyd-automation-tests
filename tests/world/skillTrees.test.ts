@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  BLACK_MAGIC, buffGain, cumulativePoints, healAmount, judgmentHp, learnBit, learnLevel, manaCost, masteryCapAt, skillIn, skillPointsAt, SPECIAL_MAGIC, WHITE_MAGIC,
-} from '../../src/world/foemaSkills.ts';
+  BLACK_MAGIC, BM_MAGIC, BM_SUMMON, BM_TRANSFORM, buffGain, cumulativePoints, summonCount, transformScore, healAmount, judgmentHp, learnBit, learnLevel, manaCost, masteryCapAt, skillIn, skillPointsAt, SPECIAL_MAGIC, WHITE_MAGIC,
+} from '../../src/world/skillTrees.ts';
 
 describe('árvores de skills da Foema', () => {
   it('Magia Branca = 24–31 (bits 0–7), Magia Negra = 32–39 (bits 8–15)', () => {
@@ -51,5 +51,25 @@ describe('árvores de skills da Foema', () => {
   it('Julgamento Divino deixa a Foema com HP/6 + 1 a cada alvo', () => {
     expect(judgmentHp(600, 1)).toBe(101);
     expect(judgmentHp(600, 2)).toBe(17);
+  });
+
+  it('BeastMaster: bits, pontos e nível de cada skill', () => {
+    expect([BM_MAGIC, BM_SUMMON, BM_TRANSFORM].map((t) => t.skills.reduce((m, k) => m | learnBit(k.id), 0))).toEqual([0xff, 0xff00, 0xff0000]);
+    expect(BM_MAGIC.skills.map((k) => learnLevel(BM_MAGIC, k.id))).toEqual([8, 20, 43, 58, 83, 109, 139, 219]);
+    expect(BM_SUMMON.skills.map((k) => learnLevel(BM_SUMMON, k.id))).toEqual([11, 28, 52, 76, 104, 135, 169, 232]);
+    expect(BM_TRANSFORM.skills.map((k) => learnLevel(BM_TRANSFORM, k.id))).toEqual([11, 26, 48, 63, 96, 111, 155, 219]);
+  });
+
+  it('evocação: Special[2]/30, /40 ou /80 bichos (_MSG_Attack.cpp:818-828)', () => {
+    expect([summonCount(1, 29), summonCount(1, 30), summonCount(4, 86), summonCount(6, 166), summonCount(8, 0)]).toEqual([0, 1, 2, 2, 1]);
+  });
+
+  it('transformação: AC×multi/100 do legado (Basedef.cpp:4180-4196)', () => {
+    // Lobo sem a passiva, Level 0: multi 95; o legado trunca 49×95/100 = 46 (+5 do Lobo).
+    expect(transformScore(1, 0, 0, { ac: 49, maxHp: 145, run: 2 })).toEqual({ ac: 51, maxHp: 137, run: 3 });
+    // Com Coração de Lobo (bit 17): +3 de AC e +5 de HP no multiplicador.
+    expect(transformScore(1, 0, 0x20000, { ac: 100, maxHp: 200, run: 2 })).toEqual({ ac: 103, maxHp: 200, run: 3 });
+    // Titã, Level 200: AC 110+15 → 125+10.
+    expect(transformScore(4, 200, 0, { ac: 100, maxHp: 100, run: 6 })).toEqual({ ac: 135, maxHp: 115, run: 6 });
   });
 });

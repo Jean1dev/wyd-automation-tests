@@ -16,6 +16,7 @@ npm run account:create     # cria uma conta no portal e preenche WYD_ACCOUNT/WYD
 npm run account:create -- --second   # segunda conta (WYD_ACCOUNT_B/WYD_PASSWORD_B), só para o cenário de troca
 npm run account:create -- --arch     # conta do cenário do Arch (WYD_ACCOUNT_ARCH/WYD_PASSWORD_ARCH)
 npm run account:create -- --foema    # conta dos cenários da Foema (WYD_ACCOUNT_FOEMA/WYD_PASSWORD_FOEMA)
+npm run account:create -- --bm       # conta dos cenários do BeastMaster (WYD_ACCOUNT_BM/WYD_PASSWORD_BM)
 ```
 
 O `.env` aponta por padrão para o tm-server do Railway (`reseau.proxy.rlwy.net:56950`, versão de cliente 12000). Ele nunca vai para o Git.
@@ -354,7 +355,7 @@ Na primeira tentativa do Trovão, a conexão caiu 4 s depois do cast. Um process
 
 `npm run scenario:foema-white` (a mesma conta do cenário 6, com outra Foema: `npm run account:create -- --foema`)
 
-O mesmo cenário do 6 (`src/scenarios/foemaSkillTree.ts --tree branca`), agora na árvore 1. São as skills 24–31, bits 0–7 do `LearnedSkill`, com maestria em `Special[1]`. Nos requisitos do ItemList, o campo "ReqInt" é comparado com `Special[1]`.
+O mesmo cenário do 6 (`src/scenarios/skillTree.ts --tree branca`), agora na árvore 1. São as skills 24–31, bits 0–7 do `LearnedSkill`, com maestria em `Special[1]`. Nos requisitos do ItemList, o campo "ReqInt" é comparado com `Special[1]`.
 
 | id | Skill | Pontos | Requisito (nível exibido / Special[1]) | Como o bot testa |
 |---|---|---|---|---|
@@ -412,7 +413,7 @@ Na primeira execução, os mobs não tiraram HP e só um Gremlin ficou colado. O
 
 `npm run scenario:foema-special` (a mesma conta dos cenários 6 e 7, com uma terceira Foema)
 
-O mesmo cenário dos 6 e 7 (`src/scenarios/foemaSkillTree.ts --tree especial`), agora na árvore 3: skills 40–47, bits 16–23 do `LearnedSkill`, com maestria em `Special[3]`. O SkillData troca os nomes de 41 e 42. Os dados e o ItemList (5041 Velocidade, 5042 Teleporte) mostram que a 41 é a Velocidade (affect 2, grupo) e a 42 é o Teleporte (InstanceType 9, sem MP).
+O mesmo cenário dos 6 e 7 (`src/scenarios/skillTree.ts --tree especial`), agora na árvore 3: skills 40–47, bits 16–23 do `LearnedSkill`, com maestria em `Special[3]`. O SkillData troca os nomes de 41 e 42. Os dados e o ItemList (5041 Velocidade, 5042 Teleporte) mostram que a 41 é a Velocidade (affect 2, grupo) e a 42 é o Teleporte (InstanceType 9, sem MP).
 
 | id | Skill | Pontos | Requisito (nível exibido / Special[3]) | Como o bot testa |
 |---|---|---|---|---|
@@ -458,13 +459,87 @@ O MP de todos os casts bateu com a fórmula.
 
 Na primeira execução, a Velocidade falhou por erro do bot: ele lia a corrida no nibble alto do `AttackRun`, que é o ataque. O `AttackRun` é `ataque × 16 + corrida` (`Basedef.cpp:4711`). Corrigido, o `--skill 41` passou.
 
+## Cenário 9 — Skills do BeastMaster (três árvores)
+
+```
+npm run account:create -- --bm       # conta própria (WYD_ACCOUNT_BM): um BM por árvore
+npm run scenario:bm-magia            # magias, 48–55, Special[1]
+npm run scenario:bm-evocacao         # evocações, 56–63, Special[2]
+npm run scenario:bm-transformacao    # transformações, 64–71, Special[3]
+```
+
+O mesmo cenário das árvores da Foema (`src/scenarios/skillTree.ts --tree bm-…`), com um BM novo por árvore. O mestre é o **Mestre_Archi** (2077,2123), que tem Merchant 19 e vende 5048–5071. Os dados vêm do `SkillData.csv` e do `ItemList.csv`. Os nomes divergem entre os dois em algumas skills; aqui seguem o que a skill faz:
+- a 59 evoca o Urso e a 60 o Tigre;
+- a 54 é a Aura Bestial.
+
+| Árvore | Skill | Como o bot testa |
+|---|---|---|
+| Magias | 48 Fera Flamejante, 50 Som das Fadas | dano num mob |
+| | 49 Chamas Etéreas | cast e MP; em mob não age (no legado e no Go, só queima MP ou tira buffs de jogador) |
+| | 51 Enfraquecer | nos mobs ao alcance, sem dano; o debuff só pega em jogador |
+| | 52 Fúria de Gaia | em área, 2 ou mais alvos |
+| | 53 Proteção Elemental | affect 25: três resistências + (10 + Level/4)/10 |
+| | 54 Aura Bestial | dispara Fúria de Gaia (skill 52) sozinha, como o Trovão |
+| | 55 Espírito Vingador (8ª) | só a recusa sem os 50M |
+| Evocações | 56–62 | evoca `Special[2]/30` (Condor, Javali), `/40` (Lobo, Urso, Tigre) ou `/80` (Gorila, Dragão Negro) bichos do modelo certo; antes sobe a maestria até evocar 1; depois reloga, porque o logout recolhe os bichos e uma evocação de outro tipo falha com bicho vivo |
+| | 63 Succubus (8ª) | só a recusa sem os 50M; os pontos da árvore somam 727, então a recusa vem no nível exibido 233 |
+| Transformações | 64 Lobisomem, 66 Homem-Urso, 68 Astaroth, 70 Titã | affect 16; AC e HP máximo pela fórmula exata do legado (`X×multi/100`, multi = (max − min)×Level/200 + min da `pTransBonus`) e a corrida |
+| | 65, 67, 69 (passivas) | o cast é recusado; depois refaz a forma que a passiva melhora (Lobo, Urso, Astaroth) e confere o bônus |
+| | 71 Éden (8ª) | só a recusa sem os 50M |
+
+Os affects voltam no login, então relogar não desfaz a transformação. Antes de cada forma, o bot espera a anterior acabar, pelo `SendAffect`. Os estados ficam em `state/bm-{magic,summon,transform}.json`.
+
+### Situação (2026-10-17): falha no Lobisomem (arredondamento)
+
+Execuções de 2026-10-17 entre 19:07 e 20:30 UTC:
+
+| Árvore | BM | Jogo | Resultado |
+|---|---|---|---|
+| Magias | `bot06j35hct3` | 16,6 min | ✅ tudo |
+| Evocações | `bot09xrjdyv0` | 14,4 min | ✅ tudo (depois de corrigir o nome do Dragão no bot) |
+| Transformações | `bot0bq49uyyr` | 32,6 min | ❌ Lobisomem com AC e HP máximo 1 ponto acima do legado |
+
+- **Magias:**
+  - recusa um nível antes nas 7;
+  - dano: Fera 82, Som das Fadas 415, Fúria de Gaia 1087/1098 em dois alvos;
+  - Proteção Elemental: resistências 0/0/0/0 → 3/3/0/3;
+  - Aura Bestial: a Fúria de Gaia disparou sozinha, com 1458 de dano.
+- **Evocações:** a quantidade bateu com a fórmula em todas:
+
+  | Skill | Special[2] | Bichos |
+  |---|---|---|
+  | Condor | 30 | 1 |
+  | Javali | 30 | 1 |
+  | Lobo | 40 | 1 |
+  | Urso | 40 | 1 |
+  | Tigre | 86 | 2 |
+  | Gorila | 112 | 1 |
+  | Dragão Negro | 200 | 2 |
+
+  Os bichos aparecem com o nome do modelo e um "^" no fim ("Dragao Negro^").
+- **Transformações:**
+  - Homem-Urso, Astaroth e Titã bateram exatamente, assim como as passivas Escudo do Tormento e Asas do Inferno;
+  - Lobisomem, Level 0: AC 46 → 49 e HP máximo 116 → 111, quando o legado daria 48 e 110;
+  - com Coração de Lobo: AC 61 → 65 (legado 64);
+  - o Go soma `X×(multi − 100)/100`, que com multiplicador abaixo de 100 trunca em direção ao zero (`transform.go:128`, `:134`).
+  - Issue: [Jean1dev/w2pp-OpenWYD#394](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394). Veja [docs/findings/006-transformacao-bm-arredondamento.md](docs/findings/006-transformacao-bm-arredondamento.md).
+- **Nas três árvores:**
+  - controles de cast (alcance e falta de MP só onde a 1ª skill se aplica) ✅;
+  - recusa da 8ª sem os 50M ✅;
+  - reaprender: `AlreadyLearned` ✅;
+  - relogin ✅;
+  - a compra da skill como item reprova também no Mestre_Archi ([#391](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391)).
+- **Notas:**
+  - Na primeira execução das magias, o bot usou o mestre da Foema, e o BM aprendeu as skills dele no Foema_Ancian. Nem o legado nem o Go conferem qual mestre ensina, só o `TargetID` (`_MSG_ApplyBonus.cpp:139`). A execução final usou o Mestre_Archi.
+  - Um HP máximo +1 no Astaroth com Asas do Inferno não se repetiu com `--skill 69` e ficou como inconclusivo.
+
 ## Estrutura
 
 ```
 src/protocol/   codec CPSock (keytable, encode/decode, framer), opcodes e pacotes no layout do servidor Go
 src/client/     GameClient (TCP, relógio de ClientTick, estado do mundo, waitFor) e logger
 src/bot/        sessão (login/PIN/personagem), movimento, viagens (Grifo, tiles), combate, grind, sobrevivência, NPCs (loja, itens, quest), quests de arena, build de atributos e maestria, skills (aprender e conjurar), equipamento, troca entre jogadores e progresso
-src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento), criação do Arch e as três árvores de skills da Foema (Negra, Branca e Especial) (skills, mestre e campo de teste)
+src/world/      Campo de Treino (zona 0x80 e spawns), Quest do Coveiro, Quest 256 passos 2–5 (NPCs, arenas, rotas, equipamento), criação do Arch e as árvores de skills da Foema e do BeastMaster (skills, mestre e campo de teste)
 src/scenarios/  cenários de teste e peças comuns (common.ts)
 scripts/        create-account, extract-newbie-zone e smokes manuais em scripts/dev (sessão, grind, loja, equipamento/Grifo, lista de personagens)
 tests/          testes unitários (vitest)

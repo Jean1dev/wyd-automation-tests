@@ -30,11 +30,11 @@ export const BUILDS: Record<number, Build> = {
 };
 
 /**
- * Foema de magias (Negra ou Branca): o dano das magias da Foema é Int/30 + Int/3 + nível + base +
+ * Foema ou BeastMaster de magias: o dano das magias das duas classes é Int/30 + Int/3 + nível + base +
  * 2×Special (combat/skill.go SkillBaseDamage) e o MP cresce com Int, então quase tudo vai para
  * Int, com Con suficiente para aguentar os mobs do campo (wydtutoriais "Guia FM": Int alta).
  */
-export const FOEMA_INT: Build = { name: 'Foema de Int (magias)', share: { int: 0.8, con: 0.2 }, cap: { con: 500 } };
+export const CASTER_INT: Build = { name: 'Int (magias)', share: { int: 0.8, con: 0.2 }, cap: { con: 500 } };
 
 /** Só Str: a distribuição dos cenários 1 a 3, em que o bot só precisa de dano. */
 export const ALL_STR: Build = { name: 'tudo em Str', share: { str: 1 }, cap: {} };

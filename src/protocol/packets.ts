@@ -511,6 +511,8 @@ export interface ScoreUpdate {
   mp?: number;
   /** AttackRun @13: (ataque << 4) | corrida (Basedef.cpp:4711, handler/item.go attackRunOf). */
   attackRun?: number;
+  /** Resist[4] @118 (i8). */
+  resist?: number[];
   attrs?: Attributes;
   /** CurrentScore.Special[4] (maestria com equipamento e buffs). */
   special?: number[];
@@ -536,6 +538,7 @@ export function parseUpdateScore(body: Buffer): ScoreUpdate {
     maxMp: body.length >= 32 ? body.readInt32LE(20) : undefined,
     mp: full ? body.readInt32LE(128) : body.length >= 32 ? body.readInt32LE(28) : undefined,
     attackRun: body.length >= 14 ? body[13] : undefined,
+    resist: full ? [0, 1, 2, 3].map((i) => body.readInt8(118 + i)) : undefined,
     attrs: body.length >= 40 ? { str: body.readInt16LE(32), int: body.readInt16LE(34), dex: body.readInt16LE(36), con: body.readInt16LE(38) } : undefined,
     special: body.length >= 48 ? [0, 1, 2, 3].map((i) => body.readInt16LE(40 + i * 2)) : undefined,
     affects: full ? affects : undefined,

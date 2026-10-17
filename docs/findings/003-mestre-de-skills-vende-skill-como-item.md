@@ -1,7 +1,10 @@
 # 003 — O mestre de skills vende a skill como item pelo MSG_Buy
 
 **Status:** aberto. Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T17-02-07-259Z-foema-black-magic`).
-Reproduzido de novo no cenário 7 (Magia Branca), com a skill 5025 (Desintoxicar), em `reports/2026-10-17T17-50-05-408Z-foema-white-magic`.
+Reproduzido de novo em todas as árvores seguintes:
+- Magia Branca (5025);
+- Magia Especial (5041);
+- no mestre do BeastMaster, o Mestre_Archi (Merchant 19): 5049, 5057 e 5066 (cenário 9).
 **Issue:** [Jean1dev/w2pp-OpenWYD#391](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391)
 **Cenário:** `npm run scenario:foema-black`
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `d896ae2f`)
