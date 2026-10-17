@@ -143,7 +143,18 @@ async function probeEntry(c: GameClient, label: string): Promise<ProbeResult> {
   const me = c.self!;
   if (isInTrainingField(me.x, me.y)) {
     log.info(`${label}: saindo do campo para Armia`, { x: me.x, y: me.y });
-    await walkPath(c, [ROUTE.fieldEntry, ROUTE.armiaEdge, ROUTE.armia]);
+    // Acima do limite, o primeiro passo dentro do campo já manda o personagem para Armia
+    // (_MSG_Action.cpp:211); voltar à rota de saída só o faria ser expulso de novo.
+    let kicked = false;
+    const onKick = () => { kicked = true; };
+    c.on('teleport', onKick);
+    try {
+      await walkPath(c, [ROUTE.fieldEntry, ROUTE.armiaEdge, ROUTE.armia], { abort: () => kicked });
+    } finally {
+      c.off('teleport', onKick);
+    }
+    if (kicked) log.info(`${label}: teleportado para Armia ao andar no campo`, { x: me.x, y: me.y });
+    await walkPath(c, isInTrainingField(me.x, me.y) ? [ROUTE.fieldEntry, ROUTE.armiaEdge, ROUTE.armia] : [ROUTE.armia]);
   } else {
     await walkPath(c, [ROUTE.armia]);
   }

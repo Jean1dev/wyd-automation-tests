@@ -1,6 +1,8 @@
 # 001 — Campo de Treino sem trava de nível no servidor Go
 
-**Status:** aberto, **confirmado no Railway** em 2026-10-16 (execuções `reports/2026-10-16T21-07-12-674Z-training-field-lv35` e `reports/2026-10-16T22-06-51-007Z-training-field-lv35`): o personagem com nível exibido 36 entrou no campo em (2100, 2032) sem mensagem nem teleporte. O PR [w2pp-OpenWYD#384](https://github.com/Jean1dev/w2pp-OpenWYD/pull/384) corrigiu a exp do campo, mas deixou a trava fora do escopo. Issue: [w2pp-OpenWYD#385](https://github.com/Jean1dev/w2pp-OpenWYD/issues/385).
+**Status:** **corrigido** por [w2pp-OpenWYD#388](https://github.com/Jean1dev/w2pp-OpenWYD/pull/388) e verificado no Railway em 2026-10-17 (`reports/2026-10-17T13-17-57-271Z-training-field-lv35`). O exibido 35 entra; o exibido 36 recebe "Somente nível 35 ou inferior pode entrar no campo de treinamento." e é teleportado para Armia (2091,2101).
+
+**Antes da correção:** confirmado no Railway em 2026-10-16 (execuções `reports/2026-10-16T21-07-12-674Z-training-field-lv35` e `reports/2026-10-16T22-06-51-007Z-training-field-lv35`): o personagem com nível exibido 36 entrou no campo em (2100, 2032) sem mensagem nem teleporte. O PR [w2pp-OpenWYD#384](https://github.com/Jean1dev/w2pp-OpenWYD/pull/384) corrigiu a exp do campo, mas deixou a trava fora do escopo. Issue: [w2pp-OpenWYD#385](https://github.com/Jean1dev/w2pp-OpenWYD/issues/385).
 **Cenário:** `npm run scenario:training-field`
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (commit inspecionado `931f097`)
 

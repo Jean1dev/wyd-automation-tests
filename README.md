@@ -53,7 +53,20 @@ Códigos de saída: `0` passou ou ainda em progresso · `1` falhou · `3` erro d
 
 Cada execução grava `reports/<data>-training-field-lv35/` com `report.json` (veredito, verificações, curva de nível, kills e exp por mob) e `events.jsonl` (log sanitizado, sem senha nem PIN).
 
-### Situação (2026-10-16): meta de tempo cumprida, trava ausente
+### Situação (2026-10-17): passa, trava corrigida
+
+A trava foi corrigida em [Jean1dev/w2pp-OpenWYD#388](https://github.com/Jean1dev/w2pp-OpenWYD/pull/388). A execução de 2026-10-17 13:17–13:25 UTC (`--fresh --until-done`) **passou**:
+
+| Verificação | Resultado |
+|---|---|
+| Começa no nível exibido 1 | ✅ |
+| Nível exibido 35 em até 15 min | ✅ **6,2 min** |
+| Controle positivo (o 35 entra no campo) | ✅ |
+| Controle negativo (o 36 é barrado) | ✅ recebe "Somente nível 35 ou inferior pode entrar no campo de treinamento." e é teleportado para Armia (2091,2101) |
+
+Como no legado, o personagem que vira 36 dentro do campo é mandado para Armia no primeiro passo. Na execução anterior, das 13:01, o bot tentava voltar pela rota de saída e era expulso de novo a cada ~13 s, até reconectar 7 min depois. Agora a saída trata esse teleporte como chegada a Armia.
+
+### Antes da correção (2026-10-16): meta de tempo cumprida, trava ausente
 
 Execução de 2026-10-16 22:06–22:15 UTC (`--fresh --until-done`), com o multiplicador de exp do campo no servidor ([Jean1dev/w2pp-OpenWYD#384](https://github.com/Jean1dev/w2pp-OpenWYD/pull/384)). Veredito: **falhou**, só pela trava.
 
@@ -65,7 +78,7 @@ Execução de 2026-10-16 22:06–22:15 UTC (`--fresh --until-done`), com o multi
 | Controle negativo (o 36 é barrado) | ❌ entrou em (2100, 2032) sem mensagem nem teleporte |
 
 - **Exp do campo:** resolvida com o #384 junto com uma correção no bot. Na execução anterior, das 21:07, o nível 35 levou 25,5 min. O bot não distribuía os pontos de atributo, então terminou com dano 57 e gastou ~15 min em lutas abandonadas (40 golpes sem matar) contra Chefe_Krill e Orc_Arqueiro_, que têm AC alta. Distribuindo os pontos, o dano chega a ~126 no nível 35, e a escolha de alvo pela exp por segundo eliminou as desistências. Foram 60 kills e nenhuma desistência.
-- **Trava ausente:** confirmada no Railway. Issue aberta: [Jean1dev/w2pp-OpenWYD#385](https://github.com/Jean1dev/w2pp-OpenWYD/issues/385). Veja [docs/findings/001-campo-de-treino-sem-trava.md](docs/findings/001-campo-de-treino-sem-trava.md).
+- **Trava ausente:** confirmada no Railway. Issue: [Jean1dev/w2pp-OpenWYD#385](https://github.com/Jean1dev/w2pp-OpenWYD/issues/385). Veja [docs/findings/001-campo-de-treino-sem-trava.md](docs/findings/001-campo-de-treino-sem-trava.md).
 
 ## Cenário 2 — Quest do Coveiro
 
@@ -92,9 +105,14 @@ O cenário é retomável (`state/coveiro-quest.json`), mas a espera do reset nã
 
 Cada execução grava `reports/<data>-coveiro-quest/` com `report.json` (veredito e verificações; no reset, o horário UTC, o minuto e os segundos desde a entrada) e `events.jsonl`.
 
-### Situação (2026-10-16): entrega funciona, reset ausente
+### Situação (2026-10-17): passa, reset corrigido
 
-Execução de 2026-10-16 22:58 a 2026-10-17 00:02 UTC (`--until-done`). Veredito: **falhou**, só pelo reset.
+O reset foi corrigido em [Jean1dev/w2pp-OpenWYD#388](https://github.com/Jean1dev/w2pp-OpenWYD/pull/388), com deploy no Railway às 12:51:46 UTC. A execução de 2026-10-17 13:00 UTC (`--phase handin --reset-wait 12m`) **passou**:
+
+- A: a entrega teleportou para a arena, em (2397,2104).
+- B: o reset mandou o personagem para Armia (2096,2107) às 13:01:43 UTC, 59 s depois da entrada. Isso é 10 min depois do boot, como no legado. O `MSG_StartTime` continua ausente (ficou fora do escopo do #388).
+
+Antes da correção, a execução de 2026-10-16 22:58 a 2026-10-17 00:02 UTC (`--until-done`) tinha **falhado**, só pelo reset:
 
 | Verificação | Resultado |
 |---|---|
@@ -105,7 +123,7 @@ Execução de 2026-10-16 22:58 a 2026-10-17 00:02 UTC (`--until-done`). Veredito
 | A: a entrega teleporta para a arena | ✅ (2398,2105), vela consumida |
 | B: o reset manda de volta | ❌ 59,5 min vivo na arena, passando pela virada da hora (00:00 UTC), sem teleporte. O legado teria resetado pelo menos 5 vezes. |
 
-O servidor Go não tem o reset das áreas de quest. Issue aberta: [Jean1dev/w2pp-OpenWYD#386](https://github.com/Jean1dev/w2pp-OpenWYD/issues/386). Veja [docs/findings/002-quest-coveiro-sem-reset.md](docs/findings/002-quest-coveiro-sem-reset.md).
+O servidor Go não tinha o reset das áreas de quest. Issue: [Jean1dev/w2pp-OpenWYD#386](https://github.com/Jean1dev/w2pp-OpenWYD/issues/386). Veja [docs/findings/002-quest-coveiro-sem-reset.md](docs/findings/002-quest-coveiro-sem-reset.md).
 
 ## Cenário 3 — Troca entre jogadores
 

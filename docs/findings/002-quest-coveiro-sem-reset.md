@@ -1,6 +1,8 @@
 # 002 — Quest do Coveiro (e demais arenas da Quest 256) sem reset no servidor Go
 
-**Status:** aberto, **confirmado no Railway** em 2026-10-16 (execução `reports/2026-10-16T22-58-44-311Z-coveiro-quest`). O personagem entregou a Vela do Coveiro às 23:02:27 UTC e foi teleportado para dentro da arena. Ficou lá, vivo, até o fim da janela de espera às 00:02:00 UTC, **59,5 min** sem ser mandado de volta. A janela passou pela virada da hora (00:00 UTC), e nesse intervalo o legado teria resetado pelo menos cinco vezes.
+**Status:** **corrigido** por [w2pp-OpenWYD#388](https://github.com/Jean1dev/w2pp-OpenWYD/pull/388) e verificado no Railway em 2026-10-17 (`reports/2026-10-17T12-59-21-572Z-coveiro-quest`). A entrega teleportou para a arena às 13:00:43 UTC, e o reset mandou o personagem para Armia (2096,2107) às 13:01:43, 10 min depois do boot do tm-server (deploy às 12:51:46). O `MSG_StartTime` ficou fora do escopo da correção.
+
+**Antes da correção:** confirmado no Railway em 2026-10-16 (execução `reports/2026-10-16T22-58-44-311Z-coveiro-quest`). O personagem entregou a Vela do Coveiro às 23:02:27 UTC e foi teleportado para dentro da arena. Ficou lá, vivo, até o fim da janela de espera às 00:02:00 UTC, **59,5 min** sem ser mandado de volta. A janela passou pela virada da hora (00:00 UTC), e nesse intervalo o legado teria resetado pelo menos cinco vezes.
 **Issue:** [Jean1dev/w2pp-OpenWYD#386](https://github.com/Jean1dev/w2pp-OpenWYD/issues/386)
 **Cenário:** `npm run scenario:coveiro`
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `4181ce3`)
