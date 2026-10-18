@@ -66,6 +66,12 @@ export class Db {
     return r.rows[0] as CharRow;
   }
 
+  /** Todos os personagens com esse nome (o Arch nasce com o nome do mortal, na mesma conta), por slot. */
+  async charactersNamed(name: string): Promise<CharRow[]> {
+    const r = await this.c.query(`SELECT id, account_id, slot, name, ${CHAR_COLUMNS.map((k) => `"${k}"`).join(', ')} FROM character WHERE name = $1 ORDER BY slot`, [name]);
+    return r.rows as CharRow[];
+  }
+
   /** Grava colunas do personagem (só as da lista CHAR_COLUMNS). */
   async setCharacter(name: string, fields: Partial<Record<CharColumn, number>>): Promise<void> {
     const keys = Object.keys(fields) as CharColumn[];
@@ -89,10 +95,14 @@ export class Db {
   }
 
   async items(name: string, kind: ItemKind): Promise<ItemRow[]> {
-    const ch = await this.character(name);
+    return this.itemsById((await this.character(name)).id, kind);
+  }
+
+  /** Itens pelo id do personagem (para quando há dois com o mesmo nome, como o mortal e o Arch). */
+  async itemsById(id: number, kind: ItemKind): Promise<ItemRow[]> {
     const r = await this.c.query(
       'SELECT slot, item_index, eff1, effv1, eff2, effv2, eff3, effv3 FROM item WHERE character_id = $1 AND owner_kind = $2 ORDER BY slot',
-      [ch.id, OWNER[kind]],
+      [id, OWNER[kind]],
     );
     return r.rows.map((x) => ({ slot: x.slot, index: x.item_index, eff: [[x.eff1, x.effv1], [x.eff2, x.effv2], [x.eff3, x.effv3]] }));
   }

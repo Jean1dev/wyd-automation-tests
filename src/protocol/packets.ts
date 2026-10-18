@@ -189,6 +189,16 @@ export function useItem(slot: number, gridX = 0, gridY = 0): Buffer {
   return b;
 }
 
+/** MSG_UseItem do item do slot `slot` sobre outro item (ex.: poeira arrastada para uma pedra): DestType/DestPos. */
+export function useItemOn(slot: number, destSlot: number, destType = PLACE_CARRY): Buffer {
+  const b = Buffer.alloc(22);
+  b.writeInt32LE(PLACE_CARRY, 0);
+  b.writeInt32LE(slot, 4);
+  b.writeInt32LE(destType, 8);
+  b.writeInt32LE(destSlot, 12);
+  return b;
+}
+
 /** MSG_DropItem (0x0272), 16 B: SourType@0 SourPos@4 Rotate@8 GridX u16@12 GridY u16@14 (messages.go MsgDropItemBody). */
 export function dropItem(slot: number, gridX: number, gridY: number): Buffer {
   const b = Buffer.alloc(16);
