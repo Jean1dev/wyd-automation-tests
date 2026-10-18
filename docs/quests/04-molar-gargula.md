@@ -64,3 +64,25 @@ Esta quest refina o equipamento do Mortal. A Patrulha__ do Dungeon leva o person
 - `src/world/quest256.ts`: viagem até o Dungeon (`TELEPORT.fieldToDungeon`, `GRIFF_WARP.calabouco`).
 - `src/bot/quest.ts` `waitForReset`; `src/bot/npc.ts` `useItem`.
 - Esqueleto de `src/scenarios/quest256Chain.ts` (nível, equipamento, viagem com mortes).
+
+## Situação (2026-10-18)
+
+Validado no Railway com `npm run quest -- 04`, com o nível, a classe, os atributos, o equipamento (com a refinação de cada Equip[1..5]) e o 4122 semeados pelo banco. O bot vai pelo Grifo "Calabouço" e pelo tile do Armia Field até o Dungeon 1 e anda até a Patrulha__ (o Go não valida o caminho). Resultado: 6 ✅ e 4 ❌.
+
+- A ida (Patrulha__), o drop do 4122 e o reset da arena estão como no legado. O 4122 caiu no 7º kill, cerca de 1,5 min de caça no exibido 254.
+- O uso do molar não existe no Go: o Vol 194 cai no `rejectUnimplementedConsumable` (NoticeCantUseHere) e a flag `MolarGargula` não existe. MG-06 e MG-09 dependem do primeiro uso e reprovam pela mesma causa; o MG-07 só passa porque o item é recusado para todos.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| MG-01 | ✅ | |
+| MG-02 | ✅ | |
+| MG-03 | ✅ | |
+| MG-04 | ✅ | |
+| MG-05 | ❌ | [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) |
+| MG-06 | ❌ | [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) |
+| MG-07 | ✅ (vácuo: o 4122 é recusado para todos; ver [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398)) | |
+| MG-08 | ❌ | [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) |
+| MG-09 | ❌ | [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) |
+| MG-10 | ✅ | |
+
+Finding: [010](../findings/010-molar-gargula-sem-uso.md).
