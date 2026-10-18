@@ -45,7 +45,7 @@ Trocas repetíveis, serviços, instâncias com horário, eventos e a quest diár
 | [09](09-arch-cadeia.md) | Cadeia do Arch: almas, Oráculo, Pedras Arch, Sephirot e Rei | Mortal | 300–400 | Oráculos, mestres de skill e Rei | ⚠️ (sem o refino das pedras; Sephirot da classe errada, #390) | `npm run quest -- 09`: 10 ✅ 2 ❌ ([#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390)) | 9 |
 | [10](10-arch-destravas.md) | Destravas do Arch: Lindy 355/370 e Cristais | Arch | 355–400 | Lindy (centro dos reinos); cristais por uso | ⚠️ | `npm run quest -- 10`: 14 ✅ (3 informativos: LD-06, CR-05 #327, CR-06 #348) | 10 |
 | [11](11-alma-mortal-kibita.md) | Alma do Mortal (Kibita) | Mortal | 370+ | Kibita (Armia) | ✅ | `npm run quest -- 11`: 7 ✅ | 10 |
-| [12](12-celestial.md) | Pedra Ideal e Arch → Celestial | Arch | 356+ | Rei; Pedra Ideal por uso | ⚠️ (o Go usa a 1742 no lugar da 5338) | — | 11 |
+| [12](12-celestial.md) | Pedra Ideal e Arch → Celestial | Arch | 356+ | Rei; Pedra Ideal por uso | ⚠️ (o Go usa a 1742 no lugar da 5338) | `npm run quest -- 12`: 5 ✅ 4 ❌ ([#406](https://github.com/Jean1dev/w2pp-OpenWYD/issues/406), [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407)) | 11 |
 | [13](13-celestial-destravas.md) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e adds do Sub | Celestial | 40–200 | Alquimista_Odin; Pedra da Fúria por uso | ⚠️ (só o Lv40) | — | 12 |
 | [14](14-sub-celestial.md) | Sub-Celestial e troca de subclasse (Urnammu) | Celestial | 121+ | Pedra Ideal por uso; Urnammu | ❌ | — | 13 |
 

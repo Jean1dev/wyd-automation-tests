@@ -82,3 +82,24 @@ A evolução do Arch para Celestial tem dois passos:
 ## Reaproveitamento
 
 - `src/scenarios/archCreation.ts` e a conta do Arch; `src/world/arch.ts`; `talkKing`.
+
+## Situação (2026-10-18)
+
+`npm run quest -- 12` no Railway: 5 ✅ 4 ❌. O Arch (ou o Mortal exibido 300) nasce no banco com a exp mínima do nível, `mortal_level`, `arch_crystal_stage`, Clan 0 e os itens (1742/Sephirot no Equip[10]/[11], Pedras Secretas, 5338 e 1742 em slots altos); nos casos de uso o elmo inicial (1103), que o 1º login põe no Equip[1], é limpo pelo banco.
+
+- **Rei (#406):** o ramo da Pedra Ideal não existe no Go. O Arch cai no serviço de capa ("13 safiras") e o Mortal com as quatro pedras vira Arch.
+- **Celestial (#407):** a suspeita do mapa se confirmou. A 5338 é recusada (notice 39) e a 1742 é que transforma o Arch. A transformação em si está certa: nível 0, Cythera pela faixa, capa 3199, SpecialBonus 855, só a Alma e a volta para a seleção.
+- Os controles CE-04/05/06 recusam nas duas pedras; na 5338 é vácuo (sem caso no Go), na 1742 são os requisitos do `useIdealStone`.
+- A Cythera 3501/3502 do Go exige Cristal 4 (#327); o CE-09 semeia Cristal 4.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| CE-01 | ❌ | [#406](https://github.com/Jean1dev/w2pp-OpenWYD/issues/406) |
+| CE-02 | ✅ | |
+| CE-03 | ❌ | [#406](https://github.com/Jean1dev/w2pp-OpenWYD/issues/406) |
+| CE-04 | ✅ (vácuo na 5338) | |
+| CE-05 | ✅ (vácuo na 5338) | |
+| CE-06 | ✅ (vácuo na 5338) | |
+| CE-07 | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) |
+| CE-08 | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) |
+| CE-09 | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) |
