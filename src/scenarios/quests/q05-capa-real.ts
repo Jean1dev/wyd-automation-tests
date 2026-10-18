@@ -336,6 +336,17 @@ const quest: QuestSpec = {
         return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
       },
     },
+    {
+      id: 'CR-09',
+      title: 'Capa já com borda',
+      type: 'controle',
+      seed: async (db, n) => { await char(db, n, KING_LEVEL.border); await putCape(db, n, ITEM.mantoDoGuerreiro); await putEmblem(db, n); await putExactPayment(db, n); },
+      run: async (ctx) => {
+        const k = await talkKing(ctx, NPC.reiHarabard, 1);
+        const r = kingControl(k, '543 no Rei_Harabard (exibido 256, 4081 e safiras)');
+        return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
+      },
+    },
   ],
 };
 
