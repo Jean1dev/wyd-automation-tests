@@ -347,6 +347,18 @@ const quest: QuestSpec = {
         return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
       },
     },
+    {
+      id: 'CR-10',
+      title: 'Borda antes do nível',
+      type: 'controle',
+      // 4081 e pagamento exato: só o nível barra a borda.
+      seed: async (db, n) => { await char(db, n, KING_LEVEL.border - 1); await putCape(db, n, ITEM.mantoHekalotia); await putEmblem(db, n); await putExactPayment(db, n); },
+      run: async (ctx) => {
+        const k = await talkKing(ctx, NPC.reiHarabard, 1);
+        const r = kingControl(k, '545, exibido 255, 4081 e safiras');
+        return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
+      },
+    },
   ],
 };
 
