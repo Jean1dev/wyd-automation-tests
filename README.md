@@ -663,6 +663,16 @@ Execuções de 2026-10-17 entre 22:10 e 23:30 UTC:
   - o controle de MP da Carga procurava mob a −1 tile;
   - o HP do Possuído não levava em conta o EF_HPADD +5% do equipamento inicial do TK.
 
+## Mapa das quests principais
+
+[docs/quests/README.md](docs/quests/README.md) mapeia as quests principais do jogo para os próximos cenários. São 14 grupos, do novato ao Sub-Celestial. Para cada quest, o mapa traz:
+- NPC, requisitos e recompensa, com file:line do legado e do Go;
+- a situação no Go (✅/⚠️/❌);
+- os casos de uso: caminho feliz, controles e bordas;
+- a viabilidade para o bot sem GM.
+
+O mapa também sugere a ordem dos cenários. As divergências que ele aponta são suspeitas da leitura do código e só viram issue quando um cenário reprovar no Railway.
+
 ## Estrutura
 
 ```
