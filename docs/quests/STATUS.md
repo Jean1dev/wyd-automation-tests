@@ -19,10 +19,10 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 10 | 2 | 0 | 0 |
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 14 | 0 | 0 | 0 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
-| [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 1 | 0 | 8 |
+| [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 1 | 1 | 0 | 7 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **81** | **38** | **0** | **25** |
+| | **Total** | **144** | **82** | **38** | **0** | **24** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -238,7 +238,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
 | CE-01 | Pedra Ideal | feliz | ❌ | [#406](https://github.com/Jean1dev/w2pp-OpenWYD/issues/406) | Arch exibido 356 com 1742/1760 e 5334–5337: "Sao necessarias 13 safiras em pagamento exato." (serviço de capa); sem 5338, banco igual |
-| CE-02 | Faltando uma Pedra Secreta | controle | ⏳ | | |
+| CE-02 | Faltando uma Pedra Secreta | controle | ✅ |  | Mortal exibido 300 sem a 5337: sem 5338; o Rei cria o Arch (SendArchEffect slot 1), as 5334–5336 ficam no mortal |
 | CE-03 | Mortal com as 4 pedras no Rei | borda | ⏳ | | |
 | CE-04 | Celestial com armadura | controle | ⏳ | | |
 | CE-05 | Arch abaixo do nível | controle | ⏳ | | |
