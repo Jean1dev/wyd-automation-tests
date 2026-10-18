@@ -22,6 +22,8 @@ import {
 import { carryOf, diffSlots, equipOf, hasItem, type SlotItem } from './helpers.ts';
 import type { CaseCtx, QuestSpec } from './runner.ts';
 
+/** ReqLvl do 4080 (ItemList.csv:5743), comparado com o nível armazenado. */
+const EMBLEM_REQ_LEVEL = 100;
 const inArena = (c: GameClient) => isInArea(ARENA, c.self!.x, c.self!.y);
 const pos = (c: GameClient) => ({ x: c.self!.x, y: c.self!.y });
 const equipAt = (c: GameClient, slot: number) => c.self!.equip[slot]?.index ?? 0;
@@ -254,7 +256,9 @@ const quest: QuestSpec = {
       id: 'CV-06',
       title: 'Entrega',
       type: 'feliz',
-      seed: async (db, n) => { await char(db, n, LEVEL.min); await putCarry(db, n, 0, ITEM.emblemaDaAprendizagem); },
+      // O 4080 pede ReqLvl 100 (ItemList.csv:5743) contra o nível ARMAZENADO (Basedef.cpp:5050 `lvl > score->Level`;
+      // Go item.go:1779): o exibido 100 não equipa, então a entrega usa o exibido 101.
+      seed: async (db, n) => { await char(db, n, EMBLEM_REQ_LEVEL); await putCarry(db, n, 0, ITEM.emblemaDaAprendizagem); },
       run: async (ctx) => {
         let eq: Awaited<ReturnType<typeof equipFromCarry>> | undefined;
         const { entry, t } = await handIn(ctx, { before: async () => { eq = await equipFromCarry(ctx.c, ctx.log, 0, EQUIP_SLOT.emblema); } });
