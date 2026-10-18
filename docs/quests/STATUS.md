@@ -20,9 +20,9 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 14 | 0 | 0 | 0 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 5 | 0 | 0 |
-| [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 4 | 1 | 0 | 5 |
+| [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 4 | 2 | 0 | 4 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **89** | **43** | **0** | **12** |
+| | **Total** | **144** | **89** | **44** | **0** | **11** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -259,7 +259,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CL-03 | Lv40 de novo | controle | ✅ |  | Celestial exibido 40 com Lv40 1 e a receita: CombineComplete 0; receita fica nos slots 20–26 |
 | CL-04 | Lv90 sem Fama | controle | ✅ |  | Celestial exibido 90, Fama 100: botão direito na 3020 sem resposta; pedra, Fama e Lv90 iguais (vácuo: a 3020 não tem uso no Go, #408) |
 | CL-05 | Lv90 | feliz | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | Celestial exibido 90, Fama 600: botão direito na 3020 sem resposta; Fama 600, Lv90 0, sem 3502, a pedra fica |
-| CL-06 | Arcana | feliz | ⏳ | | |
+| CL-06 | Arcana | feliz | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | Celestial exibido 200, Fama 600, 5334–5337, Equip[1] vazio: 3020 sem resposta; pedras, Fama e Circle 0 iguais, sem 3507 |
 | CL-07 | Arcana herdando o `Circle` | borda | ⏳ | | |
 | CL-08 | Reset | feliz | ⏳ | | |
 | CL-09 | Comandos que pulam quest | borda | ⏳ | | |
