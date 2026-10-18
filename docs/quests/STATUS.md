@@ -16,13 +16,13 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 4 | 7 | 0 | 0 |
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 5 | 0 | 0 |
 | [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 3 | 4 | 0 | 0 |
-| [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 6 | 0 | 0 | 6 |
+| [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 7 | 0 | 0 | 5 |
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 0 | 0 | 0 | 14 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 0 | 0 | 0 | 7 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **56** | **35** | **0** | **53** |
+| | **Total** | **144** | **57** | **35** | **0** | **52** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -186,7 +186,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | AR-04 | Pedra da Imortalidade | feliz | ✅ |  | almas nos slots 0/1 e 10 × 697: as 12 somem e a 1742 entra no slot 0, no cliente e no banco depois do relog |
 | AR-05 | Pacote de safiras | borda | ✅ |  | almas nos slots 0/1 e 1 × 4131: o pacote e as almas somem e a 1742 entra no slot 0, no cliente e no banco depois do relog |
 | AR-06 | Refino da pedra de boss | feliz | ✅ |  | 412 sobre a 1752 no inventário e no Equip[11]: "não pode ser mais refinado", poeira e pedra ficam (cliente e banco). O legado faz o mesmo: EF_NOSANC das 1752–1759 barra o PO/PL (_MSG_UseItem.cpp:188/365) antes do ramo :515 |
-| AR-07 | Sephirot (ask) | controle | ⏳ | | |
+| AR-07 | Sephirot (ask) | controle | ✅ |  | 8 Pedras Arch, 30.001.000 de gold, confirm 0 no Cap.Cavaleiros: sem resposta (o legado só fala _NN_Soul_n_8_Sephera); nada muda no cliente nem no banco |
 | AR-08 | Sephirot sem gold | controle | ⏳ | | |
 | AR-09 | Sephirot faltando pedra | controle | ⏳ | | |
 | AR-10 | Sephirot | feliz | ⏳ | | |
