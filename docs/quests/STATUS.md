@@ -11,7 +11,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 2 | 10 | 0 | 0 |
 | [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 13 | 1 | 0 | 0 |
 | [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 12 | 1 | 0 | 0 |
-| [04](#04) | Molar do Gárgula | 10 | 4 | 1 | 0 | 5 |
+| [04](#04) | Molar do Gárgula | 10 | 4 | 2 | 0 | 4 |
 | [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 0 | 0 | 0 | 13 |
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 0 | 0 | 0 | 11 |
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 0 | 0 | 5 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **31** | **13** | **0** | **100** |
+| | **Total** | **144** | **31** | **14** | **0** | **99** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -99,7 +99,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | MG-03 | Arch | controle | ✅ | | Arch exibido 200: a Patrulha__ recusa (NoticeReqNotMet 15), sem teleporte |
 | MG-04 | Drop | feliz | ✅ | | o 4122 caiu ao matar um Gargula_Inf, 7 kills (6 Servo, 1 Inf) em 4,5 min com a viagem |
 | MG-05 | Uso do molar | feliz | ❌ | [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) | MessageBoxOk 39 (NoticeCantUseHere): refinação +0 +3 +5 +7 +1 igual (banco também), o 4122 fica, AC 1992→1992 |
-| MG-06 | Uso repetido | controle | ⏳ | | |
+| MG-06 | Uso repetido | controle | ❌ | [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) | pré-condição não acontece: o primeiro 4122 já é recusado (NoticeCantUseHere) e não refina; o segundo também (não há flag MolarGargula) |
 | MG-07 | Uso fora da faixa | controle | ⏳ | | |
 | MG-08 | Slot vazio | borda | ⏳ | | |
 | MG-09 | Flag persiste | borda | ⏳ | | |
