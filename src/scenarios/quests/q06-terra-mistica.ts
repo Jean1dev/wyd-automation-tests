@@ -122,6 +122,13 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n); },
       run: async (ctx) => control(await talk(ctx, NPC.capMercenario, 1), 'Mortal sem grupo, confirm 1'),
     },
+    {
+      id: 'TM-02',
+      title: 'Ask',
+      type: 'controle',
+      seed: async (db, n) => { await char(db, n); },
+      run: async (ctx) => withParty(ctx, true, (db, n) => char(db, n), async () => control(await talk(ctx, NPC.capMercenario, 0), 'líder de grupo, confirm 0')),
+    },
   ],
 };
 
