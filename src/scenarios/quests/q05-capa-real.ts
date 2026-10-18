@@ -280,6 +280,24 @@ const quest: QuestSpec = {
         return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
       },
     },
+    {
+      id: 'CR-05',
+      title: 'Preço (ask)',
+      type: 'feliz',
+      // Com o emblema e o pagamento exato: o confirm 0 tem de só informar o preço.
+      seed: async (db, n) => { await char(db, n, KING_LEVEL.cape); await putEmblem(db, n); await putExactPayment(db, n); },
+      run: async (ctx) => {
+        const k = await talkKing(ctx, NPC.reiHarabard, 0);
+        const priced = k.talk.texts.some((t) => (t.match(/\d+/g) ?? ([] as string[])).includes(String(k.price.hekalotia)));
+        const pass = priced && untouched(k);
+        return {
+          pass, evidence: kingEvidence(k),
+          note: pass
+            ? `confirm 0: ${kingAnswer(k)} (preço ${k.price.hekalotia} no sapphire_balance); nada muda (${fmtState(k.after)}, banco igual)`
+            : `confirm 0: ${kingAnswer(k)}, preço ${k.price.hekalotia}; ${fmtState(k.before)} → ${fmtState(k.after)} (banco ${fmtState(k.saved)})`,
+        };
+      },
+    },
   ],
 };
 
