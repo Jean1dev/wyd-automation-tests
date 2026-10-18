@@ -55,3 +55,21 @@ Esta quest reinicia os pontos de skill.
 ## Reaproveitamento
 
 - `src/bot/skills.ts` (estado do `LearnedSkill`), `src/world/skillTrees.ts`, `src/bot/equip.ts` (Equip[13]).
+
+## Situação (2026-10-18)
+
+Validado no Railway com `npm run quest -- 08`, Mortal de nível armazenado 99 com o pedaço ou o círculo no Equip[13], o gold, o `Special[0..3]`, o `LearnedSkill` e a flag `Circle` (coluna `celestial_circle`, o mesmo `QuestInfo.Circle` da Arcana) semeados pelo banco (`db.setSpecial` em `src/db/seed.ts`). O bot vai pelo Grifo ao Jardim dos Deuses e anda até Azran. Resultado: 3 ✅ e 4 ❌, todos pela mesma causa ([#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405)).
+
+- O Jeffi e a Shaman estão no mundo, mas os Merchants 12 e 13 não têm rota no `MSG_Quest` do Go: nenhuma resposta, nada muda (CD-02, CD-04, CD-06, CD-07).
+- Os controles (CD-01, CD-03, CD-05) passam só por vácuo: o legado responderia com fala, o Go fica calado.
+- A #249 (Jeffi) está fechada como concluída, mas não há código do Jeffi no `main`.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| CD-01 | ✅ (vácuo) | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) |
+| CD-02 | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) |
+| CD-03 | ✅ (vácuo) | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) |
+| CD-04 | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) |
+| CD-05 | ✅ (vácuo) | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) |
+| CD-06 | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) |
+| CD-07 | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) |
