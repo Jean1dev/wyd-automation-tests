@@ -117,6 +117,8 @@ const SEPHI_SEED: Seed = { carry: PEDRAS_ARCH, coin: PRICE.sephirot + 1000 };
 
 interface Refine {
   t: string;
+  /** Onde estava a pedra: inventário (slot 0) ou Equip[11] (nPos 2048 das pedras de boss). */
+  dest: 'carry' | 'equip';
   before: SlotItem[];
   after: SlotItem[];
   db: SlotItem[];
@@ -124,19 +126,27 @@ interface Refine {
   notices: number[];
 }
 
-/** Arrasta a poeira (slot `src`) sobre a pedra (slot `dest`) e confere o inventário e o banco. */
-async function refine(ctx: CaseCtx, src: number, dest: number): Promise<Refine> {
+/** Inventário + Equip[11] (o equipamento entra com slot 100 + n para não colidir). */
+const withEq = (carry: SlotItem[], eq11: number): SlotItem[] => (eq11 ? [...carry, { slot: 100 + EQUIP_SLOT.sephirot, index: eq11, eff: [] }] : carry);
+
+/** Arrasta a poeira (slot `src`) sobre a pedra (slot 0 do inventário ou Equip[11]) e confere o inventário e o banco. */
+async function refine(ctx: CaseCtx, src: number, dest: Refine['dest']): Promise<Refine> {
   const c = ctx.c;
-  const before = carryOf(c);
+  const snap = () => withEq(carryOf(c), c.self!.equip[EQUIP_SLOT.sephirot]?.index ?? 0);
+  const before = snap();
   const since = c.mark;
-  c.send(Op.UseItem, P.useItemOn(src, dest));
+  c.send(Op.UseItem, dest === 'carry' ? P.useItemOn(src, 0) : P.useItemOn(src, EQUIP_SLOT.sephirot, P.PLACE_EQUIP));
   await sleep(3000);
   const frames = c.framesSince(since);
-  const after = carryOf(c);
+  const after = snap();
   await ctx.relog();
-  const db = (await saved(ctx)).carry;
+  const db = await ctx.query(async (d, ch) => {
+    const eq = (await d.items(ch, 'equip')).find((x) => x.slot === EQUIP_SLOT.sephirot)?.index ?? 0;
+    return withEq((await saved(ctx)).carry, eq);
+  });
   const r: Refine = {
     t: new Date().toISOString(),
+    dest,
     before,
     after,
     db,
@@ -245,17 +255,26 @@ const quest: QuestSpec = {
       type: 'feliz',
       seed: (db, ch) => mortal(db, ch, { carry: [ITEM.pedraLordeOrc, ITEM.poeiraOri] }),
       run: async (ctx) => {
-        const r = await refine(ctx, 1, 0);
-        // Legado: a poeira some sempre; sucesso (93 %) troca a 1752 por uma de 1744–1747, falha deixa a 1752.
-        const ok = (l: SlotItem[]) => {
-          const stone = l.find((x) => x.slot === 0)?.index ?? 0;
-          return count(l, ITEM.poeiraOri) === 0 && (stone === ITEM.pedraLordeOrc || (stone >= LORDE_ORC_RESULT.min && stone <= LORDE_ORC_RESULT.max));
-        };
-        const answerR = r.texts.length ? `"${r.texts.join(' | ')}"` : r.notices.length ? `notices ${r.notices.join(',')}` : 'sem resposta';
+        // Legado (_MSG_UseItem.cpp:153-372): antes do ramo das Pedras Arch (:515) o caminho PO/PL recusa
+        // com _NN_Cant_Refine_More todo destino com EF_NOSANC, e as 1752–1759 têm EF_NOSANC 1 no
+        // ItemList.csv. Então o efeito do legado é a recusa: a poeira volta e a pedra fica. O bot tenta
+        // com a pedra no inventário e no Equip[11] (o único lugar em que o ramo :515 seria alcançável).
+        const carry = await refine(ctx, 1, 'carry');
+        await ctx.reseed(async (db, ch) => {
+          await db.clearItem(ch, 'carry', 0);
+          await db.clearItem(ch, 'carry', 1);
+          await db.putItem(ch, 'carry', 1, { index: ITEM.poeiraOri });
+          await db.putItem(ch, 'equip', EQUIP_SLOT.sephirot, { index: ITEM.pedraLordeOrc });
+        });
+        const equip = await refine(ctx, 1, 'equip');
+        const kept = (r: Refine) => idx(r.before) === idx(r.after) && idx(r.before) === idx(r.db);
+        const changed = (r: Refine) => [...r.after, ...r.db].some((x) => x.index >= LORDE_ORC_RESULT.min && x.index <= LORDE_ORC_RESULT.max);
+        const answerR = (r: Refine) => (r.texts.length ? `"${r.texts.join(' | ')}"` : r.notices.length ? `notices ${r.notices.join(',')}` : 'sem resposta');
+        const line = (r: Refine) => `${r.dest === 'carry' ? 'inventário' : 'Equip[11]'}: ${answerR(r)}; antes [${idx(r.before)}] → depois [${idx(r.after)}]; banco [${idx(r.db)}]`;
         return {
-          pass: ok(r.after) && ok(r.db),
-          evidence: { ...r },
-          note: `poeira 412 sobre a 1752: ${answerR}; antes [${idx(r.before)}] → depois [${idx(r.after)}]; banco depois do relog [${idx(r.db)}]`,
+          pass: kept(carry) && kept(equip) && !changed(carry) && !changed(equip),
+          evidence: { carry, equip },
+          note: `poeira 412 sobre a 1752 — ${line(carry)} | ${line(equip)}`,
         };
       },
     },

@@ -37,7 +37,7 @@ Drops (templates em `npc/*`):
   - Rei em `_MSG_Quest.cpp:769-866`.
 - **Go:**
   - Oráculo em `blackOracle`, `handler/misc.go:736` ✅. A diferença: aceita **qualquer par** 1740→1741 vizinho, não só o primeiro.
-  - Pedras Arch ❌: não há caso 1752–1759 no caminho da poeira.
+  - Pedras Arch ❌: não há caso 1752–1759 no caminho da poeira. Mas o efeito é o mesmo do legado: as 1752–1759 têm `EF_NOSANC 1` no `ItemList.csv`, e o caminho PO/PL do legado recusa todo destino com EF_NOSANC (`_MSG_UseItem.cpp:188` no inventário, `:365` no equipamento) antes de chegar ao ramo das Pedras Arch (`:515`). Com esses dados, o ramo é inalcançável nos dois servidores.
   - Sephirot em `compSephi`, `misc.go:802` ⚠️: dá `1760 + Class`, um a mais que o legado (issue [#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390)).
   - Rei em `kingArch`, `misc.go:525` ✅ (cenário 5).
 
@@ -50,7 +50,7 @@ Drops (templates em `npc/*`):
 | AR-03 | Sem safiras | almas em ordem, 9 safiras | `MSG_Quest` | "precisa de 10 safiras"; nada some | controle |
 | AR-04 | Pedra da Imortalidade | almas em ordem, 10 × 697 | `MSG_Quest` | almas e safiras somem; recebe a 1742 | feliz |
 | AR-05 | Pacote de safiras | almas em ordem, 1 × 4131 | `MSG_Quest` | o 4131 some; recebe a 1742 | borda |
-| AR-06 | Refino da pedra de boss | 1752 e Poeira 412 | `MSG_UseItem` com a poeira sobre a pedra | sucesso: a 1752 vira uma de 1744–1747 e uma poeira some. Falha: a pedra fica e uma poeira some | feliz |
+| AR-06 | Refino da pedra de boss | 1752 e Poeira 412 | `MSG_UseItem` com a poeira sobre a pedra (no inventário e no Equip[11]) | pelo código do ramo: sucesso troca a 1752 por uma de 1744–1747. **Na prática, recusa**: `_NN_Cant_Refine_More`, a poeira volta e a pedra fica (ver nota abaixo) | feliz |
 | AR-07 | Sephirot (ask) | 8 pedras, 30M | `MSG_Quest` no mestre, confirm 0 | só a fala; nada muda | controle |
 | AR-08 | Sephirot sem gold | 8 pedras, gold < 30M | confirm 1 | `_NN_Need_8_Sephera`; nada some | controle |
 | AR-09 | Sephirot faltando pedra | 7 pedras diferentes e uma repetida | confirm 1 | `_NN_Need_8_Sephera`; nada some | controle |
@@ -70,7 +70,7 @@ Drops (templates em `npc/*`):
 
 ## Divergências suspeitas no Go
 
-- Refino das pedras de boss ausente (AR-06).
+- Refino das pedras de boss ausente (AR-06): sem efeito visível, porque o EF_NOSANC das pedras de boss também barra o legado.
 - Sephirot com classe deslocada (#390, já aberto).
 - O Oráculo procura qualquer par de almas vizinho: com 1740 no slot 0 e o par certo em 5/6, o legado recusa e o Go aceita. Borda informativa.
 
