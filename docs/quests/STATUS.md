@@ -10,7 +10,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 |---|---|---|---|---|---|---|
 | [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 2 | 10 | 0 | 0 |
 | [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 13 | 1 | 0 | 0 |
-| [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 11 | 1 | 0 | 1 |
+| [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 12 | 1 | 0 | 0 |
 | [04](#04) | Molar do Gárgula | 10 | 0 | 0 | 0 | 10 |
 | [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 0 | 0 | 0 | 13 |
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 0 | 0 | 0 | 11 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **26** | **12** | **0** | **106** |
+| | **Total** | **144** | **27** | **12** | **0** | **105** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -85,7 +85,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CV-10 | Arch pelo Lider_Aprendiz | feliz | ❌ | [#397](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) | Arch armazenado 99 sem capa: o Lider_Aprendiz não responde (Merchant 100 grade 5 sem rota no Go, misc.go:259); Equip[15] vazio, também no banco |
 | CV-11 | Arch fora da faixa | controle | ✅ | | Arch armazenado 98: nada muda, Equip[15] vazio — mas o Lider_Aprendiz não responde a ninguém no Go (#397) |
 | CV-12 | Mortal no Lider_Aprendiz | controle | ✅ | | Mortal exibido 100: nada muda, Equip[15] vazio — mas o Lider_Aprendiz não responde a ninguém no Go (#397) |
-| CV-13 | Arch no Diretor | controle | ⏳ | | |
+| CV-13 | Arch no Diretor | controle | ✅ | | Arch exibido 100: o Diretor recusa (NoticeReqNotMet 15), sem teleporte |
 
 <a id="04"></a>
 ## 04 — Molar do Gárgula
