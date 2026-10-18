@@ -17,12 +17,12 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 5 | 0 | 0 |
 | [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 3 | 4 | 0 | 0 |
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 10 | 2 | 0 | 0 |
-| [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 12 | 0 | 0 | 2 |
+| [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 13 | 0 | 0 | 1 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 0 | 0 | 0 | 7 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **72** | **37** | **0** | **35** |
+| | **Total** | **144** | **73** | **37** | **0** | **34** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -212,7 +212,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CR-02 | Etapa 1 | feliz | ✅ |  | Arch exibido 356, Cristal 0: 4106 some; banco MaxMp 3000→3080, exp 2150M→2050M, nível igual, Cristal 1 |
 | CR-03 | Etapa repetida | controle | ✅ |  | Cristal 1 com outro 4106: "Voce ja concluiu esta etapa da quest dos cristais."; o 4106 volta, banco igual |
 | CR-04 | Quatro etapas | feliz | ✅ |  | 4106→4109 em sequência: banco MaxHp 25000→25140, MaxMp 3000→3140, exp −400M, nível igual, Cristal 4; AC do score 613→663 depois do relog; os quatro cristais somem |
-| CR-05 | Mortal com cristal | borda | ⏳ | | |
+| CR-05 | Mortal com cristal | borda | ✅ |  | informativo (o legado aceita, checagem comentada): Mortal exibido 356 com o 4106 — o Go recusa de propósito (#327), "Quest permitida somente a Archs de nivel 356 ou superior."; o 4106 volta, banco igual |
 | CR-06 | Exp abaixo de 100M | borda | ⏳ | | |
 
 <a id="11"></a>
