@@ -15,14 +15,14 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 10 | 3 | 0 | 0 |
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 4 | 7 | 0 | 0 |
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 5 | 0 | 0 |
-| [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 2 | 2 | 0 | 3 |
+| [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 3 | 2 | 0 | 2 |
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 0 | 0 | 0 | 12 |
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 0 | 0 | 0 | 14 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 0 | 0 | 0 | 7 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **49** | **33** | **0** | **62** |
+| | **Total** | **144** | **50** | **33** | **0** | **61** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -169,7 +169,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CD-02 | Purificar | feliz | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | 447 no Equip[13], gold 1.005.000: o Jeffi não responde (Merchant 12 sem rota); Equip[13] continua 447 e gold 1.005.000 no cliente e no banco depois do relog |
 | CD-03 | Shama sem círculo puro | controle | ✅ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | 447 (não purificado) no Equip[13], Special [60,60,60,60], Learn 0xffffff: nada muda no cliente nem no banco depois do relog — vácuo: Shaman sem rota no Go (#405); o legado manda _NN_Need_Pure_Divine |
 | CD-04 | Reiniciar | feliz | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | 448 no Equip[13], Special [60,60,60,60], Learn 0xffffff: a Shaman não responde (Merchant 13 sem rota); nada muda no cliente nem no banco (esperado SpecialBonus 200, Special [10,10,10,10], Learn 0xffff00, Equip[13] vazio, Circle 1) |
-| CD-05 | Segundo círculo comum | controle | ⏳ | | |
+| CD-05 | Segundo círculo comum | controle | ✅ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | celestial_circle 1 semeado, 448 no Equip[13]: o círculo fica, nada muda e Circle continua 1 no banco depois do relog — vácuo: Shaman sem rota no Go (#405); o legado manda _NN_Youve_Done_It_Already |
 | CD-06 | Círculo completo depois do comum | borda | ⏳ | | |
 | CD-07 | Special abaixo do teto | borda | ⏳ | | |
 
