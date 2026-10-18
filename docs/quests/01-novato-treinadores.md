@@ -74,3 +74,24 @@ De onde vêm os itens (`NPCGener.txt`; o drop está no template do mob, a confer
 - `src/world/trainingField.ts`: zona, spawns e rota de saída.
 - `src/bot/grind.ts` `grindUntil`, `src/bot/npc.ts` `approachNpc`/`talkQuest`, `src/bot/equip.ts` (arma e peças nos slots certos para NOV-05/07).
 - Esqueleto de `src/scenarios/trainingFieldLv35.ts`. O novato pode ser uma fase depois do grind dele, ou um cenário próprio `scenario:newbie`.
+
+## Situação (2026-10-18)
+
+Validado no Railway com `npm run quest -- 01` (servidor `main` `b392705`). A quest do novato não existe no Go: o passo 1 não funciona, então a pré-condição `Newbie ≥ 1` dos casos seguintes não é alcançável (e a flag não existe no banco para semear). Os casos fazem os passos anteriores jogando e, quando não chegam lá, falam com o NPC do caso para registrar a resposta.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| NOV-01 | ✅ nada muda (a resposta é a `NoticeReqNotMet` do Coveiro) | |
+| NOV-02 | ❌ sem Kit 682 | [w2pp-OpenWYD#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) |
+| NOV-03 | ❌ pré-condição inalcançável | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) |
+| NOV-04 | ❌ pré-condição inalcançável; Treinador3 sem resposta | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) |
+| NOV-05 | ❌ pré-condição inalcançável; Treinador2 sem resposta | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) |
+| NOV-06 | ❌ pré-condição inalcançável; Treinador2 sem resposta | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) |
+| NOV-07 | ❌ pré-condição inalcançável; Treinador3 sem resposta | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) |
+| NOV-08 | ❌ pré-condição inalcançável; Treinador3 sem resposta | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) |
+| NOV-09 | ❌ pré-condição inalcançável; Chefe_de_Treino sem resposta | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) |
+| NOV-10 | ✅ exibido 36 com a 451: nada muda | |
+| NOV-11 | ❌ pré-condição inalcançável; Treinador2 sem resposta | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) |
+| NOV-12 | ❌ teleporte para a arena do Coveiro (2395,2102) e Vela consumida | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) |
+
+Finding: [007](../findings/007-quest-novato-ausente.md).

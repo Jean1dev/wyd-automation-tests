@@ -34,7 +34,7 @@ Trocas repetíveis, serviços, instâncias com horário, eventos e a quest diár
 
 | # | Quest | Classe | Nível exibido | NPC (cidade) | Go | Cenário hoje | Prioridade |
 |---|---|---|---|---|---|---|---|
-| [01](01-novato-treinadores.md) | Novato: quatro treinadores | Mortal | 1–35 | Treinador1/2/3 e Chefe_de_Treino (Armia, Campo de Treino) | ❌ (o Treinador1 cai no Coveiro) | Cenário 1 só sobe de nível | 1 |
+| [01](01-novato-treinadores.md) | Novato: quatro treinadores | Mortal | 1–35 | Treinador1/2/3 e Chefe_de_Treino (Armia, Campo de Treino) | ❌ (o Treinador1 cai no Coveiro) | `npm run quest -- 01`: 2 ✅ 10 ❌ ([#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395)) | 1 |
 | [02](02-quest256-tickets.md) | Quest 256: Coveiro, Jardineiro, Kaizen, Hidra e Elfos, com troféus | Mortal/Arch | 40–350 | Coveiro, Jardineiro, Patrulha_, Patrulha e Guarda | ✅ (reset no #388) | Cenários 2 e 4, sem os troféus | 2 |
 | [03](03-capa-verde.md) | Capa Verde (Formatura Aprendiz) | Mortal / Arch | 100–150 | Diretor_Treina. e Chefe_Treina. (sul de Azran); Lider_Aprendiz para o Arch | Mortal ✅, Arch ❌ | — | 3 |
 | [04](04-molar-gargula.md) | Molar do Gárgula | Mortal | 200–254 | Patrulha__ (Dungeon) | ⚠️ (o uso do molar não existe) | — | 4 |

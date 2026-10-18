@@ -13,6 +13,9 @@ Confirmado no Railway em 2026-10-18 (`reports/2026-10-18T13-5*-quest-01`):
 |---|---|
 | Treinador1 sem a chave (NOV-01): nada muda | ✅ (mas a resposta é a `NoticeReqNotMet` do Coveiro, não a fala `Cheerup1`) |
 | Treinador1 com a 451 (NOV-02): Kit 682 ×20 e `Newbie` = 1 | ❌ 13:55:45 UTC, `MessageBoxOk 15`, inventário igual |
+| Treinador2 / Treinador3 / Chefe_de_Treino com a 452 / 453 / 524 (NOV-05, NOV-04, NOV-09) | ❌ sem resposta, nada muda (14:06:28, 14:05:29, 14:10:19 UTC) |
+| Treinador1 com nível exibido 40 e a Vela 4038 (NOV-12): `Already1`, nada muda | ❌ 14:03:15 UTC, teleporte para (2395,2102), arena do Coveiro, e a Vela consumida |
+| Treinador1 com nível exibido 36 e a 451 (NOV-10): nada muda | ✅ (resposta `NoticeReqNotMet`) |
 
 Os casos seguintes dependem do passo 1 e reprovam pela mesma causa (veja `docs/quests/STATUS.md`).
 
