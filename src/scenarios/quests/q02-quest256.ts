@@ -5,13 +5,10 @@
 // Nível, classe, ticket, troféu, atributos e equipamento vêm do banco. Cada caso confere o
 // efeito: slots, posição (dentro/fora da arena), exp e gold, e o banco depois do relog.
 import type { GameClient } from '../../client/GameClient.ts';
-import type { BotConfig } from '../../config.ts';
-import { signupAccount } from '../../bot/account.ts';
 import { fight } from '../../bot/combat.ts';
 import { walkPath, walkTo } from '../../bot/movement.ts';
 import { approachNpc, type NpcSpec, talkQuest, type QuestTalk, useItem } from '../../bot/npc.ts';
 import { probeIntruder, waitForReset } from '../../bot/quest.ts';
-import { createCharacter, enterWorld, login } from '../../bot/session.ts';
 import { reviveAfterDeath } from '../../bot/survival.ts';
 import { dist, sleep } from '../../bot/util.ts';
 import { CLASS_MASTER, type Db } from '../../db/seed.ts';
@@ -20,8 +17,7 @@ import * as P from '../../protocol/packets.ts';
 import {
   COVEIRO, HUNT_ATTRS, HUNT_GEAR, HUNT_HP, INTRUDER_PROBE, isInArea, ITEM, NPC, ROUTE_TO_ARMIA, ROUTE_TO_COVEIRO,
 } from '../../world/quests/02-quest256.ts';
-import { newCharName } from '../common.ts';
-import { carryOf, diffSlots, hasItem, type SlotItem } from './helpers.ts';
+import { carryOf, diffSlots, hasItem, makeParty, secondChar, type SlotItem } from './helpers.ts';
 import type { CaseCtx, CaseResult, QuestSpec } from './runner.ts';
 
 const A = COVEIRO;
@@ -135,39 +131,6 @@ const wallet = (c: GameClient) => ({ exp: Number(c.self!.exp), coin: c.self!.coi
 
 /** Exp esperado do troféu no legado: o exp da tabela e mais 10 % como "líder" de si mesmo (_MSG_UseItem.cpp:2398-2410). */
 const legacySoloExp = (e: number) => e + Math.floor(e / 10);
-
-// ---------------------------------------------------------------- segundo personagem (QST-11)
-
-async function secondChar(ctx: CaseCtx, seed: (db: Db, name: string) => Promise<void>): Promise<{ c: GameClient; name: string }> {
-  const acc = await signupAccount();
-  const cfg: BotConfig = { ...ctx.cfg, ...acc, charClass: 0 };
-  const name = newCharName(cfg.charPrefix);
-  ctx.log.info('segunda conta', { account: acc.account, char: name });
-  const sel = await login(cfg, ctx.log);
-  await createCharacter(sel, name, 0, ctx.log);
-  sel.close();
-  await ctx.query(async (db) => seed(db, name));
-  const c = await login(cfg, ctx.log);
-  await enterWorld(c, name, ctx.log);
-  return { c, name };
-}
-
-/** O líder convida e o outro aceita (MSG_SendReqParty → MSG_AcceptParty). */
-async function makeParty(leader: GameClient, member: GameClient): Promise<{ invited: boolean; frames: string[] }> {
-  const L = leader.self!, M = member.self!;
-  const since = member.mark;
-  leader.send(Op.SendReqParty, P.sendReqParty(L.clientId, M.clientId, { name: L.name, cls: L.cls, level: L.level, hp: L.hp, maxHp: L.maxHp }));
-  let invited = true;
-  try {
-    await member.waitType(Op.SendReqParty, { timeoutMs: 5000, since });
-  } catch {
-    invited = false;
-  }
-  const lsince = leader.mark;
-  member.send(Op.AcceptParty, P.acceptParty(L.clientId, L.name));
-  await sleep(2000);
-  return { invited, frames: leader.framesSince(lsince).map((f) => `0x${f.header.type.toString(16)}`) };
-}
 
 // ---------------------------------------------------------------- caça do troféu (QST-08)
 
