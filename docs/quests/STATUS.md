@@ -9,7 +9,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | # | Quest | Casos | ✅ | ❌ | ⏸️ | ⏳ |
 |---|---|---|---|---|---|---|
 | [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 2 | 10 | 0 | 0 |
-| [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 2 | 0 | 0 | 12 |
+| [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 3 | 0 | 0 | 11 |
 | [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 0 | 0 | 0 | 13 |
 | [04](#04) | Molar do Gárgula | 10 | 0 | 0 | 0 | 10 |
 | [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 0 | 0 | 0 | 13 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **4** | **10** | **0** | **130** |
+| | **Total** | **144** | **5** | **10** | **0** | **129** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -53,7 +53,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 |---|---|---|---|---|---|
 | QST-01 | Entrega do ticket | feliz (cenários 2/4) | ✅ | | exibido 40 com a Vela: Vela consumida, teleportado para (2399,2103) e ficou 6 s na arena (QuestFlag 1) |
 | QST-02 | Sem ticket / ticket de outro passo | controle (cenários 2/4) | ✅ | | exibido 40 com 4039 e 4041, sem a Vela: o Coveiro recusa (NoticeReqNotMet 15), nada some, sem teleporte |
-| QST-03 | Um nível abaixo do mínimo | controle (cenário 4) | ⏳ | | |
+| QST-03 | Um nível abaixo do mínimo | controle (cenário 4) | ✅ | | exibido 39 com a Vela: o Coveiro recusa (NoticeReqNotMet 15), a Vela fica, sem teleporte |
 | QST-04 | Intruso | controle (cenários 2/4) | ⏳ | | |
 | QST-05 | Reset | feliz (cenários 2/4) | ⏳ | | |
 | QST-06 | Relogin dentro da arena | borda | ⏳ | | |
