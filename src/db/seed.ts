@@ -48,12 +48,30 @@ export interface ItemRow {
 
 /** Uma conexão por uso; fecha sempre (a máquina de teste tem pouca memória). */
 export async function withDb<T>(cfg: DbConfig, fn: (db: Db) => Promise<T>): Promise<T> {
-  const client = new pg.Client({ connectionString: cfg.url });
-  await client.connect();
+  const client = await connectWithRetry(cfg);
   try {
     return await fn(new Db(client));
   } finally {
     await client.end();
+  }
+}
+
+/**
+ * O Postgres do db-server tem poucas conexões e às vezes recusa com "too many connections"
+ * (53300) por alguns minutos; espera e tenta de novo até ~25 min antes de desistir.
+ */
+async function connectWithRetry(cfg: DbConfig): Promise<pg.Client> {
+  for (let attempt = 1; ; attempt++) {
+    const client = new pg.Client({ connectionString: cfg.url });
+    try {
+      await client.connect();
+      return client;
+    } catch (e) {
+      await client.end().catch(() => {});
+      const full = (e as { code?: string }).code === '53300' || /too many connections/i.test(String(e));
+      if (!full || attempt >= 50) throw e;
+      await new Promise((r) => setTimeout(r, 30_000));
+    }
   }
 }
 
