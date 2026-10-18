@@ -129,6 +129,13 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n); },
       run: async (ctx) => withParty(ctx, true, (db, n) => char(db, n), async () => control(await talk(ctx, NPC.capMercenario, 0), 'líder de grupo, confirm 0')),
     },
+    {
+      id: 'TM-03',
+      title: 'Membro, não líder',
+      type: 'controle',
+      seed: async (db, n) => { await char(db, n); },
+      run: async (ctx) => withParty(ctx, false, (db, n) => char(db, n), async () => control(await talk(ctx, NPC.capMercenario, 1), 'membro (a conta B lidera), confirm 1')),
+    },
   ],
 };
 
