@@ -295,6 +295,13 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n, { flag: FLAG.concluida, level: 49 }); },
       run: async (ctx) => reward(await talk(ctx, NPC.capExplor, 0), AMULET.prata, 'terra_mistica 2, exibido 50'),
     },
+    {
+      id: 'TM-10',
+      title: 'Recompensa repetida',
+      type: 'controle',
+      seed: async (db, n) => { await char(db, n, { flag: FLAG.recompensada }); },
+      run: async (ctx) => control(await talk(ctx, NPC.capExplor, 0), 'terra_mistica 3 no Cap.Explor.'),
+    },
   ],
 };
 
