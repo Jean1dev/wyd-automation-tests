@@ -168,6 +168,13 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n, { flag: FLAG.aceita }); },
       run: async (ctx) => withParty(ctx, true, (db, n) => char(db, n), async () => control(await talk(ctx, NPC.capMercenario, 1), 'terra_mistica 1, líder com membro, confirm 1')),
     },
+    {
+      id: 'TM-06',
+      title: 'Recompensa antes da hora',
+      type: 'controle',
+      seed: async (db, n) => { await char(db, n, { flag: FLAG.aceita }); },
+      run: async (ctx) => control(await talk(ctx, NPC.capExplor, 0), 'terra_mistica 1 no Cap.Explor.'),
+    },
   ],
 };
 
