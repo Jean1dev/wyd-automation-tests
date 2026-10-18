@@ -17,12 +17,12 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 5 | 0 | 0 |
 | [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 3 | 4 | 0 | 0 |
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 10 | 2 | 0 | 0 |
-| [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 9 | 0 | 0 | 5 |
+| [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 10 | 0 | 0 | 4 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 0 | 0 | 0 | 7 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **69** | **37** | **0** | **38** |
+| | **Total** | **144** | **70** | **37** | **0** | **37** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -209,7 +209,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | LD-07 | 370 sem Fame | controle | ✅ |  | Arch exibido 370 com Level355 1 e Fame 0: CombineComplete 0; nada some, Level370 0 no banco |
 | LD-08 | Destrava 370 | feliz | ✅ |  | Arch exibido 370, Level355 1, Fame 3 (semeada): CombineComplete 1, receita some, Level370 1 e Fame 2 no banco |
 | CR-01 | Cristal fora de ordem | controle | ✅ |  | Arch exibido 356, Cristal 0, com o 4107: "Conclua a etapa anterior da quest dos cristais primeiro."; o 4107 volta, exp/nível/Cristal/MaxHp/MaxMp iguais no banco, AC igual |
-| CR-02 | Etapa 1 | feliz | ⏳ | | |
+| CR-02 | Etapa 1 | feliz | ✅ |  | Arch exibido 356, Cristal 0: 4106 some; banco MaxMp 3000→3080, exp 2150M→2050M, nível igual, Cristal 1 |
 | CR-03 | Etapa repetida | controle | ⏳ | | |
 | CR-04 | Quatro etapas | feliz | ⏳ | | |
 | CR-05 | Mortal com cristal | borda | ⏳ | | |
