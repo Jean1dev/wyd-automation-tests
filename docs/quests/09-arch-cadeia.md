@@ -78,3 +78,24 @@ Drops (templates em `npc/*`):
 
 - `src/scenarios/archCreation.ts` (`talkKing`, conta do Arch) e `src/world/arch.ts` (Rei, rota, Evolucao).
 - O mestre de skill de cada classe já está em `src/world/skillTrees.ts` (cenários 6–11).
+
+## Situação (2026-10-18)
+
+`npm run quest -- 09` no Railway: 10 ✅ 2 ❌. O mortal 300 e todos os itens raros (almas, safiras, pedras de boss, Pedras Arch, Pedra da Imortalidade, Sephirot) e o gold vêm pelo banco, então nenhum caso ficou bloqueado.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| AR-01 | ✅ | |
+| AR-02 | ✅ | |
+| AR-03 | ✅ | |
+| AR-04 | ✅ | |
+| AR-05 | ✅ | |
+| AR-06 | ✅ (o legado também recusa: EF_NOSANC) | |
+| AR-07 | ✅ | |
+| AR-08 | ✅ | |
+| AR-09 | ✅ | |
+| AR-10 | ❌ 1761 no lugar da 1760 | [#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) |
+| AR-11 | ❌ 1762/1763/1764 no lugar de 1761/1762/1763 | [#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) |
+| AR-12 | ✅ | |
+
+Finding: [018](../findings/018-sephirot-classe-deslocada.md).
