@@ -19,10 +19,10 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 10 | 2 | 0 | 0 |
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 14 | 0 | 0 | 0 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
-| [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 4 | 0 | 1 |
+| [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 5 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **85** | **41** | **0** | **18** |
+| | **Total** | **144** | **85** | **42** | **0** | **17** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -245,7 +245,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CE-06 | Mortal de origem baixo | controle | ✅ |  | Arch exibido 356 com MortalLevel 98: 5338 → notice 39 (vácuo, #407); 1742 → "O Mortal de origem precisa ter atingido o nivel 100"; banco igual |
 | CE-07 | Celestial | feliz | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) | Arch exibido 356 sem armadura, MortalLevel 99: 5338 → notice 39, nada muda; a 1742 é que vira Celestial (nível 0, Cythera 3500, capa 3199, SpecialBonus 855) |
 | CE-08 | 1742 com o botão direito | borda | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) | Arch exibido 356 com a 1742: SendArchEffect, vira Celestial (master 3, Cythera 3500, capa 3199); no legado a 1742 não faz nada |
-| CE-09 | Faixa da Cythera | borda | ⏳ | | |
+| CE-09 | Faixa da Cythera | borda | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) | Arch exibido 400, Cristal 4: 5338 → notice 39, nada muda; pela 1742 o Go dá Cythera 3502 e ArchLevel 5 (faixa certa) |
 
 <a id="13"></a>
 ## 13 — Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial
