@@ -161,6 +161,13 @@ const quest: QuestSpec = {
         };
       }),
     },
+    {
+      id: 'TM-05',
+      title: 'Aceitar de novo',
+      type: 'controle',
+      seed: async (db, n) => { await char(db, n, { flag: FLAG.aceita }); },
+      run: async (ctx) => withParty(ctx, true, (db, n) => char(db, n), async () => control(await talk(ctx, NPC.capMercenario, 1), 'terra_mistica 1, líder com membro, confirm 1')),
+    },
   ],
 };
 
