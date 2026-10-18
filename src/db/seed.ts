@@ -23,7 +23,7 @@ export function loadDbConfig(): DbConfig {
 export const CHAR_COLUMNS = [
   'class', 'level', 'exp', 'coin', 'str', 'int', 'dex', 'con', 'score_bonus', 'special_bonus', 'skill_bonus',
   'max_hp', 'max_mp', 'hp', 'mp', 'learned_skill', 'sec_learned_skill', 'save_x', 'save_y', 'citizen',
-  'class_master', 'soul', 'fame', 'celestial_lv40', 'celestial_lv90', 'celestial_circle', 'terra_mistica',
+  'class_master', 'clan', 'soul', 'fame', 'celestial_lv40', 'celestial_lv90', 'celestial_circle', 'terra_mistica',
   'arch_lv355', 'arch_lv370', 'mortal_level', 'celestial_arch_level', 'arch_crystal_stage',
 ] as const;
 export type CharColumn = (typeof CHAR_COLUMNS)[number];
@@ -95,6 +95,14 @@ export class Db {
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
       [OWNER[kind], ch.id, slot, item.index, e[0][0], e[0][1], e[1][0], e[1][1], e[2][0], e[2][1]],
     );
+  }
+
+  /** Preço da capa do reino em safiras (tabela `sapphire_balance`, store/kingdom_cape.go). */
+  async kingdomCapeQuote(): Promise<{ revision: number; hekalotia: number; akelonia: number }> {
+    const r = await this.c.query('SELECT version, hekalotia_cost, akelonia_cost FROM sapphire_balance WHERE singleton');
+    const x = r.rows[0];
+    if (!x) throw new Error('sapphire_balance vazia');
+    return { revision: Number(x.version), hekalotia: x.hekalotia_cost, akelonia: x.akelonia_cost };
   }
 
   async clearItem(name: string, kind: ItemKind, slot: number): Promise<void> {

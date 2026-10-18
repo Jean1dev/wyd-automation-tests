@@ -12,7 +12,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 13 | 1 | 0 | 0 |
 | [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 12 | 1 | 0 | 0 |
 | [04](#04) | Molar do Gárgula | 10 | 6 | 4 | 0 | 0 |
-| [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 0 | 0 | 0 | 13 |
+| [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 1 | 0 | 0 | 12 |
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 0 | 0 | 0 | 11 |
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 0 | 0 | 5 |
 | [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 0 | 0 | 0 | 7 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **33** | **16** | **0** | **95** |
+| | **Total** | **144** | **34** | **16** | **0** | **94** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -112,7 +112,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| CR-01 | Teleporte abaixo do nível | controle | ⏳ | | |
+| CR-01 | Teleporte abaixo do nível | controle | ✅ |  | Mortal exibido 199: o Guarda_Real recusa (NoticeReqNotMet 15), sem teleporte |
 | CR-02 | Teleporte | feliz | ⏳ | | |
 | CR-03 | Drop do emblema | feliz | ⏳ | | |
 | CR-04 | Rei abaixo do nível | controle | ⏳ | | |
