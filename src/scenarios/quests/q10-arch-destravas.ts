@@ -209,7 +209,7 @@ async function use(ctx: CaseCtx, slot: number): Promise<Use> {
   return r;
 }
 
-const noteU = (u: Use) => `${u.item}: ${fmtA(u.answer)}; nível ${u.before.level}→${u.after.level}, exp ${u.before.exp}→${u.after.exp}, inv [${u.before.carry}] → [${u.after.carry}]`;
+const noteU = (u: Use) => `${u.item}: ${[...u.answer.texts.map((t) => `"${t}"`), ...u.answer.notices.map((n) => `notice ${n}`)].join(', ') || 'sem resposta'}; nível ${u.before.level}→${u.after.level}, exp ${u.before.exp}→${u.after.exp}, inv [${u.before.carry}] → [${u.after.carry}]`;
 
 interface Crystals {
   uses: Use[];
