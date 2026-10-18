@@ -82,3 +82,26 @@ Os casos QST-01 a QST-07 já estão cobertos pelos cenários 2 e 4 e entram aqui
 - `src/scenarios/quest256Chain.ts` e `coveiroQuest.ts` (fases `level → gear → probe → ticket → handin → reset`). A fase nova `trophy` entra entre `handin` e `reset`.
 - `src/world/quest256.ts` e `coveiro.ts` (NPCs, arenas, spawns, `safeSpot`).
 - `src/bot/combat.ts` `fight` e `src/bot/grind.ts` para caçar dentro da arena; `src/bot/npc.ts` `useItem` para o troféu.
+
+## Situação (2026-10-18)
+
+Validado no Railway com `npm run quest -- 02`, todos os casos na arena do Coveiro (passo 1), com o nível, a classe, os tickets, os troféus e o equipamento semeados pelo banco. Resultado: 13 ✅ e 1 ❌. O único ❌ é o exp do troféu usado sem grupo: o legado dá 110 % da tabela (os 10 % de líder vão para quem usa), e o Go dá 100 %.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| QST-01 | ✅ |  |
+| QST-02 | ✅ |  |
+| QST-03 | ✅ |  |
+| QST-04 | ✅ |  |
+| QST-05 | ✅ |  |
+| QST-06 | ✅ |  |
+| QST-07 | ✅ |  |
+| QST-08 | ✅ |  |
+| QST-09 | ❌ | [#396](https://github.com/Jean1dev/w2pp-OpenWYD/issues/396) |
+| QST-10 | ✅ |  |
+| QST-11 | ✅ |  |
+| QST-12 | ✅ (informativo, só no Go) |  |
+| QST-13 | ✅ (informativo, só no Go) |  |
+| QST-14 | ✅ |  |
+
+Finding: [008](../findings/008-trofeu-quest256-sem-bonus-de-lider.md).
