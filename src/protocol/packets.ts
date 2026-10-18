@@ -311,6 +311,17 @@ export function chat(text: string): Buffer {
   return b;
 }
 
+/**
+ * MSG_MessageWhisper (0x0334): MobName[16] + String[128]. O cliente manda "/x args" como cochicho
+ * para "x"; o servidor trata os comandos pelo MobName (chat.go runCommand).
+ */
+export function whisper(name: string, text = ''): Buffer {
+  const b = Buffer.alloc(16 + 128);
+  putCstr(b, 0, 15, name);
+  putCstr(b, 16, 127, text);
+  return b;
+}
+
 // ---------------------------------------------------------------- S→C
 
 export interface SelCharSlot {

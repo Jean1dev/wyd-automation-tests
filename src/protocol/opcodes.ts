@@ -30,6 +30,7 @@ export const Op = {
   GetItem: 0x0270, // pegar item do chão (ItemID = id do chão + 10000)
   DropItem: 0x0272, // largar item do inventário no chão
   CombineItemLindy: 0x02c3, // combinação da Lindy (MSG_CombineItem: Item[8] + InvenPos[8])
+  CombineItemOdin: 0x02d2, // combinação do Alquimista Odin (mesmo corpo MSG_CombineItem)
   MessageChat: 0x0333,
   MessageWhisper: 0x0334,
   Ping: 0x03a0,
