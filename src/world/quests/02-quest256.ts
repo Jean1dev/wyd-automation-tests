@@ -112,3 +112,6 @@ export const HUNT_GEAR: Record<number, number> = { 2: 1230, 3: 1231, 4: 1232, 5:
 
 /** Atributos de um TK no exibido 115 (≈ 5 pontos por nível) para aguentar a Aparição (nv 98). */
 export const HUNT_ATTRS = { str: 320, dex: 120, con: 200, int: 10 } as const;
+
+/** BaseMaxHP semeado para a caça (um TK no exibido 115 com Con 200 fica nessa ordem). */
+export const HUNT_HP = 3000;

@@ -18,7 +18,7 @@ import { CLASS_MASTER, type Db } from '../../db/seed.ts';
 import { Op } from '../../protocol/opcodes.ts';
 import * as P from '../../protocol/packets.ts';
 import {
-  COVEIRO, HUNT_ATTRS, HUNT_GEAR, INTRUDER_PROBE, isInArea, ITEM, NPC, ROUTE_TO_ARMIA, ROUTE_TO_COVEIRO,
+  COVEIRO, HUNT_ATTRS, HUNT_GEAR, HUNT_HP, INTRUDER_PROBE, isInArea, ITEM, NPC, ROUTE_TO_ARMIA, ROUTE_TO_COVEIRO,
 } from '../../world/quests/02-quest256.ts';
 import { newCharName } from '../common.ts';
 import { carryOf, diffSlots, hasItem, type SlotItem } from './helpers.ts';
@@ -39,7 +39,8 @@ async function char(db: Db, name: string, storedLevel: number, o: { arch?: boole
 
 /** Atributos e equipamento de caça (TK), para aguentar a Aparição (nv 98) dentro da arena. */
 async function huntGear(db: Db, name: string): Promise<void> {
-  await db.setCharacter(name, { ...HUNT_ATTRS, hp: 5000, mp: 1000 });
+  // max_hp é o BaseMaxHP: o Go só soma IncHP no level up e 2 por ponto de Con (misc.go:63).
+  await db.setCharacter(name, { ...HUNT_ATTRS, max_hp: HUNT_HP, hp: HUNT_HP, max_mp: 600, mp: 600 });
   for (const [slot, index] of Object.entries(HUNT_GEAR)) await db.putItem(name, 'equip', Number(slot), { index });
 }
 
