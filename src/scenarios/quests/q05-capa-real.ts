@@ -268,6 +268,18 @@ const quest: QuestSpec = {
         return { pass: true, evidence: ev, note: `o 4081 caiu no inventário (slot ${slot}) ao matar ${k?.mob ?? '?'}; ${h.kills.length} kill(s) ${JSON.stringify(byMob)}, ${h.deaths} morte(s), ${h.minutes} min com a viagem` };
       },
     },
+    {
+      id: 'CR-04',
+      title: 'Rei abaixo do nível',
+      type: 'controle',
+      // Emblema e pagamento exato: só o nível pode barrar (no Go também).
+      seed: async (db, n) => { await char(db, n, KING_LEVEL.cape - 1); await putEmblem(db, n); await putExactPayment(db, n); },
+      run: async (ctx) => {
+        const k = await talkKing(ctx, NPC.reiHarabard, 1);
+        const r = kingControl(k, 'Mortal exibido 219 com o 4081 e as safiras');
+        return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
+      },
+    },
   ],
 };
 
