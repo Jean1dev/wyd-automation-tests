@@ -6,4 +6,5 @@ export const QUESTS: Record<string, () => Promise<QuestSpec>> = {
   '01': async () => (await import('./q01-novato.ts')).default,
   '02': async () => (await import('./q02-quest256.ts')).default,
   '03': async () => (await import('./q03-capa-verde.ts')).default,
+  '04': async () => (await import('./q04-molar-gargula.ts')).default,
 };
