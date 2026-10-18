@@ -370,6 +370,26 @@ const quest: QuestSpec = {
         return { pass: r.pass, evidence: kingEvidence(k), note: `545, exibido 256, 4081 e sem safiras: ${r.note}` };
       },
     },
+    {
+      id: 'CR-12',
+      title: 'Pagamento em safiras',
+      type: 'feliz',
+      // Pacotes 4131 que cobrem o preço com sobra (o legado consome o 4131 inteiro).
+      seed: async (db, n) => { await char(db, n, KING_LEVEL.cape); await putSapphires(db, n, Math.ceil((await hekalotiaPrice(db)) / 10), 0); },
+      run: async (ctx) => {
+        const k = await talkKing(ctx, NPC.reiHarabard, 1);
+        const r = kingTrade(k, { emblema: 0, capa: ITEM.mantoHekalotia, sapphires: 0 });
+        if (r.pass) return { pass: true, evidence: kingEvidence(k), note: `${k.before.sapphires / 10} × 4131: ${r.note}` };
+        // Evidência para a issue: com o pagamento exato (697) o Go entrega.
+        await ctx.reseed(async (db, n) => { await db.clearItem(n, 'carry', 0); await putExactPayment(db, n); });
+        const exact = await talkKing(ctx, NPC.reiHarabard, 1);
+        const ex = kingTrade(exact, { emblema: 0, capa: ITEM.mantoHekalotia, sapphires: 0 });
+        return {
+          pass: false, evidence: { surplus: kingEvidence(k), exact: { ...kingEvidence(exact), ok: ex.pass } },
+          note: `${k.before.sapphires / 10} × 4131 (valor ${k.before.sapphires}, preço ${k.price.hekalotia}): ${r.note}. Com ${exact.before.sapphires} × 697 (exato): ${ex.pass ? 'entrega' : 'não entrega'} — ${ex.note}`,
+        };
+      },
+    },
   ],
 };
 
