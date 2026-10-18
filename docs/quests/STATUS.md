@@ -11,7 +11,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 2 | 10 | 0 | 0 |
 | [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 13 | 1 | 0 | 0 |
 | [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 12 | 1 | 0 | 0 |
-| [04](#04) | Molar do Gárgula | 10 | 5 | 4 | 0 | 1 |
+| [04](#04) | Molar do Gárgula | 10 | 6 | 4 | 0 | 0 |
 | [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 0 | 0 | 0 | 13 |
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 0 | 0 | 0 | 11 |
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 0 | 0 | 5 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **32** | **16** | **0** | **96** |
+| | **Total** | **144** | **33** | **16** | **0** | **95** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -103,7 +103,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | MG-07 | Uso fora da faixa | controle | ✅ | [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) | exibido 255: recusa (NoticeCantUseHere 39), o 4122 fica, refinação intacta — vácuo: o Vol 194 é recusado para todos (#398) |
 | MG-08 | Slot vazio | borda | ❌ | [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) | Equip[3] vazio: NoticeCantUseHere, as outras peças continuam +0 +3 +7 +1 (banco também), AC 1512→1512 |
 | MG-09 | Flag persiste | borda | ❌ | [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) | pré-condição (MG-05) não acontece: o primeiro 4122 é recusado (NoticeCantUseHere); depois do relog, idem; não há flag MolarGargula para persistir |
-| MG-10 | Reset da arena | feliz | ⏳ | | |
+| MG-10 | Reset da arena | feliz | ✅ | | entrou pela Patrulha__; mandado para Armia (2097,2095) 53 s depois, às 16:17:29 UTC |
 
 <a id="05"></a>
 ## 05 — Capa do Reino (azul / vermelha) e a borda
