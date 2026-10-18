@@ -18,11 +18,11 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 3 | 4 | 0 | 0 |
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 10 | 2 | 0 | 0 |
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 14 | 0 | 0 | 0 |
-| [11](#11) | Alma do Mortal (Kibita) | 7 | 1 | 0 | 0 | 6 |
+| [11](#11) | Alma do Mortal (Kibita) | 7 | 2 | 0 | 0 | 5 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **75** | **37** | **0** | **32** |
+| | **Total** | **144** | **76** | **37** | **0** | **31** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -223,7 +223,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
 | KB-01 | Abaixo do nível | controle | ✅ |  | Mortal exibido 369 com a 5334: notice 15 (ReqNotMet), sem SendArchEffect; banco depois do relog: pedra fica, bit 30 0, capa 545 |
-| KB-02 | Pedra de outra classe | controle | ⏳ | | |
+| KB-02 | Pedra de outra classe | controle | ✅ |  | TK exibido 370 com a 5336 (Sol): notice 15, sem SendArchEffect; banco depois do relog: a 5336 fica, bit 30 0, capa 545 |
 | KB-03 | Alma do Mortal | feliz | ⏳ | | |
 | KB-04 | Depois do relogin | feliz | ⏳ | | |
 | KB-05 | Repetir | controle | ⏳ | | |
