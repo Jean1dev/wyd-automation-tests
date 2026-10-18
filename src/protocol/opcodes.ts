@@ -25,6 +25,8 @@ export const Op = {
   MasterGriff: 0x0ad9, // viagem do Mestre Grifo (MSG_STANDARDPARM2: WarpID, Ty)
   Trade: 0x0383, // troca entre jogadores (C↔S; o servidor repassa a oferta ao outro lado)
   QuitTrade: 0x0384, // cancela a troca (C↔S; S→C também fecha a janela depois da troca)
+  SendReqParty: 0x037f, // convite de grupo (C↔S; o servidor repassa ao convidado)
+  AcceptParty: 0x03ab, // aceitar o convite de grupo
   MessageChat: 0x0333,
   MessageWhisper: 0x0334,
   Ping: 0x03a0,

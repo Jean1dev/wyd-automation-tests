@@ -232,6 +232,31 @@ export function masterGriff(warpId: number, ty = 0): Buffer {
   return b;
 }
 
+/**
+ * MSG_SendReqParty (0x037F), 36 B: Class u8@0 PartyPos u8@1 Level u16@2 MaxHP u16@4 HP u16@6
+ * PartyID i16@8 (quem convida) MobName[16]@10 Unk i32@28 (o convidado) Target i16@32 (messages.go).
+ */
+export function sendReqParty(leaderId: number, targetId: number, o: { name: string; cls: number; level: number; hp: number; maxHp: number }): Buffer {
+  const b = Buffer.alloc(36);
+  b.writeUInt8(o.cls & 0xff, 0);
+  b.writeUInt16LE(Math.min(o.level, 0xffff), 2);
+  b.writeUInt16LE(Math.min(o.maxHp, 0xffff), 4);
+  b.writeUInt16LE(Math.min(o.hp, 0xffff), 6);
+  b.writeInt16LE(leaderId, 8);
+  putCstr(b, 10, 16, o.name);
+  b.writeInt32LE(targetId, 28);
+  b.writeInt16LE(targetId, 32);
+  return b;
+}
+
+/** MSG_AcceptParty (0x03AB), 20 B: LeaderID i16@0 MobName[16]@2 (o nome do líder). */
+export function acceptParty(leaderId: number, leaderName: string): Buffer {
+  const b = Buffer.alloc(20);
+  b.writeInt16LE(leaderId, 0);
+  putCstr(b, 2, 16, leaderName);
+  return b;
+}
+
 /** MSG_MessageChat (0x0333): String[96]. */
 export function chat(text: string): Buffer {
   const b = Buffer.alloc(96);
