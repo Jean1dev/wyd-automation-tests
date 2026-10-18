@@ -298,6 +298,17 @@ const quest: QuestSpec = {
         };
       },
     },
+    {
+      id: 'CR-06',
+      title: 'Capa pelo emblema',
+      type: 'feliz',
+      seed: async (db, n) => { await char(db, n, KING_LEVEL.cape); await putEmblem(db, n); },
+      run: async (ctx) => {
+        const k = await talkKing(ctx, NPC.reiHarabard, 1);
+        const r = kingTrade(k, { emblema: 0, capa: ITEM.mantoHekalotia, sapphires: 0 });
+        return { pass: r.pass, evidence: kingEvidence(k), note: `exibido 220, 4081 e sem safiras: ${r.note}` };
+      },
+    },
   ],
 };
 
