@@ -136,6 +136,31 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n); },
       run: async (ctx) => withParty(ctx, false, (db, n) => char(db, n), async () => control(await talk(ctx, NPC.capMercenario, 1), 'membro (a conta B lidera), confirm 1')),
     },
+    {
+      id: 'TM-04',
+      title: 'Aceitar',
+      type: 'feliz',
+      seed: async (db, n) => { await char(db, n); },
+      run: async (ctx) => withParty(ctx, true, (db, n) => char(db, n), async () => {
+        await goTo(ctx, NPC.capMercenario);
+        const first = await talkQuest(ctx.c, ctx.log, NPC.capMercenario, 4000, 1);
+        await sleep(2000);
+        // Na mesma sessão, um segundo pedido mostra a flag em memória: com 1 o Go recusa (NoticeReqNotMet).
+        const again = await talkQuest(ctx.c, ctx.log, NPC.capMercenario, 4000, 1);
+        const inMemory = again.notices.length > 0 && !first.notices.length;
+        await ctx.relog();
+        const saved = (await ctx.query((db, n) => db.character(n))).terra_mistica;
+        const pass = saved === FLAG.aceita;
+        const evidence = { first: { notices: first.notices, texts: first.texts }, again: { notices: again.notices, texts: again.texts }, inMemory, saved };
+        ctx.log.info('resultado do aceite', evidence);
+        return {
+          pass, evidence,
+          note: pass
+            ? `líder com a conta B no grupo, confirm 1: terra_mistica 0 → ${saved} no banco depois do relog (${answer(first)})`
+            : `líder com membro, confirm 1: ${answer(first)}; ${inMemory ? `o segundo pedido já recusa (${answer(again)}), a flag virou 1 em memória` : `o segundo pedido responde igual (${answer(again)})`}, mas terra_mistica ficou ${saved} no banco depois do relog`,
+        };
+      }),
+    },
   ],
 };
 
