@@ -12,6 +12,7 @@ Confirmado no Railway em 2026-10-18 (`reports/2026-10-18T16-5*-quest-05/CR-06`):
 | Verificação | Resultado |
 |---|---|
 | Mortal exibido 220, 4081 no Equip[13], sem safiras, `MSG_Quest` no Rei_Harabard com confirm 1 (CR-06) | ❌ 16:55:31 UTC, "Sao necessarias 4 safiras em pagamento exato."; Equip[13] continua 4081, Equip[15] vazio (banco igual) |
+| Mortal exibido 256 com a 545 e o 4081, sem safiras (CR-11) | ❌ 17:13:09 UTC, mesmo texto; a 545 não vira 543 e o 4081 fica (banco igual) |
 | Guarda_Real (CR-01, CR-02), drop do 4081 (CR-03), nível e preço do Rei (CR-04, CR-05) | ✅ |
 
 ## Comportamento esperado (legado)

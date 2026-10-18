@@ -359,6 +359,17 @@ const quest: QuestSpec = {
         return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
       },
     },
+    {
+      id: 'CR-11',
+      title: 'Borda pelo emblema',
+      type: 'feliz',
+      seed: async (db, n) => { await char(db, n, KING_LEVEL.border); await putCape(db, n, ITEM.mantoHekalotia); await putEmblem(db, n); },
+      run: async (ctx) => {
+        const k = await talkKing(ctx, NPC.reiHarabard, 1);
+        const r = kingTrade(k, { emblema: 0, capa: ITEM.mantoDoGuerreiro, sapphires: 0 });
+        return { pass: r.pass, evidence: kingEvidence(k), note: `545, exibido 256, 4081 e sem safiras: ${r.note}` };
+      },
+    },
   ],
 };
 
