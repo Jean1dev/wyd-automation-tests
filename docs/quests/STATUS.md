@@ -16,13 +16,13 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 4 | 7 | 0 | 0 |
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 5 | 0 | 0 |
 | [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 3 | 4 | 0 | 0 |
-| [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 9 | 2 | 0 | 1 |
+| [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 10 | 2 | 0 | 0 |
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 0 | 0 | 0 | 14 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 0 | 0 | 0 | 7 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **59** | **37** | **0** | **48** |
+| | **Total** | **144** | **60** | **37** | **0** | **47** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -191,7 +191,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | AR-09 | Sephirot faltando pedra | controle | ✅ |  | 1744–1750 + outra 1750 (falta a 1751), 30.001.000 de gold, confirm 1: notice 15; nada some no cliente nem no banco |
 | AR-10 | Sephirot | feliz | ❌ | [#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) | 8 Pedras Arch e 30.001.000 de gold, confirm 1 no Cap.Cavaleiros: pedras e 30M somem, mas entra a 1761 (Foema) no lugar da 1760 (cliente e banco) |
 | AR-11 | Sephirot de cada mestre | feliz | ❌ | [#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) | Foema_Ancian deu 1762 (esperado 1761), Mestre_Archi 1763 (1762), ForeLearner 1764 Poção_Combatente (1763); pedras e 30M somem |
-| AR-12 | Rei | coberto | ⏳ | | |
+| AR-12 | Rei | coberto | ✅ |  | 1742 no Equip[10], 1760 no Equip[11], armazenado 299: Rei_Glantuar volta à seleção com o Arch no slot 1 (SendArchEffect 1); banco: Arch class 0, master 1, nível 0, Equip[0] 6; mortal sem Equip[10]/[11] |
 
 <a id="10"></a>
 ## 10 — Destravas do Arch: Lindy 355/370 e Cristais
