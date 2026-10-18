@@ -17,12 +17,12 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 5 | 0 | 0 |
 | [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 3 | 4 | 0 | 0 |
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 10 | 2 | 0 | 0 |
-| [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 1 | 0 | 0 | 13 |
+| [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 2 | 0 | 0 | 12 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 0 | 0 | 0 | 7 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **61** | **37** | **0** | **46** |
+| | **Total** | **144** | **62** | **37** | **0** | **45** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -201,7 +201,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
 | LD-01 | Mortal na Lindy | controle | ✅ |  | Mortal exibido 355 com a receita, ao lado da Lindy (1707,1728): CombineComplete 0; inventário e banco iguais, Level355 0 |
-| LD-02 | Arch fora do nível | controle | ⏳ | | |
+| LD-02 | Arch fora do nível | controle | ✅ |  | Arch exibido 354 (armazenado 353) com a receita: CombineComplete 0; inventário e banco iguais, Level355 0 |
 | LD-03 | Receita errada | controle | ⏳ | | |
 | LD-04 | Destrava 355 | feliz | ⏳ | | |
 | LD-05 | 355 de novo | controle | ⏳ | | |
