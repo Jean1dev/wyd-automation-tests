@@ -218,6 +218,24 @@ export function getItem(itemId: number, destSlot: number): Buffer {
   return b;
 }
 
+/** MAX_COMBINE: posições da janela de combinação. */
+export const MAX_COMBINE = 8;
+
+/**
+ * MSG_CombineItem (0x03A6 e variantes como a Lindy 0x02C3), 72 B: STRUCT_ITEM Item[8]@0, InvenPos u8[8]@64
+ * (messages.go MsgCombineItemBody). Posição sem item = Item.sIndex 0 (o servidor ignora o InvenPos).
+ */
+export function combineItem(inputs: ({ slot: number; item: Item } | undefined)[]): Buffer {
+  const b = Buffer.alloc(MAX_COMBINE * 8 + MAX_COMBINE);
+  for (let i = 0; i < MAX_COMBINE; i++) {
+    const it = inputs[i];
+    if (!it || !it.item.index) continue;
+    writeItem(b, i * 8, it.item);
+    b[MAX_COMBINE * 8 + i] = it.slot;
+  }
+  return b;
+}
+
 /** MSG_Quest (0x028B), MSG_STANDARDPARM2: Parm1 = id do NPC @0, Parm2 = confirmação @4. */
 export function quest(npcId: number, confirm = 0): Buffer {
   const b = Buffer.alloc(8);

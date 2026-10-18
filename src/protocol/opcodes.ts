@@ -29,6 +29,7 @@ export const Op = {
   AcceptParty: 0x03ab, // aceitar o convite de grupo
   GetItem: 0x0270, // pegar item do chão (ItemID = id do chão + 10000)
   DropItem: 0x0272, // largar item do inventário no chão
+  CombineItemLindy: 0x02c3, // combinação da Lindy (MSG_CombineItem: Item[8] + InvenPos[8])
   MessageChat: 0x0333,
   MessageWhisper: 0x0334,
   Ping: 0x03a0,
@@ -65,6 +66,7 @@ export const Op = {
   CNFDropItem: 0x0175, // largou o item: u32 slot do inventário esvaziado
   StartTime: 0x03a1, // contador das arenas de quest (legado)
   SendArchEffect: 0x03b4, // Arch criado: STANDARDPARM com o slot do novo personagem
+  CombineComplete: 0x03a7, // resultado de combinação: STANDARDPARM 0 inválida, 1 sucesso, 2 falhou
   SendAffect: 0x03b9, // buffs/debuffs do personagem: STRUCT_AFFECT[32] {Type u8, Value u8, Level u16, Time u32}
 } as const;
 
