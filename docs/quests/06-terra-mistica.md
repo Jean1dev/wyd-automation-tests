@@ -70,3 +70,26 @@ Atenção: no legado, a **Lindy** `[3142]` (1705,1727) também tem o byte 17 = 1
 - `src/scenarios/playerTrade.ts` (duas contas na mesma sessão de teste).
 - `src/bot/combat.ts` e `src/bot/grind.ts` para o farm do passo 2.
 - O grupo é peça nova (`src/bot/party.ts`). Ela também serve para o QST-11 (troféu em grupo).
+
+## Situação (2026-10-18)
+
+Validado no Railway com `npm run quest -- 06`, com o nível, a classe, os atributos, o equipamento e a flag `terra_mistica` semeados pelo banco. O bot vai pelo Grifo até o Jardim dos Deuses e anda até Azran, saindo pelo norte da arena do Jardineiro (quem entra nela sem a QuestFlag volta para Armia). O grupo usa uma segunda conta nova (`secondChar`/`makeParty` em `src/scenarios/quests/helpers.ts`). Resultado: 4 ✅ e 7 ❌.
+
+- As travas do Cap.Mercenario (sozinho, confirm 0, membro, Arch) estão como no legado; o Go responde NoticeReqNotMet 15 onde o legado manda fala, e fica calado no confirm 0 e no aceite.
+- O aceite grava a flag 1 só em memória: o `characterSaveToProto` não envia `MortalTerraMistica`, e todo save grava 0 (TM-04). Pelo mesmo motivo, as flags semeadas 1 e 3 viram 0 no relog (TM-05, TM-06, TM-10); com a flag 3 perdida, a quest fica refazível.
+- O passo 2 não existe: 77 kills de rosto 239/241 em 10 min sem concluir; no legado a chance disso é de 1,9 % (TM-07).
+- O passo 3 não existe: o Cap.Explor. (Merchant 11) não tem rota no Go, e nenhum amuleto sai (TM-08, TM-09).
+
+| ID | Resultado | Issue |
+|---|---|---|
+| TM-01 | ✅ | |
+| TM-02 | ✅ | |
+| TM-03 | ✅ | |
+| TM-04 | ❌ | [#401](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) |
+| TM-05 | ❌ | [#401](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) |
+| TM-06 | ❌ | [#401](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) |
+| TM-07 | ❌ | [#402](https://github.com/Jean1dev/w2pp-OpenWYD/issues/402) |
+| TM-08 | ❌ | [#403](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) |
+| TM-09 | ❌ | [#403](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) |
+| TM-10 | ❌ | [#401](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) |
+| TM-11 | ✅ | |
