@@ -83,3 +83,28 @@ Duas quests do Arch de nível alto:
 
 - A conta do Arch e `src/scenarios/archCreation.ts`.
 - `src/bot/quest.ts` `useDustUntil`, `src/bot/npc.ts` `buyItem`/`useItem`.
+
+## Situação (2026-10-18)
+
+`npm run quest -- 10` no Railway: 14 ✅. O Arch nasce direto no banco (class_master ARCH) no nível do caso, com a exp mínima do nível, as flags `arch_lv355`/`arch_lv370`/`fame`/`arch_crystal_stage` e os ingredientes (413, 4127, cristais, Poeira de Fada), então nenhum caso ficou bloqueado. O bot anda até a Lindy pela rota do cenário 3, mas não clica nela (no Go o clique cai no Merchant 74, a Alma do Mortal); nem o legado nem o Go conferem a distância na combinação.
+
+- A trava de exp do Arch funciona: no 354 sem a Lindy a Poeira de Fada é recusada e, depois da 355, sobe de novo.
+- LD-06, CR-05 e CR-06 são as divergências documentadas e propositais do Go (aceita a 355 acima do 354; #327; #348). Ficam como informativas, sem issue.
+- O Pergaminho_Selado 4127 e a Fame ainda não têm fonte mapeada no jogo; os casos usam o banco.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| LD-01 | ✅ | |
+| LD-02 | ✅ | |
+| LD-03 | ✅ | |
+| LD-04 | ✅ | |
+| LD-05 | ✅ | |
+| LD-06 | ✅ informativo (Go aceita acima do 354) | |
+| LD-07 | ✅ | |
+| LD-08 | ✅ | |
+| CR-01 | ✅ | |
+| CR-02 | ✅ | |
+| CR-03 | ✅ | |
+| CR-04 | ✅ | |
+| CR-05 | ✅ informativo (#327) | |
+| CR-06 | ✅ informativo (#348) | |
