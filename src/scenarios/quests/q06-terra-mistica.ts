@@ -96,6 +96,20 @@ function control(t: Talk, what: string): CaseResult {
   };
 }
 
+/** Recompensa do Cap.Explor.: um amuleto da faixa com stEffect[0] = 43 no inventário e no banco, e a flag 3. */
+function reward(t: Talk, band: { min: number; max: number }, what: string): CaseResult {
+  const isAmulet = (x: SlotItem) => x.index >= band.min && x.index <= band.max;
+  const got = t.carry.gained.find(isAmulet);
+  const savedAmulet = t.savedCarry.find(isAmulet);
+  const pass = !!got && got.eff[0]?.[0] === AMULET_EF0 && !!savedAmulet && t.flag.saved === FLAG.recompensada;
+  return {
+    pass, evidence: { ...talkEvidence(t), amulet: got, savedAmulet },
+    note: pass
+      ? `${what}: recebeu o ${got!.index} (efeitos ${JSON.stringify(got!.eff)}), terra_mistica 3 no banco`
+      : `${what}: esperado um amuleto ${band.min}–${band.max} e a flag 3; ${got ? `ganhou ${got.index}` : 'nenhum item'} (${answer(t.talk)}), terra_mistica ${t.flag.before} → ${t.flag.saved} no banco`,
+  };
+}
+
 /** Leva uma segunda conta ao mundo, forma o grupo e roda `fn`; fecha a segunda conta no fim. */
 async function withParty<T>(ctx: CaseCtx, leaderIsA: boolean, seedB: (db: Db, n: string) => Promise<void>, fn: (p: { formed: boolean; invited: boolean; b: string }) => Promise<T>): Promise<T> {
   const b = await secondChar(ctx, seedB);
@@ -266,6 +280,13 @@ const quest: QuestSpec = {
             : `${h.kills.length} kills (${Object.entries(byMob).map(([k, v]) => `${v} ${k}`).join(', ')}) em ${h.minutes} min, ${h.deaths} mortes: nenhuma mensagem de conclusão, terra_mistica ${saved} no banco (no legado a chance de não concluir em ${h.kills.length} kills é ${miss}%)`,
         };
       },
+    },
+    {
+      id: 'TM-08',
+      title: 'Recompensa',
+      type: 'feliz',
+      seed: async (db, n) => { await char(db, n, { flag: FLAG.concluida, level: 100 }); },
+      run: async (ctx) => reward(await talk(ctx, NPC.capExplor, 0), AMULET.mistico, 'terra_mistica 2, exibido 101'),
     },
   ],
 };
