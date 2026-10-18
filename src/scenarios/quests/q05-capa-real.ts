@@ -55,7 +55,10 @@ async function putSapphires(db: Db, name: string, packs: number, units: number):
 }
 
 /** Pagamento que o Go aceita (exato): 4131 para as dezenas e 697 para o resto. */
-const putExactPayment = async (db: Db, name: string) => { const p = await hekalotiaPrice(db); await putSapphires(db, name, Math.floor(p / 10), p % 10); };
+const putExactPayment = async (db: Db, name: string, kingdom: 'hekalotia' | 'akelonia' = 'hekalotia') => {
+  const p = kingdom === 'hekalotia' ? await hekalotiaPrice(db) : (await db.kingdomCapeQuote()).akelonia;
+  await putSapphires(db, name, Math.floor(p / 10), p % 10);
+};
 
 // ---------------------------------------------------------------- ações
 
@@ -319,6 +322,18 @@ const quest: QuestSpec = {
         const priced = k.talk.texts.some((t) => (t.match(/\d+/g) ?? ([] as string[])).includes(String(k.price.hekalotia)));
         const r = kingControl(k, 'exibido 220, sem 4081 e sem safiras');
         return { pass: r.pass, evidence: { ...kingEvidence(k), priced }, note: r.note };
+      },
+    },
+    {
+      id: 'CR-08',
+      title: 'Rei do outro reino',
+      type: 'controle',
+      // Capa de Hekalotia no Rei de Akelonia, com nível de borda, 4081 e safiras: só o reino barra.
+      seed: async (db, n) => { await char(db, n, KING_LEVEL.border); await putCape(db, n, ITEM.mantoHekalotia); await putEmblem(db, n); await putExactPayment(db, n, 'akelonia'); },
+      run: async (ctx) => {
+        const k = await talkKing(ctx, NPC.reiGlantuar, 1);
+        const r = kingControl(k, '545 no Rei_Glantuar (exibido 256, 4081 e safiras)');
+        return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
       },
     },
   ],

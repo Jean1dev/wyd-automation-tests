@@ -12,7 +12,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 13 | 1 | 0 | 0 |
 | [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 12 | 1 | 0 | 0 |
 | [04](#04) | Molar do Gárgula | 10 | 6 | 4 | 0 | 0 |
-| [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 6 | 1 | 0 | 6 |
+| [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 7 | 1 | 0 | 5 |
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 0 | 0 | 0 | 11 |
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 0 | 0 | 5 |
 | [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 0 | 0 | 0 | 7 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **39** | **17** | **0** | **88** |
+| | **Total** | **144** | **40** | **17** | **0** | **87** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -119,7 +119,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CR-05 | Preço (ask) | feliz | ✅ | | confirm 0, exibido 220 com o 4081 e 4 safiras: "Sao necessarias 4 safiras." (preço do sapphire_balance); nada muda, banco igual |
 | CR-06 | Capa pelo emblema | feliz | ❌ | [#399](https://github.com/Jean1dev/w2pp-OpenWYD/issues/399) | exibido 220, 4081 no Equip[13], sem safiras: "Sao necessarias 4 safiras em pagamento exato."; o 4081 fica, Equip[15] vazio (banco igual) |
 | CR-07 | Sem emblema e sem safira | controle | ✅ | | exibido 220 sem 4081 e sem safiras: "Sao necessarias 4 safiras em pagamento exato."; nada muda, banco igual |
-| CR-08 | Rei do outro reino | controle | ⏳ | | |
+| CR-08 | Rei do outro reino | controle | ✅ | | 545 no Rei_Glantuar (exibido 256, 4081 e 14 safiras): NoticeReqNotMet 15 (o legado sai calado); nada muda, banco igual |
 | CR-09 | Capa já com borda | controle | ⏳ | | |
 | CR-10 | Borda antes do nível | controle | ⏳ | | |
 | CR-11 | Borda pelo emblema | feliz | ⏳ | | |
