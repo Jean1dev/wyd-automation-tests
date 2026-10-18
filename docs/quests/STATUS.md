@@ -15,14 +15,14 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 10 | 3 | 0 | 0 |
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 4 | 7 | 0 | 0 |
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 5 | 0 | 0 |
-| [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 1 | 0 | 0 | 6 |
+| [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 1 | 1 | 0 | 5 |
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 0 | 0 | 0 | 12 |
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 0 | 0 | 0 | 14 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 0 | 0 | 0 | 7 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **48** | **31** | **0** | **65** |
+| | **Total** | **144** | **48** | **32** | **0** | **64** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -166,7 +166,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
 | CD-01 | Purificar sem gold | controle | ✅ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | 447 no Equip[13], gold 999.999: nada muda (Equip[13] 447 e gold iguais no cliente e no banco depois do relog) — vácuo: Jeffi sem rota no Go (#405); o legado manda _NN_Need_1000000_Gold |
-| CD-02 | Purificar | feliz | ⏳ | | |
+| CD-02 | Purificar | feliz | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | 447 no Equip[13], gold 1.005.000: o Jeffi não responde (Merchant 12 sem rota); Equip[13] continua 447 e gold 1.005.000 no cliente e no banco depois do relog |
 | CD-03 | Shama sem círculo puro | controle | ⏳ | | |
 | CD-04 | Reiniciar | feliz | ⏳ | | |
 | CD-05 | Segundo círculo comum | controle | ⏳ | | |
