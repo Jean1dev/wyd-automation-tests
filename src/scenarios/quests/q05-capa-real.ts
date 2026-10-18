@@ -390,6 +390,17 @@ const quest: QuestSpec = {
         };
       },
     },
+    {
+      id: 'CR-13',
+      title: 'Mortal acima de 254 no Guarda',
+      type: 'controle',
+      seed: async (db, n) => { await char(db, n, GUARD_LEVEL.max); },
+      run: async (ctx) => {
+        const t = await talkGuard(ctx);
+        const pass = !t.talk.teleport && !t.inArea;
+        return { pass, evidence: guardSummary(t), note: pass ? `Mortal exibido 255: recusa (${talkAnswer(t.talk)}), sem teleporte, ficou em (${t.final.x},${t.final.y})` : `exibido 255 teleportado para (${t.final.x},${t.final.y})` };
+      },
+    },
   ],
 };
 
