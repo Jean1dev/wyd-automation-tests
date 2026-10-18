@@ -236,6 +236,18 @@ const quest: QuestSpec = {
         return { pass, evidence: guardSummary(t), note: pass ? `Mortal exibido 199: recusa (${talkAnswer(t.talk)}), sem teleporte, ficou em (${t.final.x},${t.final.y})` : `exibido 199 teleportado para (${t.final.x},${t.final.y})` };
       },
     },
+    {
+      id: 'CR-02',
+      title: 'Teleporte',
+      type: 'feliz',
+      seed: async (db, n) => { await char(db, n, GUARD_LEVEL.min); },
+      run: async (ctx) => {
+        const t = await talkGuard(ctx);
+        const to = t.talk.teleport?.to;
+        const pass = !!to && inTeleportSpread(to) && t.inArea;
+        return { pass, evidence: guardSummary(t), note: pass ? `Mortal exibido 200: teleportado para (${to!.x},${to!.y}), na área dos Cav._Mortal` : `exibido 200: ${to ? `teleportou para (${to.x},${to.y})` : `sem teleporte (${talkAnswer(t.talk)})`}` };
+      },
+    },
   ],
 };
 
