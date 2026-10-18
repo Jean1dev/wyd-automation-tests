@@ -19,10 +19,10 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 10 | 2 | 0 | 0 |
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 14 | 0 | 0 | 0 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
-| [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 2 | 0 | 3 |
+| [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 3 | 0 | 2 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **85** | **39** | **0** | **20** |
+| | **Total** | **144** | **85** | **40** | **0** | **19** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -243,7 +243,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CE-04 | Celestial com armadura | controle | ✅ |  | Arch exibido 356 com elmo 100 no Equip[1]: 5338 → notice 39 (vácuo: sem caso no Go, #407); 1742 → "Remova a armadura antes de usar a Pedra Ideal."; banco igual |
 | CE-05 | Arch abaixo do nível | controle | ✅ |  | Arch exibido 355: 5338 → notice 39 (vácuo, #407); 1742 → "Seu Arch precisa atingir o nivel 356"; banco igual |
 | CE-06 | Mortal de origem baixo | controle | ✅ |  | Arch exibido 356 com MortalLevel 98: 5338 → notice 39 (vácuo, #407); 1742 → "O Mortal de origem precisa ter atingido o nivel 100"; banco igual |
-| CE-07 | Celestial | feliz | ⏳ | | |
+| CE-07 | Celestial | feliz | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) | Arch exibido 356 sem armadura, MortalLevel 99: 5338 → notice 39, nada muda; a 1742 é que vira Celestial (nível 0, Cythera 3500, capa 3199, SpecialBonus 855) |
 | CE-08 | 1742 com o botão direito | borda | ⏳ | | |
 | CE-09 | Faixa da Cythera | borda | ⏳ | | |
 
