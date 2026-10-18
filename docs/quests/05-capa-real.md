@@ -91,3 +91,30 @@ A partir do nível 255, o mesmo Rei troca a capa sem borda pela capa com borda.
 ## Reaproveitamento
 
 - `src/world/arch.ts` (`NPC.rei`, rotas), `talkKing` de `src/scenarios/archCreation.ts`, `src/bot/equip.ts` (emblema no slot 13).
+
+## Situação (2026-10-18)
+
+Validado no Railway com `npm run quest -- 05`, com o nível, a classe, os atributos, o equipamento, o 4081, a capa e as safiras semeados pelo banco (o preço vem da tabela `sapphire_balance`, a mesma que o Go lê). O bot anda de Armia até o castelo de Hekalotia (Guarda_Real e Rei_Harabard) ou até o Rei_Glantuar; o Rei recebe confirm 1 (ou 0 no pedido de preço). Resultado: 10 ✅ e 3 ❌.
+
+- O Guarda_Real, o drop do 4081 e as travas do Rei (nível, reino, capa com borda, borda antes do 256) estão como no legado. O 4081 caiu no 15º kill, em 8,7 min com a viagem.
+- O caminho do 4081 não existe no Go: com o emblema e sem safiras, o Rei recusa a capa (CR-06) e a borda (CR-11).
+- O Go só aceita pagamento exato: um 4131 para o preço 4 é recusado; com 4 × 697 a capa sai e o Go grava `clan` = 7 (CR-12).
+- Diferenças só de mensagem, sem efeito: o Go manda NoticeReqNotMet onde o legado manda `_NN_Need_Level` ou sai calado (CR-04, CR-08, CR-10) e "A capa deste reino ja esta completa." no lugar da bênção (CR-09).
+
+| ID | Resultado | Issue |
+|---|---|---|
+| CR-01 | ✅ | |
+| CR-02 | ✅ | |
+| CR-03 | ✅ | |
+| CR-04 | ✅ | |
+| CR-05 | ✅ | |
+| CR-06 | ❌ | [#399](https://github.com/Jean1dev/w2pp-OpenWYD/issues/399) |
+| CR-07 | ✅ | |
+| CR-08 | ✅ | |
+| CR-09 | ✅ | |
+| CR-10 | ✅ | |
+| CR-11 | ❌ | [#399](https://github.com/Jean1dev/w2pp-OpenWYD/issues/399) |
+| CR-12 | ❌ | [#400](https://github.com/Jean1dev/w2pp-OpenWYD/issues/400) |
+| CR-13 | ✅ | |
+
+Findings: [011](../findings/011-rei-sem-emblema-do-reino.md), [012](../findings/012-rei-pagamento-exato-em-safiras.md).
