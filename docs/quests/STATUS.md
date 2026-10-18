@@ -282,4 +282,63 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 ## Issues abertas
 
-(nenhuma ainda)
+Rodada de 2026-10-18, no tm-server do Railway (w2pp-OpenWYD `origin/main` b392705). Todas as issues estão em [Jean1dev/w2pp-OpenWYD](https://github.com/Jean1dev/w2pp-OpenWYD/issues). A coluna "Casos" traz os ❌ de cada uma: 49 no total.
+
+| Issue | Tipo | O que falta ou está errado no Go | Casos ❌ | Finding |
+|---|---|---|---|---|
+| [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | bug | Quest do novato ausente. O Treinador1 é roteado como Coveiro | NOV-02…09, NOV-11, NOV-12 (10) | [007](../findings/007-quest-novato-ausente.md) |
+| [#396](https://github.com/Jean1dev/w2pp-OpenWYD/issues/396) | bug | Troféu da Quest 256 usado sem grupo não dá os 10 % do líder | QST-09 | [008](../findings/008-trofeu-quest256-sem-bonus-de-lider.md) |
+| [#397](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) | bug | Lider_Aprendiz sem rota: o Arch não recebe a Capa Verde | CV-10 | [009](../findings/009-lider-aprendiz-ausente.md) |
+| [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) | bug | O uso do Molar do Gárgula não refina; falta a flag | MG-05, MG-06, MG-08, MG-09 | 010 |
+| [#399](https://github.com/Jean1dev/w2pp-OpenWYD/issues/399) | bug | O Rei não aceita o Emblema do Reino (4081) | CR-06, CR-11 | 011 |
+| [#400](https://github.com/Jean1dev/w2pp-OpenWYD/issues/400) | bug | O Rei exige pagamento exato em safiras | CR-12 | 012 |
+| [#401](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) | bug | `terra_mistica` não é salva (volta a 0 no relog) | TM-04, TM-05, TM-06, TM-10 | 013 |
+| [#402](https://github.com/Jean1dev/w2pp-OpenWYD/issues/402) | bug | Terra Mística, passo 2: as mortes não contam | TM-07 | 014 |
+| [#403](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) | bug | Terra Mística, passo 3: Cap.Explor. sem rota, sem amuleto | TM-08, TM-09 | 015 |
+| [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) | bug | Pílula do Poder Mágico (470) sem efeito e sem flag | PO-01, PO-01b, PO-02, PO-03, PO-04 | 016 |
+| [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | bug | Jeffi e Shaman sem rota (Círculo Divino) | CD-02, CD-04, CD-06, CD-07 | 017 |
+| [#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) | bug (já existia) | Mestres de skill entregam a Sephirot da classe seguinte | AR-10, AR-11 | 018 |
+| [#406](https://github.com/Jean1dev/w2pp-OpenWYD/issues/406) | bug | O Rei não faz a Pedra Ideal (5338) | CE-01, CE-03 | 019 |
+| [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) | bug | O Celestial sai pela 1742 e a 5338 é recusada | CE-07, CE-08, CE-09 | 020 |
+| [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | enhancement | Pedra da Fúria (3020) sem uso: Lv90, Arcana e Reset | CL-05…CL-08 | 021 |
+| [#409](https://github.com/Jean1dev/w2pp-OpenWYD/issues/409) | enhancement | Adds do diadema do Sub-Celestial (`SetCircletSubGod`) | CL-10 | 022 |
+| [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | enhancement | Sub-Celestial ausente: criação pela 5338 e Urnammu | SC-03, SC-06 | 023 |
+
+As issues sem label no GitHub contam como bug nesta tabela: são divergências do legado.
+
+## ✅ que precisam ser rodados de novo
+
+Estes casos passaram, mas o resultado não prova a regra.
+
+- **No vácuo:** são controles que só "passam" porque o NPC ou o item não tem código no Go, e o servidor não responde a ninguém. Rode de novo depois da correção da issue indicada:
+  - CV-11 e CV-12 (#397);
+  - MG-07 (#398);
+  - CD-01, CD-03 e CD-05 (#405);
+  - CE-04, CE-05 e CE-06 (#407);
+  - CL-04 (#408);
+  - SC-01, SC-02, SC-04, SC-05 e SC-07 (#410).
+- **Informativos:** o Go diverge do legado de propósito. Esses ficam registrados e não viram issue.
+  - QST-12 e QST-13: atalhos que só o Go tem para a arena do Coveiro (botão direito na Vela e o Mestre_Grifo).
+  - LD-06: o Arch acima do 354 passa na Lindy sem a destrava do 355, por causa da trava de exp do Go.
+  - 10/CR-05: o Mortal não usa os Cristais (#327).
+  - 10/CR-06: o Cristal com exp insuficiente zera o nível (#348).
+  - Os IDs `CR-` das quests 05 e 10 se repetem, por isso o prefixo "10/".
+
+## Próximos passos
+
+1. **Ordem sugerida das correções:**
+   - #401 primeiro: é uma linha no `characterSaveToProto` e destrava os outros casos da Terra Mística;
+   - depois #395, que bloqueia o novato inteiro;
+   - depois as rotas de NPC ausentes: #397, #403 e #405;
+   - depois os itens de uso: #398, #404 e #408;
+   - por último as regras do Rei e do Celestial: #399, #400, #406, #407 e #390;
+   - #409 e #410 são features grandes do Sub-Celestial.
+2. **Depois de cada correção:**
+   - conferir o deploy do tm-server;
+   - rodar de novo a quest inteira (`npm run quest -- NN`) e os casos no vácuo dela;
+   - marcar o finding como corrigido.
+3. **Pendências de teste sem issue:**
+   - Na Poeira de Fada, o Celestial usaria a curva de exp mortal (`item.go:877`, contra `_MSG_UseItem.cpp:1017`). Isso vem só da leitura do código e não foi medido.
+   - O banco não guarda a 2ª ficha do Sub-Celestial (`SaveCelestial[1]`). A classe e o nível do Sub não dão para conferir.
+   - O Pergaminho_Selado 4127 e a Fama ainda não têm fonte mapeada no jogo; nos casos, vêm do banco.
+   - As arenas dos passos 2 a 5 da Quest 256 só estão cobertas pelo cenário 4. Os troféus delas não foram rodados.
