@@ -189,6 +189,25 @@ export function useItem(slot: number, gridX = 0, gridY = 0): Buffer {
   return b;
 }
 
+/** MSG_DropItem (0x0272), 16 B: SourType@0 SourPos@4 Rotate@8 GridX u16@12 GridY u16@14 (messages.go MsgDropItemBody). */
+export function dropItem(slot: number, gridX: number, gridY: number): Buffer {
+  const b = Buffer.alloc(16);
+  b.writeInt32LE(PLACE_CARRY, 0);
+  b.writeInt32LE(slot, 4);
+  b.writeUInt16LE(gridX, 12);
+  b.writeUInt16LE(gridY, 14);
+  return b;
+}
+
+/** MSG_GetItem (0x0270), 12 B: ItemID@0 (id do chão + 10000) DestType@4 DestPos@8 (messages.go MsgGetItemBody). */
+export function getItem(itemId: number, destSlot: number): Buffer {
+  const b = Buffer.alloc(12);
+  b.writeInt32LE(itemId, 0);
+  b.writeInt32LE(PLACE_CARRY, 4);
+  b.writeInt32LE(destSlot, 8);
+  return b;
+}
+
 /** MSG_Quest (0x028B), MSG_STANDARDPARM2: Parm1 = id do NPC @0, Parm2 = confirmação @4. */
 export function quest(npcId: number, confirm = 0): Buffer {
   const b = Buffer.alloc(8);

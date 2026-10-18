@@ -27,6 +27,8 @@ export const Op = {
   QuitTrade: 0x0384, // cancela a troca (C↔S; S→C também fecha a janela depois da troca)
   SendReqParty: 0x037f, // convite de grupo (C↔S; o servidor repassa ao convidado)
   AcceptParty: 0x03ab, // aceitar o convite de grupo
+  GetItem: 0x0270, // pegar item do chão (ItemID = id do chão + 10000)
+  DropItem: 0x0272, // largar item do inventário no chão
   MessageChat: 0x0333,
   MessageWhisper: 0x0334,
   Ping: 0x03a0,
@@ -58,6 +60,9 @@ export const Op = {
   SendItem: 0x0182, // atualiza um slot do inventário
   UpdateCarry: 0x0185, // inventário inteiro (Carry[64]) + gold, depois da troca
   CNFCheck: 0x0386, // troca: o servidor aceitou a minha confirmação
+  DecayItem: 0x016f, // item do chão sumiu (u32 ItemID)
+  CNFGetItem: 0x0171, // pegou o item do chão: u32 slot do inventário
+  CNFDropItem: 0x0175, // largou o item: u32 slot do inventário esvaziado
   StartTime: 0x03a1, // contador das arenas de quest (legado)
   SendArchEffect: 0x03b4, // Arch criado: STANDARDPARM com o slot do novo personagem
   SendAffect: 0x03b9, // buffs/debuffs do personagem: STRUCT_AFFECT[32] {Type u8, Value u8, Level u16, Time u32}

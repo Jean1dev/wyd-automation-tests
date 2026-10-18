@@ -14,7 +14,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [04](#04) | Molar do Gárgula | 10 | 6 | 4 | 0 | 0 |
 | [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 10 | 3 | 0 | 0 |
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 4 | 7 | 0 | 0 |
-| [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 0 | 0 | 5 |
+| [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 1 | 0 | 4 |
 | [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 0 | 0 | 0 | 7 |
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 0 | 0 | 0 | 12 |
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 0 | 0 | 0 | 14 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **47** | **26** | **0** | **71** |
+| | **Total** | **144** | **47** | **27** | **0** | **70** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -152,7 +152,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| PO-01 | Pegar a pílula | feliz | ⏳ | | |
+| PO-01 | Pegar a pílula | feliz | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) | Mortal armazenado 49, a 470 largada aos pés e pega (MSG_GetItem): CNFGetItem, a pílula volta ao inventário; SkillBonus 147→147; a 470 continua no banco depois do relog |
 | PO-01b | Pegar com a flag já gravada | controle | ⏳ | | |
 | PO-02 | Usar a pílula | feliz | ⏳ | | |
 | PO-03 | Segunda pílula | controle | ⏳ | | |
