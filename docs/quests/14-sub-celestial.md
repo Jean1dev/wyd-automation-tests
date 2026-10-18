@@ -53,3 +53,20 @@ Depois, o Urnammu troca a classe dessa ficha por 2000 de Fama e outra Sephirot.
 ## Reaproveitamento
 
 - A cadeia de personagens dos arquivos 09 → 12 → 13; `src/world/arch.ts` (Evolucao: 5338 e Sephirot).
+
+## Situação (2026-10-18)
+
+`npm run quest -- 14` no Railway: 5 ✅ 2 ❌, os cinco controles no vácuo. O Celestial (class_master 3, ou 4 para `CELESTIALCS`) nasce no banco no armazenado 119/120, com a exp da curva do Celestial do Go, `celestial_lv40/lv90` 1, a Fama, a Sephirot no Equip[11] e a 5338 no slot 20. Para chegar ao Urnammu, o ponto da Gema Estelar é semeado em (3235,1688) (`save_x/save_y`) e o bot usa o Pergaminho_do_Teleporte (699). O Go não tem o teleporte Deserto → Kefra do legado, e o `/kefra` dele vai para outro lugar.
+
+- **Sub-Celestial (#410):** a 5338 é recusada para o Celestial (notice 39). O Urnammu aparece (id 12901), mas não responde ao `MSG_Quest`. O Go não tem a ficha `SaveCelestial[1]`, então a classe e o nível do Sub não dá para conferir em nenhum caso.
+- Os controles SC-01/02/04 (5338) e SC-05/07 (Urnammu) "passam" só porque nada acontece.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| SC-01 | ✅ (vácuo) | |
+| SC-02 | ✅ (vácuo) | |
+| SC-03 | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) |
+| SC-04 | ✅ (vácuo) | |
+| SC-05 | ✅ (vácuo) | |
+| SC-06 | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) |
+| SC-07 | ✅ (vácuo) | |
