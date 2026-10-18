@@ -25,7 +25,8 @@ import type { CaseCtx, QuestSpec } from './runner.ts';
 const inArea = (c: GameClient) => inAreaXY(c.self!.x, c.self!.y);
 const pos = (c: GameClient) => ({ x: c.self!.x, y: c.self!.y });
 const equipAt = (c: GameClient, slot: number) => c.self!.equip[slot]?.index ?? 0;
-const SAPPHIRES = [ITEM.safira, ITEM.pacoteSafiras] as number[];
+/** Nível ARMAZENADO da caça (exibido 241): ainda dentro da faixa do Guarda_Real. */
+const HUNT_LEVEL = 240;
 
 // ---------------------------------------------------------------- seed
 
@@ -170,6 +171,7 @@ function kingTrade(k: KingTalk, want: { capa: number; emblema: number; sapphires
 // ---------------------------------------------------------------- caça do emblema (CR-03)
 
 interface Hunt {
+  entries: string[];
   kills: { t: string; mob: string; emblem: boolean }[];
   deaths: number;
   dropAt?: string;
@@ -179,14 +181,16 @@ interface Hunt {
 async function huntEmblem(ctx: CaseCtx, untilMs: number): Promise<Hunt> {
   const c = () => ctx.c;
   const t0 = Date.now();
-  const h: Hunt = { kills: [], deaths: 0, minutes: 0 };
+  const h: Hunt = { entries: [], kills: [], deaths: 0, minutes: 0 };
   while (Date.now() < untilMs && c().findItem(ITEM.emblemaDoReino) < 0) {
     const me = c().self!;
     if (c().isClosed) throw new Error('conexão caiu na caça do emblema');
     if (me.hp <= 0) { h.deaths++; await reviveAfterDeath(c(), ctx.log); continue; }
     if (!inArea(c())) {
-      await goTo(ctx, NPC.guardaReal);
-      await walkPath(c(), ROUTE_TO_AREA, { abort: () => me.hp <= 0 });
+      // Pelo Guarda_Real (como um jogador); se ele não mandar, a pé (a área não tem guarda).
+      const t = await talkGuard(ctx);
+      h.entries.push(t.inArea ? 'guarda' : 'a pé');
+      if (!t.inArea) await walkPath(c(), ROUTE_TO_AREA, { abort: () => me.hp <= 0 });
       continue;
     }
     if (me.hp < me.maxHp * 0.4) {
@@ -246,6 +250,22 @@ const quest: QuestSpec = {
         const to = t.talk.teleport?.to;
         const pass = !!to && inTeleportSpread(to) && t.inArea;
         return { pass, evidence: guardSummary(t), note: pass ? `Mortal exibido 200: teleportado para (${to!.x},${to!.y}), na área dos Cav._Mortal` : `exibido 200: ${to ? `teleportou para (${to.x},${to.y})` : `sem teleporte (${talkAnswer(t.talk)})`}` };
+      },
+    },
+    {
+      id: 'CR-03',
+      title: 'Drop do emblema',
+      type: 'feliz',
+      timeoutMs: 20 * 60_000,
+      seed: async (db, n) => { await char(db, n, HUNT_LEVEL); },
+      run: async (ctx) => {
+        const h = await huntEmblem(ctx, Date.now() + 15 * 60_000);
+        const slot = ctx.c.findItem(ITEM.emblemaDoReino);
+        const byMob = h.kills.reduce<Record<string, number>>((m, k) => ((m[k.mob] = (m[k.mob] ?? 0) + 1), m), {});
+        const ev = { hunt: h, byMob, damage: ctx.c.self!.damage, maxHp: ctx.c.self!.maxHp };
+        if (slot < 0) return { pass: false, evidence: ev, note: `${h.minutes} min, kills ${JSON.stringify(byMob)}, ${h.deaths} morte(s), sem o 4081` };
+        const k = h.kills.find((x) => x.emblem);
+        return { pass: true, evidence: ev, note: `o 4081 caiu no inventário (slot ${slot}) ao matar ${k?.mob ?? '?'}; ${h.kills.length} kill(s) ${JSON.stringify(byMob)}, ${h.deaths} morte(s), ${h.minutes} min com a viagem` };
       },
     },
   ],
