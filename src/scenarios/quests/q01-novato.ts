@@ -100,6 +100,17 @@ function summary(t: Talk) {
 
 const unreached = (want: number, got: number) => `pré-condição Newbie = ${want} não alcançada: o passo ${got + 1} não teve efeito`;
 
+/**
+ * A pré-condição não foi alcançada: ainda fala com o NPC do caso, para registrar como ele
+ * responde fora da sequência (evidência para a issue), e reprova.
+ */
+async function unreachedAt(ctx: CaseCtx, ev: Record<string, unknown>, want: number, got: number, npc: NpcSpec): Promise<CaseResult> {
+  const t = await talk(ctx, npc);
+  ev.alvo = summary(t);
+  const resp = t.talk.notices.length ? `notices ${t.talk.notices.join(',')}` : t.talk.texts.length ? `"${t.talk.texts.join(' | ')}"` : 'sem resposta';
+  return { pass: false, evidence: ev, note: `${unreached(want, got)}; ${npc.name} direto: ${resp}${nothingChanged(t) ? ', nada mudou' : ', mexeu no personagem'}` };
+}
+
 /** Itens do banco depois de um relog (o que o servidor salvou). */
 async function savedItems(ctx: CaseCtx) {
   await ctx.relog();
@@ -145,7 +156,7 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         const ev: Record<string, unknown> = {};
         const got = await advance(ctx, 1, ev);
-        if (got < 1) return { pass: false, evidence: ev, note: unreached(1, got) };
+        if (got < 1) return unreachedAt(ctx, ev, 1, got, NPC.treinador1);
         const t = await talk(ctx, NPC.treinador1);
         ev.denovo = summary(t);
         const pass = nothingChanged(t);
@@ -160,7 +171,7 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         const ev: Record<string, unknown> = {};
         const got = await advance(ctx, 1, ev);
-        if (got < 1) return { pass: false, evidence: ev, note: unreached(1, got) };
+        if (got < 1) return unreachedAt(ctx, ev, 1, got, NPC.treinador3);
         const t = await talk(ctx, NPC.treinador3);
         ev.treinador3 = summary(t);
         const pass = nothingChanged(t);
@@ -175,7 +186,8 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         const ev: Record<string, unknown> = {};
         const got = await advance(ctx, 2, ev);
-        if (got < 2) return { pass: false, evidence: ev, note: got < 1 ? unreached(1, got) : 'Treinador2 não refez os adicionais da Lança_Curva (ReqLvl 23)' };
+        if (got < 1) return unreachedAt(ctx, ev, 1, got, NPC.treinador2);
+        if (got < 2) return { pass: false, evidence: ev, note: 'Treinador2 não refez os adicionais da Lança_Curva (ReqLvl 23)' };
         const weapon = equipOf(ctx.c).find((x) => x.slot === 6);
         const saved = await savedItems(ctx);
         ev.saved = saved.equip.find((x) => x.slot === 6);
@@ -191,7 +203,7 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         const ev: Record<string, unknown> = {};
         const got = await advance(ctx, 1, ev);
-        if (got < 1) return { pass: false, evidence: ev, note: unreached(1, got) };
+        if (got < 1) return unreachedAt(ctx, ev, 1, got, NPC.treinador2);
         const t2 = await talk(ctx, NPC.treinador2);
         ev.passo2 = summary(t2);
         const weaponSame = !t2.equip.gained.some((x) => x.slot === 6);
@@ -211,7 +223,8 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         const ev: Record<string, unknown> = {};
         const got = await advance(ctx, 3, ev);
-        if (got < 3) return { pass: false, evidence: ev, note: got < 2 ? unreached(2, got) : 'Treinador3 não pôs +3 nas peças' };
+        if (got < 2) return unreachedAt(ctx, ev, 2, got, NPC.treinador3);
+        if (got < 3) return { pass: false, evidence: ev, note: 'Treinador3 não pôs +3 nas peças' };
         const saved = await savedItems(ctx);
         ev.saved = saved.equip;
         const pass = saved.equip.filter((x) => x.slot >= 1 && x.slot <= 7).every((x) => effValue(x, EF_SANC) === 3);
@@ -228,7 +241,8 @@ const quest: QuestSpec = {
         const got = await advance(ctx, 3, ev);
         const slot2 = ctx.c.self!.equip[2];
         ev.equip2 = slot2;
-        if (got < 3) return { pass: false, evidence: ev, note: got < 2 ? unreached(2, got) : 'Treinador3 não pôs +3 nas peças' };
+        if (got < 2) return unreachedAt(ctx, ev, 2, got, NPC.treinador3);
+        if (got < 3) return { pass: false, evidence: ev, note: 'Treinador3 não pôs +3 nas peças' };
         return { pass: true, evidence: ev, note: `peças com +3; Equip[2] vazio ficou ${slot2?.index ? `com o item ${slot2.index}` : `vazio (efeitos ${JSON.stringify(slot2?.eff ?? [])})`}` };
       },
     },
@@ -240,7 +254,8 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         const ev: Record<string, unknown> = {};
         const got = await advance(ctx, 4, ev);
-        if (got < 4) return { pass: false, evidence: ev, note: got < 3 ? unreached(3, got) : 'Chefe_de_Treino não trocou o Emblema_Orc' };
+        if (got < 3) return unreachedAt(ctx, ev, 3, got, NPC.chefe);
+        if (got < 4) return { pass: false, evidence: ev, note: 'Chefe_de_Treino não trocou o Emblema_Orc' };
         const saved = await savedItems(ctx);
         ev.saved = saved.carry;
         const pass = !saved.carry.some((x) => x.index === ITEM.emblemaOrc) && saved.carry.some((x) => STEP4_REWARDS.includes(x.index));
@@ -275,7 +290,7 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         const ev: Record<string, unknown> = {};
         const got = await advance(ctx, 2, ev);
-        if (got < 2) return { pass: false, evidence: ev, note: unreached(2, got) };
+        if (got < 2) return unreachedAt(ctx, ev, 2, got, NPC.treinador2);
         await ctx.relog();
         const t = await talk(ctx, NPC.treinador2);
         ev.depoisDoRelog = summary(t);

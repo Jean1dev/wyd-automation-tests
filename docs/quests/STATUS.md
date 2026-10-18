@@ -8,7 +8,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | # | Quest | Casos | ✅ | ❌ | ⏸️ | ⏳ |
 |---|---|---|---|---|---|---|
-| [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 1 | 1 | 0 | 10 |
+| [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 1 | 2 | 0 | 9 |
 | [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 0 | 0 | 0 | 14 |
 | [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 0 | 0 | 0 | 13 |
 | [04](#04) | Molar do Gárgula | 10 | 0 | 0 | 0 | 10 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **1** | **1** | **0** | **142** |
+| | **Total** | **144** | **1** | **2** | **0** | **141** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -33,7 +33,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 |---|---|---|---|---|---|
 | NOV-01 | Passo 1 sem a chave | controle | ✅ | | nada mudou no inventário; o Go responde com o NoticeReqNotMet do Coveiro (não a fala Cheerup1) |
 | NOV-02 | Passo 1 | feliz | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | com a 451 o Treinador1 responde NoticeReqNotMet (rota do Coveiro); sem Kit 682 |
-| NOV-03 | Passo 1 de novo | controle | ⏳ | | |
+| NOV-03 | Passo 1 de novo | controle | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | pré-condição Newbie 1 inalcançável (passo 1 sem efeito); Treinador1 de novo: NoticeReqNotMet, nada muda |
 | NOV-04 | Pular passo | controle | ⏳ | | |
 | NOV-05 | Passo 2 | feliz | ⏳ | | |
 | NOV-06 | Passo 2 com arma de ReqLvl > 39 | borda | ⏳ | | |
