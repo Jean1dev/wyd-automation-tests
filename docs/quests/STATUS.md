@@ -20,9 +20,9 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 14 | 0 | 0 | 0 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 5 | 0 | 0 |
-| [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 4 | 3 | 0 | 3 |
+| [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 4 | 4 | 0 | 2 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **89** | **45** | **0** | **10** |
+| | **Total** | **144** | **89** | **46** | **0** | **9** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -261,7 +261,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CL-05 | Lv90 | feliz | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | Celestial exibido 90, Fama 600: botão direito na 3020 sem resposta; Fama 600, Lv90 0, sem 3502, a pedra fica |
 | CL-06 | Arcana | feliz | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | Celestial exibido 200, Fama 600, 5334–5337, Equip[1] vazio: 3020 sem resposta; pedras, Fama e Circle 0 iguais, sem 3507 |
 | CL-07 | Arcana herdando o `Circle` | borda | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | Celestial exibido 200 com Circle 1: 3020 sem resposta; exp, Fama e pedras iguais (legado: ramo Reset, exp −20M) |
-| CL-08 | Reset | feliz | ⏳ | | |
+| CL-08 | Reset | feliz | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | Circle 1, 3507 no Equip[1], Fama 600: 3020 sem resposta; exp 2219000000 e Fama iguais; o contador Reset nem existe no Go |
 | CL-09 | Comandos que pulam quest | borda | ⏳ | | |
 | CL-10 | Adds do Sub | feliz | ⏳ | | |
 
