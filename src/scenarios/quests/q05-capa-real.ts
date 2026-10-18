@@ -309,6 +309,18 @@ const quest: QuestSpec = {
         return { pass: r.pass, evidence: kingEvidence(k), note: `exibido 220, 4081 e sem safiras: ${r.note}` };
       },
     },
+    {
+      id: 'CR-07',
+      title: 'Sem emblema e sem safira',
+      type: 'controle',
+      seed: async (db, n) => { await char(db, n, KING_LEVEL.cape); },
+      run: async (ctx) => {
+        const k = await talkKing(ctx, NPC.reiHarabard, 1);
+        const priced = k.talk.texts.some((t) => (t.match(/\d+/g) ?? ([] as string[])).includes(String(k.price.hekalotia)));
+        const r = kingControl(k, 'exibido 220, sem 4081 e sem safiras');
+        return { pass: r.pass, evidence: { ...kingEvidence(k), priced }, note: r.note };
+      },
+    },
   ],
 };
 
