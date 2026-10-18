@@ -1,0 +1,285 @@
+# Status das quests
+
+Situação de cada caso de uso de `docs/quests/`, validado no Railway com `npm run quest -- NN --case ID`. Cada caso roda numa conta nova e recebe a pré-condição pelo banco (`src/db/seed.ts`).
+
+Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na nota) · ⏳ pendente.
+
+## Resumo
+
+| # | Quest | Casos | ✅ | ❌ | ⏸️ | ⏳ |
+|---|---|---|---|---|---|---|
+| [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 0 | 0 | 0 | 12 |
+| [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 0 | 0 | 0 | 14 |
+| [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 0 | 0 | 0 | 13 |
+| [04](#04) | Molar do Gárgula | 10 | 0 | 0 | 0 | 10 |
+| [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 0 | 0 | 0 | 13 |
+| [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 0 | 0 | 0 | 11 |
+| [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 0 | 0 | 5 |
+| [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 0 | 0 | 0 | 7 |
+| [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 0 | 0 | 0 | 12 |
+| [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 0 | 0 | 0 | 14 |
+| [11](#11) | Alma do Mortal (Kibita) | 7 | 0 | 0 | 0 | 7 |
+| [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
+| [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
+| [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
+| | **Total** | **144** | **0** | **0** | **0** | **144** |
+
+<a id="01"></a>
+## 01 — Novato: os quatro treinadores do Campo de Treino
+
+[Casos de uso](01-novato-treinadores.md) · `npm run quest -- 01`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| NOV-01 | Passo 1 sem a chave | controle | ⏳ | | |
+| NOV-02 | Passo 1 | feliz | ⏳ | | |
+| NOV-03 | Passo 1 de novo | controle | ⏳ | | |
+| NOV-04 | Pular passo | controle | ⏳ | | |
+| NOV-05 | Passo 2 | feliz | ⏳ | | |
+| NOV-06 | Passo 2 com arma de ReqLvl > 39 | borda | ⏳ | | |
+| NOV-07 | Passo 3 | feliz | ⏳ | | |
+| NOV-08 | Passo 3 com slot vazio | borda | ⏳ | | |
+| NOV-09 | Passo 4 | feliz | ⏳ | | |
+| NOV-10 | Acima do nível | controle | ⏳ | | |
+| NOV-11 | Flag persiste | borda | ⏳ | | |
+| NOV-12 | Treinador1 não é Coveiro | controle | ⏳ | | |
+
+<a id="02"></a>
+## 02 — Quest 256: as cinco arenas e os troféus
+
+[Casos de uso](02-quest256-tickets.md) · `npm run quest -- 02`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| QST-01 | Entrega do ticket | feliz (cenários 2/4) | ⏳ | | |
+| QST-02 | Sem ticket / ticket de outro passo | controle (cenários 2/4) | ⏳ | | |
+| QST-03 | Um nível abaixo do mínimo | controle (cenário 4) | ⏳ | | |
+| QST-04 | Intruso | controle (cenários 2/4) | ⏳ | | |
+| QST-05 | Reset | feliz (cenários 2/4) | ⏳ | | |
+| QST-06 | Relogin dentro da arena | borda | ⏳ | | |
+| QST-07 | Acima do máximo | controle | ⏳ | | |
+| QST-08 | Drop do troféu | feliz | ⏳ | | |
+| QST-09 | Usar o troféu | feliz | ⏳ | | |
+| QST-10 | Troféu fora da faixa | controle | ⏳ | | |
+| QST-11 | Troféu em grupo | borda | ⏳ | | |
+| QST-12 | Ticket com o botão direito | borda | ⏳ | | |
+| QST-13 | Mestre_Grifo dá a `QuestFlag` | borda | ⏳ | | |
+| QST-14 | Arch na arena | borda | ⏳ | | |
+
+<a id="03"></a>
+## 03 — Capa Verde (Formatura Aprendiz)
+
+[Casos de uso](03-capa-verde.md) · `npm run quest -- 03`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| CV-01 | Teleporte abaixo do nível | controle | ⏳ | | |
+| CV-02 | Teleporte | feliz | ⏳ | | |
+| CV-03 | Entrega sem emblema | controle | ⏳ | | |
+| CV-04 | Emblema no inventário, não equipado | controle | ⏳ | | |
+| CV-05 | Drop do emblema | feliz | ⏳ | | |
+| CV-06 | Entrega | feliz | ⏳ | | |
+| CV-07 | Entrega com capa | controle | ⏳ | | |
+| CV-08 | Acima do nível | controle | ⏳ | | |
+| CV-09 | Reset da arena | feliz | ⏳ | | |
+| CV-10 | Arch pelo Lider_Aprendiz | feliz | ⏳ | | |
+| CV-11 | Arch fora da faixa | controle | ⏳ | | |
+| CV-12 | Mortal no Lider_Aprendiz | controle | ⏳ | | |
+| CV-13 | Arch no Diretor | controle | ⏳ | | |
+
+<a id="04"></a>
+## 04 — Molar do Gárgula
+
+[Casos de uso](04-molar-gargula.md) · `npm run quest -- 04`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| MG-01 | Teleporte abaixo do nível | controle | ⏳ | | |
+| MG-02 | Teleporte | feliz | ⏳ | | |
+| MG-03 | Arch | controle | ⏳ | | |
+| MG-04 | Drop | feliz | ⏳ | | |
+| MG-05 | Uso do molar | feliz | ⏳ | | |
+| MG-06 | Uso repetido | controle | ⏳ | | |
+| MG-07 | Uso fora da faixa | controle | ⏳ | | |
+| MG-08 | Slot vazio | borda | ⏳ | | |
+| MG-09 | Flag persiste | borda | ⏳ | | |
+| MG-10 | Reset da arena | feliz | ⏳ | | |
+
+<a id="05"></a>
+## 05 — Capa do Reino (azul / vermelha) e a borda
+
+[Casos de uso](05-capa-real.md) · `npm run quest -- 05`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| CR-01 | Teleporte abaixo do nível | controle | ⏳ | | |
+| CR-02 | Teleporte | feliz | ⏳ | | |
+| CR-03 | Drop do emblema | feliz | ⏳ | | |
+| CR-04 | Rei abaixo do nível | controle | ⏳ | | |
+| CR-05 | Preço (ask) | feliz | ⏳ | | |
+| CR-06 | Capa pelo emblema | feliz | ⏳ | | |
+| CR-07 | Sem emblema e sem safira | controle | ⏳ | | |
+| CR-08 | Rei do outro reino | controle | ⏳ | | |
+| CR-09 | Capa já com borda | controle | ⏳ | | |
+| CR-10 | Borda antes do nível | controle | ⏳ | | |
+| CR-11 | Borda pelo emblema | feliz | ⏳ | | |
+| CR-12 | Pagamento em safiras | feliz | ⏳ | | |
+| CR-13 | Mortal acima de 254 no Guarda | controle | ⏳ | | |
+
+<a id="06"></a>
+## 06 — Terra Mística (Defendendo a Terra Mística)
+
+[Casos de uso](06-terra-mistica.md) · `npm run quest -- 06`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| TM-01 | Sozinho | controle | ⏳ | | |
+| TM-02 | Ask | controle | ⏳ | | |
+| TM-03 | Membro, não líder | controle | ⏳ | | |
+| TM-04 | Aceitar | feliz | ⏳ | | |
+| TM-05 | Aceitar de novo | controle | ⏳ | | |
+| TM-06 | Recompensa antes da hora | controle | ⏳ | | |
+| TM-07 | Concluir a missão | feliz | ⏳ | | |
+| TM-08 | Recompensa | feliz | ⏳ | | |
+| TM-09 | Faixa do amuleto | borda | ⏳ | | |
+| TM-10 | Recompensa repetida | controle | ⏳ | | |
+| TM-11 | Arch | controle | ⏳ | | |
+
+<a id="07"></a>
+## 07 — Pílula do Poder Mágico (Conquista do Castelo Orc)
+
+[Casos de uso](07-pilula-orc.md) · `npm run quest -- 07`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| PO-01 | Pegar a pílula | feliz | ⏳ | | |
+| PO-01b | Pegar com a flag já gravada | controle | ⏳ | | |
+| PO-02 | Usar a pílula | feliz | ⏳ | | |
+| PO-03 | Segunda pílula | controle | ⏳ | | |
+| PO-04 | Persistência | borda | ⏳ | | |
+
+<a id="08"></a>
+## 08 — Círculo Divino (Jeffi e Shama)
+
+[Casos de uso](08-circulo-divino.md) · `npm run quest -- 08`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| CD-01 | Purificar sem gold | controle | ⏳ | | |
+| CD-02 | Purificar | feliz | ⏳ | | |
+| CD-03 | Shama sem círculo puro | controle | ⏳ | | |
+| CD-04 | Reiniciar | feliz | ⏳ | | |
+| CD-05 | Segundo círculo comum | controle | ⏳ | | |
+| CD-06 | Círculo completo depois do comum | borda | ⏳ | | |
+| CD-07 | Special abaixo do teto | borda | ⏳ | | |
+
+<a id="09"></a>
+## 09 — Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei
+
+[Casos de uso](09-arch-cadeia.md) · `npm run quest -- 09`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| AR-01 | Oráculo sem almas | controle | ⏳ | | |
+| AR-02 | Almas fora de ordem | controle | ⏳ | | |
+| AR-03 | Sem safiras | controle | ⏳ | | |
+| AR-04 | Pedra da Imortalidade | feliz | ⏳ | | |
+| AR-05 | Pacote de safiras | borda | ⏳ | | |
+| AR-06 | Refino da pedra de boss | feliz | ⏳ | | |
+| AR-07 | Sephirot (ask) | controle | ⏳ | | |
+| AR-08 | Sephirot sem gold | controle | ⏳ | | |
+| AR-09 | Sephirot faltando pedra | controle | ⏳ | | |
+| AR-10 | Sephirot | feliz | ⏳ | | |
+| AR-11 | Sephirot de cada mestre | feliz | ⏳ | | |
+| AR-12 | Rei | coberto | ⏳ | | |
+
+<a id="10"></a>
+## 10 — Destravas do Arch: Lindy 355/370 e Cristais
+
+[Casos de uso](10-arch-destravas.md) · `npm run quest -- 10`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| LD-01 | Mortal na Lindy | controle | ⏳ | | |
+| LD-02 | Arch fora do nível | controle | ⏳ | | |
+| LD-03 | Receita errada | controle | ⏳ | | |
+| LD-04 | Destrava 355 | feliz | ⏳ | | |
+| LD-05 | 355 de novo | controle | ⏳ | | |
+| LD-06 | 355 acima do nível | borda | ⏳ | | |
+| LD-07 | 370 sem Fame | controle | ⏳ | | |
+| LD-08 | Destrava 370 | feliz | ⏳ | | |
+| CR-01 | Cristal fora de ordem | controle | ⏳ | | |
+| CR-02 | Etapa 1 | feliz | ⏳ | | |
+| CR-03 | Etapa repetida | controle | ⏳ | | |
+| CR-04 | Quatro etapas | feliz | ⏳ | | |
+| CR-05 | Mortal com cristal | borda | ⏳ | | |
+| CR-06 | Exp abaixo de 100M | borda | ⏳ | | |
+
+<a id="11"></a>
+## 11 — Alma do Mortal (Kibita)
+
+[Casos de uso](11-alma-mortal-kibita.md) · `npm run quest -- 11`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| KB-01 | Abaixo do nível | controle | ⏳ | | |
+| KB-02 | Pedra de outra classe | controle | ⏳ | | |
+| KB-03 | Alma do Mortal | feliz | ⏳ | | |
+| KB-04 | Depois do relogin | feliz | ⏳ | | |
+| KB-05 | Repetir | controle | ⏳ | | |
+| KB-06 | Arch | controle | ⏳ | | |
+| KB-07 | Sem reino | borda | ⏳ | | |
+
+<a id="12"></a>
+## 12 — Pedra Ideal e Arch → Celestial
+
+[Casos de uso](12-celestial.md) · `npm run quest -- 12`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| CE-01 | Pedra Ideal | feliz | ⏳ | | |
+| CE-02 | Faltando uma Pedra Secreta | controle | ⏳ | | |
+| CE-03 | Mortal com as 4 pedras no Rei | borda | ⏳ | | |
+| CE-04 | Celestial com armadura | controle | ⏳ | | |
+| CE-05 | Arch abaixo do nível | controle | ⏳ | | |
+| CE-06 | Mortal de origem baixo | controle | ⏳ | | |
+| CE-07 | Celestial | feliz | ⏳ | | |
+| CE-08 | 1742 com o botão direito | borda | ⏳ | | |
+| CE-09 | Faixa da Cythera | borda | ⏳ | | |
+
+<a id="13"></a>
+## 13 — Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial
+
+[Casos de uso](13-celestial-destravas.md) · `npm run quest -- 13`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| CL-01 | Lv40 fora do nível | controle | ⏳ | | |
+| CL-02 | Lv40 | feliz | ⏳ | | |
+| CL-03 | Lv40 de novo | controle | ⏳ | | |
+| CL-04 | Lv90 sem Fama | controle | ⏳ | | |
+| CL-05 | Lv90 | feliz | ⏳ | | |
+| CL-06 | Arcana | feliz | ⏳ | | |
+| CL-07 | Arcana herdando o `Circle` | borda | ⏳ | | |
+| CL-08 | Reset | feliz | ⏳ | | |
+| CL-09 | Comandos que pulam quest | borda | ⏳ | | |
+| CL-10 | Adds do Sub | feliz | ⏳ | | |
+
+<a id="14"></a>
+## 14 — Sub-Celestial e troca de subclasse (Urnammu)
+
+[Casos de uso](14-sub-celestial.md) · `npm run quest -- 14`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| SC-01 | Sub sem Sephirot | controle | ⏳ | | |
+| SC-02 | Sub abaixo do nível | controle | ⏳ | | |
+| SC-03 | Criar o Sub | feliz | ⏳ | | |
+| SC-04 | Sub de novo | controle | ⏳ | | |
+| SC-05 | Urnammu sem Fama | controle | ⏳ | | |
+| SC-06 | Trocar a subclasse | feliz | ⏳ | | |
+| SC-07 | Urnammu para Celestial puro | controle | ⏳ | | |
+
+## Issues abertas
+
+(nenhuma ainda)

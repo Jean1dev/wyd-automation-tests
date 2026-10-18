@@ -12,18 +12,15 @@
 //      npm run account:create -- --bm       # conta dos cenários de skills do BeastMaster (WYD_ACCOUNT_BM/WYD_PASSWORD_BM)
 //      npm run account:create -- --ht       # conta dos cenários de skills da Huntress (WYD_ACCOUNT_HT/WYD_PASSWORD_HT)
 //      npm run account:create -- --tk       # conta dos cenários de skills do TransKnight (WYD_ACCOUNT_TK/WYD_PASSWORD_TK)
-import { randomInt } from 'node:crypto';
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { DEFAULT_PORTAL, mask, randomFrom, signupAccount, SignupError } from '../src/bot/account.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const ENV = resolve(ROOT, '.env');
-const ALNUM = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
-const random = (alphabet: string, n: number) => Array.from({ length: n }, () => alphabet[randomInt(alphabet.length)]).join('');
-const mask = (s: string) => s.slice(0, 4) + '*'.repeat(Math.max(0, s.length - 4));
 
 const i = process.argv.indexOf('--portal');
-const portal = i >= 0 ? process.argv[i + 1] : 'https://wyd-ten.vercel.app';
+const portal = i >= 0 ? process.argv[i + 1] : DEFAULT_PORTAL;
 const sfx = process.argv.includes('--second') ? '_B' : process.argv.includes('--arch') ? '_ARCH' : process.argv.includes('--foema') ? '_FOEMA' : process.argv.includes('--bm') ? '_BM' : process.argv.includes('--ht') ? '_HT' : process.argv.includes('--tk') ? '_TK' : '';
 
 if (!existsSync(ENV)) copyFileSync(resolve(ROOT, '.env.example'), ENV);
@@ -35,16 +32,16 @@ if (current[`WYD_ACCOUNT${sfx}`]) {
   process.exit(2);
 }
 
-const name = `bot${random('0123456789', 7)}`;
-const password = random(ALNUM, 10);
-const res = await fetch(new URL('/api/signup', portal), {
-  method: 'POST',
-  headers: { 'content-type': 'application/json' },
-  body: JSON.stringify({ name, password }),
-});
-const body = (await res.json().catch(() => null)) as { error?: string } | null;
-console.log(`POST /api/signup -> ${res.status} conta=${mask(name)}${res.ok ? '' : ` erro=${body?.error ?? '?'}`}`);
-if (!res.ok) process.exit(1);
+let name: string;
+let password: string;
+try {
+  ({ account: name, password } = await signupAccount(portal));
+} catch (e) {
+  if (!(e instanceof SignupError)) throw e;
+  console.log(e.message);
+  process.exit(1);
+}
+console.log(`POST /api/signup -> ok conta=${mask(name)}`);
 
 // O dotenv fica com a primeira ocorrência de cada chave, então preenchemos as linhas no lugar.
 let text = readFileSync(ENV, 'utf8');
@@ -54,6 +51,6 @@ const set = (k: string, v: string) => {
 };
 set(`WYD_ACCOUNT${sfx}`, name);
 set(`WYD_PASSWORD${sfx}`, password);
-if (!current.WYD_PIN) set('WYD_PIN', random('0123456789', 6));
+if (!current.WYD_PIN) set('WYD_PIN', randomFrom('0123456789', 6));
 writeFileSync(ENV, text);
 console.log(`.env: WYD_ACCOUNT${sfx}, WYD_PASSWORD${sfx}${current.WYD_PIN ? '' : ' e WYD_PIN'} preenchidos`);
