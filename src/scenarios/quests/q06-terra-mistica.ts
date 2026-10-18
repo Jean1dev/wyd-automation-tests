@@ -302,6 +302,14 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n, { flag: FLAG.recompensada }); },
       run: async (ctx) => control(await talk(ctx, NPC.capExplor, 0), 'terra_mistica 3 no Cap.Explor.'),
     },
+    {
+      id: 'TM-11',
+      title: 'Arch',
+      type: 'controle',
+      // Arch líder de um grupo (o segundo também Arch, para o grupo fechar): só a classe barra o aceite.
+      seed: async (db, n) => { await char(db, n, { arch: true }); },
+      run: async (ctx) => withParty(ctx, true, (db, n) => char(db, n, { arch: true }), async () => control(await talk(ctx, NPC.capMercenario, 1), 'Arch líder de grupo, confirm 1')),
+    },
   ],
 };
 

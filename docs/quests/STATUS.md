@@ -13,7 +13,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 12 | 1 | 0 | 0 |
 | [04](#04) | Molar do Gárgula | 10 | 6 | 4 | 0 | 0 |
 | [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 10 | 3 | 0 | 0 |
-| [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 3 | 7 | 0 | 1 |
+| [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 4 | 7 | 0 | 0 |
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 0 | 0 | 5 |
 | [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 0 | 0 | 0 | 7 |
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 0 | 0 | 0 | 12 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **46** | **26** | **0** | **72** |
+| | **Total** | **144** | **47** | **26** | **0** | **71** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -143,7 +143,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | TM-08 | Recompensa | feliz | ❌ | [#403](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) | terra_mistica 2, exibido 101: o Cap.Explor. não responde (Merchant 11 sem rota no Go), nenhum amuleto 559–562 no inventário nem no banco; a flag vira 0 no relog (#401) |
 | TM-09 | Faixa do amuleto | borda | ❌ | [#403](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) | terra_mistica 2, exibido 50: o Cap.Explor. não responde, nenhum Amuleto_de_Prata 551–554 no inventário nem no banco; a flag vira 0 no relog (#401) |
 | TM-10 | Recompensa repetida | controle | ❌ | [#401](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) | terra_mistica 3 semeado, Cap.Explor.: sem resposta (vácuo: Merchant 11 sem rota, #403), nenhum amuleto; mas a flag vira 0 no banco depois do relog, e a quest fica refazível |
-| TM-11 | Arch | controle | ⏳ | | |
+| TM-11 | Arch | controle | ✅ |  | Arch líder de grupo (com outro Arch), confirm 1: recusa (NoticeReqNotMet 15, o legado manda _NN_Hurry_Helping_them); terra_mistica 0 no banco |
 
 <a id="07"></a>
 ## 07 — Pílula do Poder Mágico (Conquista do Castelo Orc)
