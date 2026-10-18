@@ -20,9 +20,9 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 14 | 0 | 0 | 0 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 5 | 0 | 0 |
-| [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 5 | 4 | 0 | 1 |
+| [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 5 | 5 | 0 | 0 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **90** | **46** | **0** | **8** |
+| | **Total** | **144** | **90** | **47** | **0** | **7** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -263,7 +263,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CL-07 | Arcana herdando o `Circle` | borda | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | Celestial exibido 200 com Circle 1: 3020 sem resposta; exp, Fama e pedras iguais (legado: ramo Reset, exp −20M) |
 | CL-08 | Reset | feliz | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | Circle 1, 3507 no Equip[1], Fama 600: 3020 sem resposta; exp 2219000000 e Fama iguais; o contador Reset nem existe no Go |
 | CL-09 | Comandos que pulam quest | borda | ✅ |  | Celestial exibido 40 sem receita: /destravar40 → CombineComplete 1 e celestial_lv40 1 no banco (o Go grava como o legado; não usar nos cenários) |
-| CL-10 | Adds do Sub | feliz | ⏳ | | |
+| CL-10 | Adds do Sub | feliz | ❌ | [#409](https://github.com/Jean1dev/w2pp-OpenWYD/issues/409) | Sub-Celestial armazenado 119 com Cythera 3500: kill do Basilisco_Ifrit sobe para 120 (cliente e banco), mas o Equip[1] fica sem EF_AC/EF_HP |
 
 <a id="14"></a>
 ## 14 — Sub-Celestial e troca de subclasse (Urnammu)
