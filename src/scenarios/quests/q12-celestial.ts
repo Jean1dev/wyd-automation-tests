@@ -87,8 +87,8 @@ const questCarry = (r: Row) => r.carry.filter((x) => QUEST_ITEMS.has(x.index)).m
 const fmtR = (r: Row) => `slot ${r.slot} master ${r.classMaster} nível ${r.level} SpecialBonus ${r.specialBonus} LearnedSkill ${r.learned} ArchLevel ${r.archLevel} `
   + `Equip[1] ${eq(r, EQUIP_SLOT.cythera)} [10] ${eq(r, EQUIP_SLOT.imortalidade)} [11] ${eq(r, EQUIP_SLOT.sephirot)} [15] ${eq(r, EQUIP_SLOT.capa)} inv(quest) [${questCarry(r)}]`;
 const fmtRows = (l: Row[]) => l.map(fmtR).join(' | ');
-/** Retrato comparável de um personagem (para os controles). */
-const sig = (r: Row | undefined) => (r ? `${r.classMaster}/${r.level}/${r.specialBonus}/${r.learned}/${r.archLevel}/${questCarry(r)}/${r.equip.map((x) => `${x.slot}:${x.index}`).join(',')}` : '-');
+/** Retrato comparável de um personagem (para os controles; sem o Equip[0], o rosto que o 1º save grava). */
+const sig = (r: Row | undefined) => (r ? `${r.classMaster}/${r.level}/${r.specialBonus}/${r.learned}/${r.archLevel}/${questCarry(r)}/${r.equip.filter((x) => x.slot !== 0).map((x) => `${x.slot}:${x.index}`).join(',')}` : '-');
 
 // ---------------------------------------------------------------- respostas
 
@@ -197,8 +197,18 @@ async function useStone(ctx: CaseCtx, item: number): Promise<Use> {
 
 const useNote = (u: Use) => `${u.item} (slot ${u.slot}): ${fmtA(u.answer)}; banco ${fmtRows(u.after)}; cliente nível ${u.client?.level} Equip[1] ${u.client?.cythera} capa ${u.client?.capa}`;
 
+/**
+ * O 1º login equipa o elmo inicial (1103) no Equip[1] vazio: sai, limpa o Equip[1] no banco e volta
+ * (o kit inicial só vem no primeiro login).
+ */
+async function noStarterHelm(ctx: CaseCtx): Promise<void> {
+  await ctx.reseed((db, ch) => db.clearItem(ch, 'equip', EQUIP_SLOT.cythera));
+}
+
 /** Controle: o botão direito na 5338 e na 1742 não muda nada (legado: só a 5338 tem Vol 211, e os requisitos falham). */
-async function untouched(ctx: CaseCtx): Promise<CaseResult> {
+
+async function untouched(ctx: CaseCtx, keepHelm = false): Promise<CaseResult> {
+  if (!keepHelm) await noStarterHelm(ctx);
   const before = await rows(ctx);
   const uses = [await useStone(ctx, ITEM.pedraIdeal), await useStone(ctx, ITEM.pedraImortalidade)];
   const pass = uses.every((u) => u.answer.archEffectSlot === undefined && !u.answer.logout && sig(u.after[0]) === sig(before[0]));
@@ -222,6 +232,7 @@ function celestialOk(u: Use, x: CelestialExpect): boolean {
 
 /** CE-07/CE-09: a 5338; se nada acontecer, a 1742 só como evidência do caminho do Go. */
 async function celestialCase(ctx: CaseCtx, x: CelestialExpect): Promise<CaseResult> {
+  await noStarterHelm(ctx);
   const before = await rows(ctx);
   const u = await useStone(ctx, ITEM.pedraIdeal);
   const pass = celestialOk(u, x);
@@ -273,7 +284,7 @@ const quest: QuestSpec = {
       title: 'Celestial com armadura',
       type: 'controle',
       seed: (db, ch) => seedChar(db, ch, ARCH(355, { carry: STONES_BOTH, equip: { [EQUIP_SLOT.cythera]: ITEM.elmo } })),
-      run: untouched,
+      run: (ctx) => untouched(ctx, true),
     },
     {
       id: 'CE-05',
@@ -302,6 +313,7 @@ const quest: QuestSpec = {
       type: 'borda',
       seed: (db, ch) => seedChar(db, ch, ARCH(355, { carry: { 21: ITEM.pedraImortalidade } })),
       run: async (ctx) => {
+        await noStarterHelm(ctx);
         const before = await rows(ctx);
         const u = await useStone(ctx, ITEM.pedraImortalidade);
         // Legado: a 1742 não tem Vol 211; nada muda.
