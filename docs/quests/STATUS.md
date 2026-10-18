@@ -10,7 +10,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 |---|---|---|---|---|---|---|
 | [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 2 | 10 | 0 | 0 |
 | [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 13 | 1 | 0 | 0 |
-| [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 0 | 0 | 0 | 13 |
+| [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 1 | 0 | 0 | 12 |
 | [04](#04) | Molar do Gárgula | 10 | 0 | 0 | 0 | 10 |
 | [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 0 | 0 | 0 | 13 |
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 0 | 0 | 0 | 11 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 0 | 0 | 0 | 9 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 0 | 0 | 0 | 10 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 0 | 0 | 0 | 7 |
-| | **Total** | **144** | **15** | **11** | **0** | **118** |
+| | **Total** | **144** | **16** | **11** | **0** | **117** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -73,7 +73,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| CV-01 | Teleporte abaixo do nível | controle | ⏳ | | |
+| CV-01 | Teleporte abaixo do nível | controle | ✅ | | exibido 99: o Diretor recusa (NoticeReqNotMet 15), sem teleporte, ficou em (2244,1597) |
 | CV-02 | Teleporte | feliz | ⏳ | | |
 | CV-03 | Entrega sem emblema | controle | ⏳ | | |
 | CV-04 | Emblema no inventário, não equipado | controle | ⏳ | | |
