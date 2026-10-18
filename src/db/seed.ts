@@ -29,6 +29,9 @@ export const CHAR_COLUMNS = [
 export type CharColumn = (typeof CHAR_COLUMNS)[number];
 export type CharRow = Record<CharColumn, number> & { id: number; account_id: number; slot: number; name: string };
 
+/** Valores de `class_master` (tmserver/internal/handler/score_derive.go). */
+export const CLASS_MASTER = { ARCH: 1, MORTAL: 2, CELESTIAL: 3, CELESTIAL_CS: 4, SCELESTIAL: 5 } as const;
+
 export type ItemKind = 'equip' | 'carry';
 const OWNER: Record<ItemKind, string> = { equip: 'char_equip', carry: 'char_carry' };
 
