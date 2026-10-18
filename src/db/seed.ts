@@ -76,6 +76,18 @@ export class Db {
     if (r.rowCount !== 1) throw new Error(`personagem "${name}" não está no banco`);
   }
 
+  /** Special[0..3] do personagem (coluna `special`, smallint[]; store_live.go LoadCharacter). */
+  async setSpecial(name: string, special: [number, number, number, number]): Promise<void> {
+    const r = await this.c.query('UPDATE character SET special = $2::smallint[] WHERE name = $1', [name, special]);
+    if (r.rowCount !== 1) throw new Error(`personagem "${name}" não está no banco`);
+  }
+
+  async special(name: string): Promise<number[]> {
+    const r = await this.c.query('SELECT special FROM character WHERE name = $1', [name]);
+    if (!r.rows[0]) throw new Error(`personagem "${name}" não está no banco`);
+    return (r.rows[0].special ?? []).map(Number);
+  }
+
   async items(name: string, kind: ItemKind): Promise<ItemRow[]> {
     const ch = await this.character(name);
     const r = await this.c.query(
