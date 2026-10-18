@@ -135,7 +135,7 @@ async function saved(ctx: CaseCtx): Promise<{ equip13: number; equip15: number; 
 
 interface Hunt {
   entries: number;
-  kills: { t: string; mob: string; emblem: boolean }[];
+  kills: { t: string; mob: string; emblem: boolean; exp: number }[];
   deaths: number;
   dropAt?: string;
   minutes: number;
@@ -166,12 +166,14 @@ async function huntEmblem(ctx: CaseCtx, untilMs: number): Promise<Hunt> {
       continue;
     }
     const m = targets[0];
+    const exp0 = me.exp;
     const r = await fight(c(), m, { minHpRatio: 0.4, maxSwings: 80 });
     if (r.result === 'killed') {
       await sleep(800);
       const got = c().findItem(ITEM.emblemaDaAprendizagem) >= 0;
-      h.kills.push({ t: new Date().toISOString(), mob: m.name, emblem: got });
-      ctx.log.info('kill na arena', { mob: m.name, emblem: got, hp: me.hp, maxHp: me.maxHp });
+      const exp = Number(me.exp - exp0);
+      h.kills.push({ t: new Date().toISOString(), mob: m.name, emblem: got, exp });
+      ctx.log.info('kill na arena', { mob: m.name, emblem: got, exp, hp: me.hp, maxHp: me.maxHp });
       if (got) h.dropAt = new Date().toISOString();
     }
   }
