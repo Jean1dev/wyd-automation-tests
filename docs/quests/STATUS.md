@@ -21,8 +21,8 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 5 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 5 | 5 | 0 | 0 |
-| [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 4 | 2 | 0 | 1 |
-| | **Total** | **144** | **94** | **49** | **0** | **1** |
+| [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 5 | 2 | 0 | 0 |
+| | **Total** | **144** | **95** | **49** | **0** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -278,7 +278,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | SC-04 | Sub de novo | controle | ✅ |  | CELESTIALCS exibido 121 com Sephirot: 5338 → notice 39, banco igual (vácuo, #410) |
 | SC-05 | Urnammu sem Fama | controle | ✅ |  | CELESTIALCS, Fama 100: pergaminho 699 até (3235,1688), Urnammu (id 12901) sem resposta, banco igual (vácuo: Merchant 76 sem rota, #410) |
 | SC-06 | Trocar a subclasse | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | CELESTIALCS, Sephirot 1763, Fama 2500: Urnammu (id 12901) sem resposta; Fama 2500 e Sephirot ficam |
-| SC-07 | Urnammu para Celestial puro | controle | ⏳ | | |
+| SC-07 | Urnammu para Celestial puro | controle | ✅ |  | Celestial puro, Sephirot, Fama 2500: Urnammu sem resposta, banco igual (vácuo: Merchant 76 sem rota, #410) |
 
 ## Issues abertas
 
