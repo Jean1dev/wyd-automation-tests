@@ -109,6 +109,74 @@ async function withParty<T>(ctx: CaseCtx, leaderIsA: boolean, seedB: (db: Db, n:
   }
 }
 
+// ---------------------------------------------------------------- caça dos dragões (TM-07)
+
+interface Hunt {
+  kills: { t: string; mob: string }[];
+  /** Textos do servidor durante a caça (o legado manda _NN_Watching_Town_Success no kill que conclui). */
+  texts: { t: string; text: string }[];
+  /** terra_mistica lido no banco a cada checagem (o Go grava no save periódico/relog). */
+  checks: { t: string; kills: number; flag: number }[];
+  deaths: number;
+  minutes: number;
+}
+
+const inHunt = (c: GameClient) => isInArea(DRAGON_AREA, c.self!.x, c.self!.y);
+
+/** Caça os mobs de rosto 239/241 até `untilMs` ou até a flag aparecer como 2 no banco. */
+async function huntDragons(ctx: CaseCtx, untilMs: number): Promise<Hunt> {
+  const c = () => ctx.c;
+  const t0 = Date.now();
+  const h: Hunt = { kills: [], texts: [], checks: [], deaths: 0, minutes: 0 };
+  const onText = (e: { text: string }) => { h.texts.push({ t: new Date().toISOString(), text: e.text }); };
+  let bound: GameClient | undefined;
+  const bind = () => { if (bound !== c()) { bound?.off('text', onText); c().on('text', onText); bound = c(); } };
+  try {
+    while (Date.now() < untilMs) {
+      bind();
+      const me = c().self!;
+      if (c().isClosed) throw new Error('conexão caiu na caça');
+      if (me.hp <= 0) { h.deaths++; await reviveAfterDeath(c(), ctx.log); continue; }
+      if (!inHunt(c())) {
+        await goTo(ctx, NPC.capExplor);
+        await walkTo(c(), DRAGON_SPAWNS[0].x + 4, DRAGON_SPAWNS[0].y + 4, { abort: () => me.hp <= 0 });
+        continue;
+      }
+      if (me.hp < me.maxHp * 0.4) {
+        await walkTo(c(), REST_SPOT.x, REST_SPOT.y, { abort: () => me.hp <= 0 });
+        const r0 = Date.now();
+        while (me.hp > 0 && me.hp < me.maxHp * 0.85 && Date.now() - r0 < 60_000) await sleep(2000);
+        if (me.hp > 0) await walkTo(c(), DRAGON_SPAWNS[0].x + 4, DRAGON_SPAWNS[0].y + 4, { abort: () => me.hp <= 0 });
+        continue;
+      }
+      const targets = c().liveMobs()
+        .filter((m) => (DRAGON_MOBS as readonly string[]).includes(m.name) && isInArea(DRAGON_AREA, m.x, m.y))
+        .sort((a, b) => dist(me.x, me.y, a.x, a.y) - dist(me.x, me.y, b.x, b.y));
+      if (!targets.length) {
+        const p = DRAGON_SPAWNS[Math.floor(Math.random() * DRAGON_SPAWNS.length)];
+        await walkTo(c(), p.x, p.y + 1, { abort: () => me.hp <= 0 });
+        await sleep(1500);
+        continue;
+      }
+      const m = targets[0];
+      const r = await fight(c(), m, { minHpRatio: 0.4, maxSwings: 120 });
+      if (r.result === 'killed') {
+        h.kills.push({ t: new Date().toISOString(), mob: m.name });
+        ctx.log.info('kill', { mob: m.name, kills: h.kills.length, hp: me.hp, maxHp: me.maxHp });
+        if (h.kills.length % 10 === 0) {
+          const flag = (await ctx.query((db, n) => db.character(n))).terra_mistica;
+          h.checks.push({ t: new Date().toISOString(), kills: h.kills.length, flag });
+          if (flag === FLAG.concluida) break;
+        }
+      }
+    }
+  } finally {
+    bound?.off('text', onText);
+  }
+  h.minutes = +((Date.now() - t0) / 60000).toFixed(1);
+  return h;
+}
+
 // ---------------------------------------------------------------- casos
 
 const quest: QuestSpec = {
@@ -174,6 +242,30 @@ const quest: QuestSpec = {
       type: 'controle',
       seed: async (db, n) => { await char(db, n, { flag: FLAG.aceita }); },
       run: async (ctx) => control(await talk(ctx, NPC.capExplor, 0), 'terra_mistica 1 no Cap.Explor.'),
+    },
+    {
+      id: 'TM-07',
+      title: 'Concluir a missão',
+      type: 'feliz',
+      timeoutMs: 15 * 60_000,
+      seed: async (db, n) => { await char(db, n, { flag: FLAG.aceita }); },
+      run: async (ctx) => {
+        const h = await huntDragons(ctx, Date.now() + 10 * 60_000);
+        await ctx.relog();
+        const saved = (await ctx.query((db, n) => db.character(n))).terra_mistica;
+        const pass = saved === FLAG.concluida;
+        // Legado: 1 em 20 por kill (MobKilled.cpp:2909) — a chance de nenhum sucesso em N kills é 0,95^N.
+        const miss = +(0.95 ** h.kills.length * 100).toFixed(1);
+        const byMob = h.kills.reduce<Record<string, number>>((a, k) => ({ ...a, [k.mob]: (a[k.mob] ?? 0) + 1 }), {});
+        const evidence = { kills: h.kills.length, byMob, texts: h.texts, checks: h.checks, deaths: h.deaths, minutes: h.minutes, saved, legacyMissPct: miss };
+        ctx.log.info('resultado da caça', evidence);
+        return {
+          pass, evidence,
+          note: pass
+            ? `terra_mistica 1 → 2 depois de ${h.kills.length} kills em ${h.minutes} min`
+            : `${h.kills.length} kills (${Object.entries(byMob).map(([k, v]) => `${v} ${k}`).join(', ')}) em ${h.minutes} min, ${h.deaths} mortes: nenhuma mensagem de conclusão, terra_mistica ${saved} no banco (no legado a chance de não concluir em ${h.kills.length} kills é ${miss}%)`,
+        };
+      },
     },
   ],
 };
