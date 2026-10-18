@@ -50,3 +50,26 @@ As runas vêm da **Pista de Runas** (Uxmal), uma quest secundária que fica fora
 
 - O Celestial do cenário do arquivo 12.
 - O protocolo do `MSG_CombineItemOdin` ainda não está no `src/protocol`. Copiar o layout do `combine_odin.go`.
+
+## Situação (2026-10-18)
+
+`npm run quest -- 13` no Railway: 6 ✅ 4 ❌. O Celestial (class_master 3, ou 5 no CL-10) nasce no banco com a exp da curva do Celestial do Go (placeholder de `level/nextlevel.go`: `c[L] = 1M·L + 50k·L·(L+1)`), as flags `celestial_lv40/lv90/circle`, a Fama e os itens em slots altos. A receita do Odin vai por `MSG_CombineItemOdin` (0x02D2), sem andar até o NPC (nem o legado nem o Go conferem a distância). "Voltar a ganhar exp" e o level up do Sub são medidos matando um dragão ao norte de Azran.
+
+- **Lv40:** funciona como o legado. A 1ª combinação deu certo (40 %), a receita some, `celestial_lv40` = 1 e o 1º kill sobe o Celestial para o 40. Os controles CL-01/CL-03 recusam com CombineComplete 0.
+- **Pedra da Fúria (#408):** a 3020 não tem uso no Go (sem volátil, cai no caminho de equipar e sai calada). Lv90, Arcana e Reset não acontecem; só saem por `/destravar90` e `/arcana`. O contador `Celestial.Reset` não existe.
+- **Adds do Sub (#409):** o Sub-Celestial sobe para o 120, mas o diadema não ganha EF_AC/EF_HP (`SetCircletSubGod` adiado no Go).
+- **Comandos:** `/destravar40` grava o Lv40 sem a receita, como o legado. Os cenários não usam os comandos.
+- Informativo (do código, não medido): a Poeira de Fada do Go põe a exp da curva **mortal** também no Celestial (`handler/item.go:877`, `level.NextLevelExp`); o legado usa `g_pNextLevel_2` para os tiers celestiais (`_MSG_UseItem.cpp:1017`). Por isso o bot sobe o Celestial pelo kill, não pela Poeira.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| CL-01 | ✅ | |
+| CL-02 | ✅ | |
+| CL-03 | ✅ | |
+| CL-04 | ✅ (vácuo: a 3020 não faz nada) | |
+| CL-05 | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) |
+| CL-06 | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) |
+| CL-07 | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) |
+| CL-08 | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) |
+| CL-09 | ✅ (registro: o comando pula a quest) | |
+| CL-10 | ❌ | [#409](https://github.com/Jean1dev/w2pp-OpenWYD/issues/409) |
