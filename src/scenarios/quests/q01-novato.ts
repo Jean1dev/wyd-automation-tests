@@ -1,9 +1,8 @@
 // Quest 01 — Novato: os quatro treinadores do Campo de Treino (docs/quests/01-novato-treinadores.md).
 //
-// A flag QuestInfo.Mortal.Newbie não existe no banco do Go, então a pré-condição "Newbie = N" é
-// montada jogando: o caso semeia as chaves e faz os passos anteriores com os treinadores. Cada
-// passo é conferido pelo efeito (Kit no inventário, adicionais da arma, +3 nas peças, emblema
-// consumido), não pelo texto da fala.
+// A pré-condição "Newbie = N" vem do banco (coluna newbie_quest, w2pp-OpenWYD#411). Cada passo é
+// conferido pelo efeito (Kit no inventário, adicionais da arma, +3 nas peças, emblema consumido) e
+// pela flag salva depois do relog, não pelo texto da fala.
 import { approachNpc, type NpcSpec, type QuestTalk, talkQuest } from '../../bot/npc.ts';
 import { walkPath } from '../../bot/movement.ts';
 import { useDustUntil } from '../../bot/quest.ts';
@@ -15,9 +14,13 @@ import { COVEIRO_ARENA, GEAR, ITEM, NPC, STEP4_REWARDS, STEP_ITEM, STEP_NPC } fr
 import { bonusEffs, carryOf, diffSlots, EF_SANC, effValue, equipOf, hasItem, type SlotItem } from './helpers.ts';
 import type { CaseCtx, CaseResult, QuestSpec } from './runner.ts';
 
-/** Personagem mortal com o nível ARMAZENADO dado e o inventário limpo nos slots usados pelo caso. */
-async function mortal(db: Db, char: string, storedLevel: number): Promise<void> {
-  await db.setCharacter(char, { level: storedLevel, class_master: CLASS_MASTER.MORTAL });
+/**
+ * Personagem mortal com o nível ARMAZENADO e a flag Newbie dados. HP folgado: os mobs do campo
+ * (Krill_Gigante ao lado do Treinador2) matam um nível 10 de 100 HP antes da fala, e morto o
+ * MSG_Quest é ignorado.
+ */
+async function mortal(db: Db, char: string, storedLevel: number, newbie = 0): Promise<void> {
+  await db.setCharacter(char, { level: storedLevel, class_master: CLASS_MASTER.MORTAL, newbie_quest: newbie, max_hp: 3000, hp: 3000 });
 }
 
 /** Põe as chaves/emblema dos passos `steps` nos slots 0.. do inventário. */
@@ -54,6 +57,7 @@ async function talk(ctx: CaseCtx, npc: NpcSpec): Promise<Talk> {
   const carry0 = carryOf(ctx.c), equip0 = equipOf(ctx.c);
   const t = await talkQuest(ctx.c, ctx.log, npc, 4000);
   await sleep(1000);
+  if (!t.texts.length && !t.notices.length) ctx.log.warn('NPC sem resposta', { npc: npc.name, hp: ctx.c.self?.hp, x: ctx.c.self?.x, y: ctx.c.self?.y });
   return { npc: npc.name, talk: t, carry: diffSlots(carry0, carryOf(ctx.c)), equip: diffSlots(equip0, equipOf(ctx.c)) };
 }
 
@@ -66,9 +70,11 @@ function stepDone(n: number, t: Talk, c: CaseCtx['c'], weaponReqLvlOk = true): b
       return t.carry.gained.some((x) => x.index === ITEM.kitDeCura && effValue(x, P.EF_AMOUNT) === 20) && hasItem(carryOf(c), ITEM.chave1);
     case 2: // adicionais da arma refeitos (só com ReqLvl ≤ 39); a chave fica
       return (weaponReqLvlOk ? t.equip.gained.some((x) => x.slot === 6 && bonusEffs(x).length > 0) : true) && hasItem(carryOf(c), ITEM.chave2);
-    case 3: { // Equip[1..7] com +3
+    case 3: { // Equip[1..6] com +3. O broquel do Equip[7] (nPos 128) fica igual: o SetItemBonus pula escudo
+      // (Server.cpp:1831) e o BASE_SetItemSanc não acha par EF_SANC onde gravar (Basedef.cpp), também no legado.
       const eq = equipOf(c);
-      return eq.filter((x) => x.slot >= 1 && x.slot <= 7).every((x) => effValue(x, EF_SANC) === 3) && t.equip.gained.length > 0;
+      return eq.filter((x) => x.slot >= 1 && x.slot <= 6).every((x) => effValue(x, EF_SANC) === 3) && t.equip.gained.length > 0
+        && !t.equip.gained.some((x) => x.slot === 7);
     }
     case 4: // a 524 some; aparece 682 ×20, 481 ou 652
       return !hasItem(carryOf(c), ITEM.emblemaOrc) && t.carry.gained.some((x) => STEP4_REWARDS.includes(x.index));
@@ -111,11 +117,16 @@ async function unreachedAt(ctx: CaseCtx, ev: Record<string, unknown>, want: numb
   return { pass: false, evidence: ev, note: `${unreached(want, got)}; ${npc.name} direto: ${resp}${nothingChanged(t) ? ', nada mudou' : ', mexeu no personagem'}` };
 }
 
-/** Itens do banco depois de um relog (o que o servidor salvou). */
+/** Itens e flag Newbie do banco depois de um relog (o que o servidor salvou). */
 async function savedItems(ctx: CaseCtx) {
   await ctx.relog();
-  return ctx.query(async (db, char) => ({ carry: await db.items(char, 'carry'), equip: await db.items(char, 'equip') }));
+  return ctx.query(async (db, char) => ({
+    carry: await db.items(char, 'carry'), equip: await db.items(char, 'equip'), newbie: (await db.character(char)).newbie_quest,
+  }));
 }
+
+/** O que o NPC respondeu (falas e notices), para a nota. */
+const said = (t: Talk) => [...t.talk.texts.map((x) => `"${x}"`), ...t.talk.notices.map((n) => `notice ${n}`)].join(', ') || 'sem resposta';
 
 const quest: QuestSpec = {
   id: '01',
@@ -141,125 +152,121 @@ const quest: QuestSpec = {
         const t = await talk(ctx, NPC.treinador1);
         const ok = stepDone(1, t, ctx.c);
         const ev: Record<string, unknown> = summary(t);
-        if (!ok) return { pass: false, evidence: ev, note: `sem Kit 682 ×20 (notices ${t.talk.notices.join(',') || '—'}, inventário igual: ${!t.carry.gained.length})` };
+        if (!ok) return { pass: false, evidence: ev, note: `sem Kit 682 ×20 (${said(t)}, inventário igual: ${!t.carry.gained.length})` };
         const saved = await savedItems(ctx);
         ev.saved = saved;
-        const pass = saved.carry.some((x) => x.index === ITEM.kitDeCura) && saved.carry.some((x) => x.index === ITEM.chave1);
-        return { pass, evidence: ev, note: pass ? 'Kit 682 ×20 recebido e salvo; 451 mantida' : 'o Kit não foi salvo no banco' };
+        const kit = saved.carry.some((x) => x.index === ITEM.kitDeCura);
+        const pass = kit && saved.carry.some((x) => x.index === ITEM.chave1) && saved.newbie === 1;
+        return { pass, evidence: ev, note: `Kit 682 ×20 recebido${kit ? ' e salvo' : ', não salvo'}; 451 mantida; newbie_quest ${saved.newbie} depois do relog` };
       },
     },
     {
       id: 'NOV-03',
       title: 'Passo 1 de novo',
       type: 'controle',
-      seed: async (db, char) => { await mortal(db, char, 9); await keys(db, char, [1]); },
+      seed: async (db, char) => { await mortal(db, char, 9, 1); await keys(db, char, [1]); },
       run: async (ctx) => {
-        const ev: Record<string, unknown> = {};
-        const got = await advance(ctx, 1, ev);
-        if (got < 1) return unreachedAt(ctx, ev, 1, got, NPC.treinador1);
         const t = await talk(ctx, NPC.treinador1);
-        ev.denovo = summary(t);
-        const pass = nothingChanged(t);
-        return { pass, evidence: ev, note: pass ? 'segundo pedido sem Kit novo' : 'o Treinador1 deu a recompensa de novo' };
+        const saved = await savedItems(ctx);
+        const pass = nothingChanged(t) && saved.newbie === 1;
+        return { pass, evidence: { ...summary(t), newbie: saved.newbie }, note: `Newbie 1 semeado, com a 451: ${nothingChanged(t) ? 'nada mudou' : 'mexeu no personagem'} (${said(t)}); newbie_quest ${saved.newbie} depois do relog` };
       },
     },
     {
       id: 'NOV-04',
       title: 'Pular passo',
       type: 'controle',
-      seed: async (db, char) => { await mortal(db, char, 9); await keys(db, char, [1, 3]); await gear(db, char, GEAR.lancaCurva); },
+      seed: async (db, char) => { await mortal(db, char, 9, 1); await keys(db, char, [3]); await gear(db, char, GEAR.lancaCurva); },
       run: async (ctx) => {
-        const ev: Record<string, unknown> = {};
-        const got = await advance(ctx, 1, ev);
-        if (got < 1) return unreachedAt(ctx, ev, 1, got, NPC.treinador3);
         const t = await talk(ctx, NPC.treinador3);
-        ev.treinador3 = summary(t);
-        const pass = nothingChanged(t);
-        return { pass, evidence: ev, note: pass ? 'Treinador3 com Newbie 1 não mexeu no equipamento' : 'o Treinador3 aceitou o passo 3 com Newbie 1' };
+        const saved = await savedItems(ctx);
+        const pass = nothingChanged(t) && saved.newbie === 1;
+        return { pass, evidence: { ...summary(t), newbie: saved.newbie }, note: `Newbie 1 semeado, Treinador3 com a 453: ${nothingChanged(t) ? 'nada mudou' : 'mexeu no equipamento'} (${said(t)}); newbie_quest ${saved.newbie} depois do relog` };
       },
     },
     {
       id: 'NOV-05',
       title: 'Passo 2',
       type: 'feliz',
-      seed: async (db, char) => { await mortal(db, char, 9); await keys(db, char, [1, 2]); await gear(db, char, GEAR.lancaCurva); },
+      seed: async (db, char) => { await mortal(db, char, 9, 1); await keys(db, char, [2]); await gear(db, char, GEAR.lancaCurva); },
       run: async (ctx) => {
-        const ev: Record<string, unknown> = {};
-        const got = await advance(ctx, 2, ev);
-        if (got < 1) return unreachedAt(ctx, ev, 1, got, NPC.treinador2);
-        if (got < 2) return { pass: false, evidence: ev, note: 'Treinador2 não refez os adicionais da Lança_Curva (ReqLvl 23)' };
+        const t = await talk(ctx, NPC.treinador2);
+        const ev: Record<string, unknown> = summary(t);
+        if (!stepDone(2, t, ctx.c)) return { pass: false, evidence: ev, note: `Newbie 1 semeado: o Treinador2 não refez os adicionais da Lança_Curva (ReqLvl 23) (${said(t)})` };
         const weapon = equipOf(ctx.c).find((x) => x.slot === 6);
         const saved = await savedItems(ctx);
-        ev.saved = saved.equip.find((x) => x.slot === 6);
-        const pass = JSON.stringify(bonusEffs(saved.equip.find((x) => x.slot === 6))) === JSON.stringify(bonusEffs(weapon));
-        return { pass, evidence: ev, note: pass ? `arma com adicionais ${JSON.stringify(bonusEffs(weapon))}, salvos` : 'os adicionais novos não foram salvos' };
+        const w = saved.equip.find((x) => x.slot === 6);
+        ev.saved = { weapon: w, newbie: saved.newbie };
+        const same = JSON.stringify(bonusEffs(w)) === JSON.stringify(bonusEffs(weapon));
+        const pass = same && saved.newbie === 2;
+        return { pass, evidence: ev, note: `Newbie 1 semeado: Lança_Curva com adicionais ${JSON.stringify(bonusEffs(weapon))}${same ? ', salvos' : ', não salvos'}; newbie_quest ${saved.newbie} depois do relog` };
       },
     },
     {
       id: 'NOV-06',
       title: 'Passo 2 com arma de ReqLvl > 39',
       type: 'borda',
-      seed: async (db, char) => { await mortal(db, char, 9); await keys(db, char, [1, 2, 3]); await gear(db, char, GEAR.lancaDoVento); },
+      seed: async (db, char) => { await mortal(db, char, 9, 1); await keys(db, char, [2]); await gear(db, char, GEAR.lancaDoVento); },
       run: async (ctx) => {
-        const ev: Record<string, unknown> = {};
-        const got = await advance(ctx, 1, ev);
-        if (got < 1) return unreachedAt(ctx, ev, 1, got, NPC.treinador2);
-        const t2 = await talk(ctx, NPC.treinador2);
-        ev.passo2 = summary(t2);
-        const weaponSame = !t2.equip.gained.some((x) => x.slot === 6);
-        // Newbie = 2 só se vê pelo passo 3 funcionar em seguida.
-        const t3 = await talk(ctx, NPC.treinador3);
-        ev.passo3 = summary(t3);
-        const flag2 = stepDone(3, t3, ctx.c);
-        const pass = weaponSame && flag2;
-        return { pass, evidence: ev, note: `arma ${weaponSame ? 'igual' : 'mudou'}; passo 3 em seguida ${flag2 ? 'funcionou (Newbie = 2)' : 'sem efeito (Newbie ≠ 2)'}` };
+        const before = equipOf(ctx.c).find((x) => x.slot === 6);
+        const t = await talk(ctx, NPC.treinador2);
+        const saved = await savedItems(ctx);
+        const w = saved.equip.find((x) => x.slot === 6);
+        const weaponSame = !t.equip.gained.some((x) => x.slot === 6) && JSON.stringify(bonusEffs(w)) === JSON.stringify(bonusEffs(before));
+        const pass = weaponSame && saved.newbie === 2;
+        return { pass, evidence: { ...summary(t), before, saved: { weapon: w, newbie: saved.newbie } }, note: `Newbie 1 semeado, Lança_do_Vento (ReqLvl 43): arma ${weaponSame ? 'igual' : 'mudou'} (${said(t)}); newbie_quest ${saved.newbie} depois do relog` };
       },
     },
     {
       id: 'NOV-07',
       title: 'Passo 3',
       type: 'feliz',
-      seed: async (db, char) => { await mortal(db, char, 9); await keys(db, char, [1, 2, 3]); await gear(db, char, GEAR.lancaCurva); },
+      seed: async (db, char) => { await mortal(db, char, 9, 2); await keys(db, char, [3]); await gear(db, char, GEAR.lancaCurva); },
       run: async (ctx) => {
-        const ev: Record<string, unknown> = {};
-        const got = await advance(ctx, 3, ev);
-        if (got < 2) return unreachedAt(ctx, ev, 2, got, NPC.treinador3);
-        if (got < 3) return { pass: false, evidence: ev, note: 'Treinador3 não pôs +3 nas peças' };
+        const t = await talk(ctx, NPC.treinador3);
+        const ev: Record<string, unknown> = summary(t);
+        if (!stepDone(3, t, ctx.c)) return { pass: false, evidence: ev, note: `Newbie 2 semeado: o Treinador3 não pôs +3 nas peças (${said(t)})` };
         const saved = await savedItems(ctx);
-        ev.saved = saved.equip;
-        const pass = saved.equip.filter((x) => x.slot >= 1 && x.slot <= 7).every((x) => effValue(x, EF_SANC) === 3);
-        return { pass, evidence: ev, note: pass ? 'Equip[1..7] com +3, salvo' : 'o +3 não foi salvo' };
+        ev.saved = { equip: saved.equip, newbie: saved.newbie };
+        const pieces = saved.equip.filter((x) => x.slot >= 1 && x.slot <= 6);
+        const ok3 = pieces.length === 6 && pieces.every((x) => effValue(x, EF_SANC) === 3);
+        const shield = saved.equip.find((x) => x.slot === 7);
+        const shieldSame = shield?.index === GEAR.broquel && bonusEffs(shield).length === 0;
+        const pass = ok3 && shieldSame && saved.newbie === 3;
+        return { pass, evidence: ev, note: `Newbie 2 semeado: Equip[1..6] ${ok3 ? 'com adicional novo e +3, salvo' : 'sem +3 no banco'}; broquel (nPos 128) ${shieldSame ? 'igual, como no legado' : 'mudou'}; newbie_quest ${saved.newbie} depois do relog` };
       },
     },
     {
       id: 'NOV-08',
       title: 'Passo 3 com slot vazio',
       type: 'borda',
-      seed: async (db, char) => { await mortal(db, char, 9); await keys(db, char, [1, 2, 3]); await gear(db, char, GEAR.lancaCurva, [2]); },
+      seed: async (db, char) => { await mortal(db, char, 9, 2); await keys(db, char, [3]); await gear(db, char, GEAR.lancaCurva, [2]); },
       run: async (ctx) => {
-        const ev: Record<string, unknown> = {};
-        const got = await advance(ctx, 3, ev);
+        const t = await talk(ctx, NPC.treinador3);
         const slot2 = ctx.c.self!.equip[2];
-        ev.equip2 = slot2;
-        if (got < 2) return unreachedAt(ctx, ev, 2, got, NPC.treinador3);
-        if (got < 3) return { pass: false, evidence: ev, note: 'Treinador3 não pôs +3 nas peças' };
-        return { pass: true, evidence: ev, note: `peças com +3; Equip[2] vazio ficou ${slot2?.index ? `com o item ${slot2.index}` : `vazio (efeitos ${JSON.stringify(slot2?.eff ?? [])})`}` };
+        const ev: Record<string, unknown> = { ...summary(t), equip2: slot2 };
+        if (!stepDone(3, t, ctx.c)) return { pass: false, evidence: ev, note: `Newbie 2 semeado: o Treinador3 não pôs +3 nas peças (${said(t)})` };
+        const saved = await savedItems(ctx);
+        ev.saved = { equip2: saved.equip.find((x) => x.slot === 2) ?? null, newbie: saved.newbie };
+        const pass = saved.newbie === 3;
+        return { pass, evidence: ev, note: `Newbie 2 semeado: peças com +3; Equip[2] vazio ficou ${slot2?.index ? `com o item ${slot2.index}` : `vazio (efeitos ${JSON.stringify(slot2?.eff ?? [])})`}; newbie_quest ${saved.newbie} depois do relog` };
       },
     },
     {
       id: 'NOV-09',
       title: 'Passo 4',
       type: 'feliz',
-      seed: async (db, char) => { await mortal(db, char, 9); await keys(db, char, [1, 2, 3, 4]); await gear(db, char, GEAR.lancaCurva); },
+      seed: async (db, char) => { await mortal(db, char, 9, 3); await keys(db, char, [4]); await gear(db, char, GEAR.lancaCurva); },
       run: async (ctx) => {
-        const ev: Record<string, unknown> = {};
-        const got = await advance(ctx, 4, ev);
-        if (got < 3) return unreachedAt(ctx, ev, 3, got, NPC.chefe);
-        if (got < 4) return { pass: false, evidence: ev, note: 'Chefe_de_Treino não trocou o Emblema_Orc' };
+        const t = await talk(ctx, NPC.chefe);
+        const ev: Record<string, unknown> = summary(t);
+        if (!stepDone(4, t, ctx.c)) return { pass: false, evidence: ev, note: `Newbie 3 semeado: o Chefe_de_Treino não trocou o Emblema_Orc (${said(t)})` };
+        const reward = t.carry.gained.find((x) => STEP4_REWARDS.includes(x.index));
         const saved = await savedItems(ctx);
-        ev.saved = saved.carry;
-        const pass = !saved.carry.some((x) => x.index === ITEM.emblemaOrc) && saved.carry.some((x) => STEP4_REWARDS.includes(x.index));
-        return { pass, evidence: ev, note: pass ? '524 consumida e recompensa salva' : 'a troca não foi salva' };
+        ev.saved = { carry: saved.carry, newbie: saved.newbie };
+        const ok = !saved.carry.some((x) => x.index === ITEM.emblemaOrc) && saved.carry.some((x) => STEP4_REWARDS.includes(x.index));
+        const pass = ok && saved.newbie === 4;
+        return { pass, evidence: ev, note: `Newbie 3 semeado: 524 consumida, recompensa ${reward?.index}${ok ? ', salvo' : ', não salvo'}; newbie_quest ${saved.newbie} depois do relog` };
       },
     },
     {
@@ -286,16 +293,20 @@ const quest: QuestSpec = {
       id: 'NOV-11',
       title: 'Flag persiste',
       type: 'borda',
-      seed: async (db, char) => { await mortal(db, char, 9); await keys(db, char, [1, 2]); await gear(db, char, GEAR.lancaCurva); },
+      // O passo 2 é feito jogando (Newbie 1 semeado) para conferir que o Go salva a flag que ele mesmo grava.
+      seed: async (db, char) => { await mortal(db, char, 9, 1); await keys(db, char, [2]); await gear(db, char, GEAR.lancaCurva); },
       run: async (ctx) => {
         const ev: Record<string, unknown> = {};
-        const got = await advance(ctx, 2, ev);
-        if (got < 2) return unreachedAt(ctx, ev, 2, got, NPC.treinador2);
+        const t1 = await talk(ctx, NPC.treinador2);
+        ev.passo2 = summary(t1);
+        if (!stepDone(2, t1, ctx.c)) return { pass: false, evidence: ev, note: `Newbie 1 semeado: o passo 2 não teve efeito (${said(t1)})` };
         await ctx.relog();
+        const newbie = await ctx.query(async (db, char) => (await db.character(char)).newbie_quest);
+        ev.newbie = newbie;
         const t = await talk(ctx, NPC.treinador2);
         ev.depoisDoRelog = summary(t);
-        const pass = nothingChanged(t);
-        return { pass, evidence: ev, note: pass ? 'depois do relog o Treinador2 não refez a arma (Newbie salvo)' : 'depois do relog o passo 2 rodou de novo (Newbie não persistiu)' };
+        const pass = nothingChanged(t) && newbie === 2;
+        return { pass, evidence: ev, note: `passo 2 feito, relog: newbie_quest ${newbie} no banco; Treinador2 de novo: ${nothingChanged(t) ? 'nada mudou' : 'refez a arma'} (${said(t)})` };
       },
     },
     {

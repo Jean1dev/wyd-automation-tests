@@ -4,9 +4,8 @@
 // - Legado: _MSG_Quest.cpp:1895-2100 (TREINADORNEWBIE1..4). Cada passo exige ClassMaster MORTAL,
 //   nível armazenado < FREEEXP (35, Server.cpp:50) e QuestInfo.Mortal.Newbie == passo − 1
 //   (Basedef.h:637); a chave/emblema pode estar em qualquer slot do inventário.
-// - Go: sem rota. O Treinador1 tem CurrentScore.Merchant 100 / grade 0 e cai no quest256NPC do
-//   Coveiro (handler/misc.go:165); Treinador2/3 (104/105) e o Chefe_de_Treino (100/16) caem no
-//   "quest NPC not implemented". A flag Newbie não existe na entidade nem no banco.
+// - Go (desde w2pp-OpenWYD#411, 2866b8c): handler/newbiequest.go roteia pelo byte Merchant do
+//   template (36/40/41, Chefe 100 grade 16) antes do Coveiro; a flag fica na coluna newbie_quest.
 import type { NpcSpec } from '../../bot/npc.ts';
 
 /** Itens (Release/Common/ItemList.csv). */
