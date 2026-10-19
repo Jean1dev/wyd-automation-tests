@@ -31,7 +31,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| NOV-01 | Passo 1 sem a chave | controle | ✅ | | nada mudou no inventário; o Go responde com o NoticeReqNotMet do Coveiro (não a fala Cheerup1) |
+| NOV-01 | Passo 1 sem a chave | controle | ✅ |  | 2026-10-19: Treinador1 sem a chave fala Cheerup1 ("Se não possuir a chave Gremlin Isca…"); nada muda no inventário |
 | NOV-02 | Passo 1 | feliz | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: com a 451: Kit 682 ×20 no inventário, 451 mantida; Kit e newbie_quest 1 no banco depois do relog |
 | NOV-03 | Passo 1 de novo | controle | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | pré-condição Newbie 1 inalcançável (passo 1 sem efeito); Treinador1 de novo: NoticeReqNotMet, nada muda |
 | NOV-04 | Pular passo | controle | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | pré-condição Newbie 1 inalcançável; Treinador3 com a 453 não responde e nada muda |
