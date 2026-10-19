@@ -40,7 +40,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | NOV-07 | Passo 3 | feliz | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: newbie_quest 2 semeado: Equip[1..6] com adicional novo e +3, salvos; broquel (nPos 128) igual, como no legado; newbie_quest 3 |
 | NOV-08 | Passo 3 com slot vazio | borda | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: newbie_quest 2 semeado, Equip[2] vazio: peças com +3, Equip[2] continua vazio (efeitos zerados) — o legado também não grava em slot vazio (SetItemBonus/BASE_SetItemSanc sem par); newbie_quest 3 |
 | NOV-09 | Passo 4 | feliz | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: newbie_quest 3 semeado: 524 consumida, recompensa (481 e 682 nas rodadas, rand()%3) salva; newbie_quest 4 no banco |
-| NOV-10 | Acima do nível | controle | ✅ | | exibido 36 (Poeira ao lado do Treinador1) com a 451: nada mudou; resposta NoticeReqNotMet do Coveiro |
+| NOV-10 | Acima do nível | controle | ✅ |  | 2026-10-19: exibido 36 (Poeira ao lado do Treinador1) com a 451: fala Already1, nada muda |
 | NOV-11 | Flag persiste | borda | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | pré-condição Newbie 2 inalcançável (passo 1 sem efeito); Treinador2 não responde; a flag Newbie nem existe no banco |
 | NOV-12 | Treinador1 não é Coveiro | controle | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | exibido 40 com a Vela 4038: o Treinador1 teleportou para (2395,2102), arena do Coveiro, e consumiu a Vela |
 
