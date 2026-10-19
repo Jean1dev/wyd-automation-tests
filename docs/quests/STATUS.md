@@ -8,7 +8,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | # | Quest | Casos | ✅ | ❌ | ⏸️ | ⏳ |
 |---|---|---|---|---|---|---|
-| [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 5 | 7 | 0 | 0 |
+| [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 6 | 6 | 0 | 0 |
 | [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 13 | 1 | 0 | 0 |
 | [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 12 | 1 | 0 | 0 |
 | [04](#04) | Molar do Gárgula | 10 | 6 | 4 | 0 | 0 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 5 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 5 | 5 | 0 | 0 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 5 | 2 | 0 | 0 |
-| | **Total** | **144** | **98** | **46** | **0** | **0** |
+| | **Total** | **144** | **99** | **45** | **0** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -35,7 +35,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | NOV-02 | Passo 1 | feliz | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: com a 451: Kit 682 ×20 no inventário, 451 mantida; Kit e newbie_quest 1 no banco depois do relog |
 | NOV-03 | Passo 1 de novo | controle | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: newbie_quest 1 semeado, com a 451: fala Already1 ("Deus te abençoe."), nada muda; flag continua 1 no banco |
 | NOV-04 | Pular passo | controle | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: newbie_quest 1 semeado, Treinador3 com a 453: fala Already3, equipamento igual; flag continua 1 |
-| NOV-05 | Passo 2 | feliz | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | pré-condição Newbie 1 inalcançável; Treinador2 com a 452 não responde, Lança_Curva sem adicional novo |
+| NOV-05 | Passo 2 | feliz | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: newbie_quest 1 semeado: Lança_Curva (ReqLvl 23) com adicionais refeitos, salvos; newbie_quest 2 no banco |
 | NOV-06 | Passo 2 com arma de ReqLvl > 39 | borda | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | pré-condição Newbie 1 inalcançável; Treinador2 com a 452 e a Lança_do_Vento não responde |
 | NOV-07 | Passo 3 | feliz | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | pré-condição Newbie 2 inalcançável; Treinador3 com a 453 não responde, Equip[1..7] sem +3 |
 | NOV-08 | Passo 3 com slot vazio | borda | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | pré-condição Newbie 2 inalcançável; Treinador3 não responde, Equip[2] continua vazio |
