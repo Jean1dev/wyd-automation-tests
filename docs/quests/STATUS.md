@@ -8,7 +8,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | # | Quest | Casos | ✅ | ❌ | ⏸️ | ⏳ |
 |---|---|---|---|---|---|---|
-| [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 11 | 1 | 0 | 0 |
+| [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 12 | 0 | 0 | 0 |
 | [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 13 | 1 | 0 | 0 |
 | [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 12 | 1 | 0 | 0 |
 | [04](#04) | Molar do Gárgula | 10 | 6 | 4 | 0 | 0 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 5 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 5 | 5 | 0 | 0 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 5 | 2 | 0 | 0 |
-| | **Total** | **144** | **104** | **40** | **0** | **0** |
+| | **Total** | **144** | **105** | **39** | **0** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -42,7 +42,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | NOV-09 | Passo 4 | feliz | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: newbie_quest 3 semeado: 524 consumida, recompensa (481 e 682 nas rodadas, rand()%3) salva; newbie_quest 4 no banco |
 | NOV-10 | Acima do nível | controle | ✅ |  | 2026-10-19: exibido 36 (Poeira ao lado do Treinador1) com a 451: fala Already1, nada muda |
 | NOV-11 | Flag persiste | borda | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: passo 2 feito jogando (newbie_quest 1 semeado), relog: newbie_quest 2 no banco; Treinador2 de novo fala Already2, arma igual |
-| NOV-12 | Treinador1 não é Coveiro | controle | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | exibido 40 com a Vela 4038: o Treinador1 teleportou para (2395,2102), arena do Coveiro, e consumiu a Vela |
+| NOV-12 | Treinador1 não é Coveiro | controle | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: exibido 40 com a Vela 4038: Treinador1 fala Already1, sem teleporte, Vela fica |
 
 <a id="02"></a>
 ## 02 — Quest 256: as cinco arenas e os troféus
