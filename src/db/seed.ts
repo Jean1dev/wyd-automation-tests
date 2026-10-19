@@ -25,6 +25,9 @@ export const CHAR_COLUMNS = [
   'max_hp', 'max_mp', 'hp', 'mp', 'learned_skill', 'sec_learned_skill', 'save_x', 'save_y', 'citizen',
   'class_master', 'clan', 'soul', 'fame', 'celestial_lv40', 'celestial_lv90', 'celestial_circle', 'terra_mistica',
   'arch_lv355', 'arch_lv370', 'mortal_level', 'celestial_arch_level', 'arch_crystal_stage',
+  // Migrações 0028–0033 (w2pp-OpenWYD#411).
+  'newbie_quest', 'molar_gargula', 'pilula_orc', 'celestial_reset',
+  'celestial_add120', 'celestial_add150', 'celestial_add180', 'celestial_add200', 'celestial_level', 'sub_celestial_level',
 ] as const;
 export type CharColumn = (typeof CHAR_COLUMNS)[number];
 export type CharRow = Record<CharColumn, number> & { id: number; account_id: number; slot: number; name: string };
