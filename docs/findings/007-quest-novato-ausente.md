@@ -1,3 +1,5 @@
+**Situação (2026-10-19): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 01`.**
+
 # 007 — Quest do novato (Treinadores do Campo de Treino) ausente no servidor Go
 
 **Status:** aberto.

@@ -34,7 +34,7 @@ Trocas repetíveis, serviços, instâncias com horário, eventos e a quest diár
 
 | # | Quest | Classe | Nível exibido | NPC (cidade) | Go | Cenário hoje | Prioridade |
 |---|---|---|---|---|---|---|---|
-| [01](01-novato-treinadores.md) | Novato: quatro treinadores | Mortal | 1–35 | Treinador1/2/3 e Chefe_de_Treino (Armia, Campo de Treino) | ❌ (o Treinador1 cai no Coveiro) | `npm run quest -- 01`: 2 ✅ 10 ❌ ([#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395)) | 1 |
+| [01](01-novato-treinadores.md) | Novato: quatro treinadores | Mortal | 1–35 | Treinador1/2/3 e Chefe_de_Treino (Armia, Campo de Treino) | ❌ (o Treinador1 cai no Coveiro) | `npm run quest -- 01`: 12 ✅ (2026-10-19, [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411) | 1 |
 | [02](02-quest256-tickets.md) | Quest 256: Coveiro, Jardineiro, Kaizen, Hidra e Elfos, com troféus | Mortal/Arch | 40–350 | Coveiro, Jardineiro, Patrulha_, Patrulha e Guarda | ✅ (reset no #388) | `npm run quest -- 02`: 13 ✅ 1 ❌ ([#396](https://github.com/Jean1dev/w2pp-OpenWYD/issues/396)) | 2 |
 | [03](03-capa-verde.md) | Capa Verde (Formatura Aprendiz) | Mortal / Arch | 100–150 | Diretor_Treina. e Chefe_Treina. (sul de Azran); Lider_Aprendiz para o Arch | Mortal ✅, Arch ❌ | `npm run quest -- 03`: 12 ✅ 1 ❌ ([#397](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397)) | 3 |
 | [04](04-molar-gargula.md) | Molar do Gárgula | Mortal | 200–254 | Patrulha__ (Dungeon) | ⚠️ (o uso do molar não existe) | `npm run quest -- 04`: 6 ✅ 4 ❌ ([#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398)) | 4 |
