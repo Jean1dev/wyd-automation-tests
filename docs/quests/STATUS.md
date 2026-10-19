@@ -8,7 +8,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | # | Quest | Casos | ✅ | ❌ | ⏸️ | ⏳ |
 |---|---|---|---|---|---|---|
-| [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 9 | 3 | 0 | 0 |
+| [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 10 | 2 | 0 | 0 |
 | [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 13 | 1 | 0 | 0 |
 | [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 12 | 1 | 0 | 0 |
 | [04](#04) | Molar do Gárgula | 10 | 6 | 4 | 0 | 0 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 5 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 5 | 5 | 0 | 0 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 5 | 2 | 0 | 0 |
-| | **Total** | **144** | **102** | **42** | **0** | **0** |
+| | **Total** | **144** | **103** | **41** | **0** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -39,7 +39,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | NOV-06 | Passo 2 com arma de ReqLvl > 39 | borda | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: newbie_quest 1 semeado, Lança_do_Vento (ReqLvl 43): arma igual no cliente e no banco, newbie_quest 2 |
 | NOV-07 | Passo 3 | feliz | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: newbie_quest 2 semeado: Equip[1..6] com adicional novo e +3, salvos; broquel (nPos 128) igual, como no legado; newbie_quest 3 |
 | NOV-08 | Passo 3 com slot vazio | borda | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: newbie_quest 2 semeado, Equip[2] vazio: peças com +3, Equip[2] continua vazio (efeitos zerados) — o legado também não grava em slot vazio (SetItemBonus/BASE_SetItemSanc sem par); newbie_quest 3 |
-| NOV-09 | Passo 4 | feliz | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | pré-condição Newbie 3 inalcançável; Chefe_de_Treino com a 524 não responde, emblema fica |
+| NOV-09 | Passo 4 | feliz | ✅ | [~~#395~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) corrigida no #411 | 2026-10-19: newbie_quest 3 semeado: 524 consumida, recompensa (481 e 682 nas rodadas, rand()%3) salva; newbie_quest 4 no banco |
 | NOV-10 | Acima do nível | controle | ✅ | | exibido 36 (Poeira ao lado do Treinador1) com a 451: nada mudou; resposta NoticeReqNotMet do Coveiro |
 | NOV-11 | Flag persiste | borda | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | pré-condição Newbie 2 inalcançável (passo 1 sem efeito); Treinador2 não responde; a flag Newbie nem existe no banco |
 | NOV-12 | Treinador1 não é Coveiro | controle | ❌ | [#395](https://github.com/Jean1dev/w2pp-OpenWYD/issues/395) | exibido 40 com a Vela 4038: o Treinador1 teleportou para (2395,2102), arena do Coveiro, e consumiu a Vela |
