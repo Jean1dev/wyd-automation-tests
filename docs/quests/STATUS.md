@@ -257,7 +257,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CL-01 | Lv40 fora do nível | controle | ✅ |  | Celestial exibido 39 com a receita: CombineComplete 0; receita nos slots 20–26 e Lv40 0 no banco depois do relog |
 | CL-02 | Lv40 | feliz | ✅ |  | Celestial exibido 40 (exp no limiar do 41): 1ª combinação CombineComplete 1, receita some, Lv40 1; 1º Dracorich depois → nível exibido 41 no cliente e no banco |
 | CL-03 | Lv40 de novo | controle | ✅ |  | Celestial exibido 40 com Lv40 1 e a receita: CombineComplete 0; receita fica nos slots 20–26 |
-| CL-04 | Lv90 sem Fama | controle | ✅ |  | Celestial exibido 90, Fama 100: botão direito na 3020 sem resposta; pedra, Fama e Lv90 iguais (vácuo: a 3020 não tem uso no Go, #408) |
+| CL-04 | Lv90 sem Fama | controle | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-22: (09:48 UTC) Celestial exibido 90, Fama 100: a 3020 é recusada como o legado, só o SendItem do slot 27 (3020) calado; pedra, Fama e Lv90 iguais (banco) — deixou de ser vácuo |
 | CL-05 | Lv90 | feliz | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | Celestial exibido 90, Fama 600: botão direito na 3020 sem resposta; Fama 600, Lv90 0, sem 3502, a pedra fica |
 | CL-06 | Arcana | feliz | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | Celestial exibido 200, Fama 600, 5334–5337, Equip[1] vazio: 3020 sem resposta; pedras, Fama e Circle 0 iguais, sem 3507 |
 | CL-07 | Arcana herdando o `Circle` | borda | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) | Celestial exibido 200 com Circle 1: 3020 sem resposta; exp, Fama e pedras iguais (legado: ramo Reset, exp −20M) |

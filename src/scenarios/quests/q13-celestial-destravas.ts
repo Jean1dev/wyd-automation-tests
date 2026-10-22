@@ -33,6 +33,10 @@ interface Seed {
   lv90?: number;
   circle?: number;
   fame?: number;
+  /** QuestInfo.Celestial.Reset (coluna celestial_reset). */
+  reset?: number;
+  /** QuestInfo.Celestial.Add120 (coluna celestial_add120). */
+  add120?: number;
   /** Inventário: slot → item. */
   carry?: Record<number, SeedItem>;
   /** Equipamento: slot → item. */
@@ -49,6 +53,8 @@ async function seedChar(db: Db, name: string, s: Seed): Promise<void> {
     celestial_lv90: s.lv90 ?? 0,
     celestial_circle: s.circle ?? 0,
     fame: s.fame ?? 0,
+    celestial_reset: s.reset ?? 0,
+    celestial_add120: s.add120 ?? 0,
     clan: 0,
   });
   for (const [slot, it] of Object.entries(s.carry ?? {})) await db.putItem(name, 'carry', Number(slot), it);
@@ -74,6 +80,8 @@ interface Saved {
   lv90: number;
   circle: number;
   fame: number;
+  reset: number;
+  add120: number;
   carry: { slot: number; index: number }[];
   cythera: { index: number; eff: [number, number][] };
 }
@@ -85,7 +93,8 @@ async function saved(ctx: CaseCtx): Promise<Saved> {
     const eq1 = (await db.items(ch, 'equip')).find((x) => x.slot === EQUIP_SLOT.cythera);
     return {
       classMaster: Number(r.class_master), level: Number(r.level), exp: Number(r.exp), lv40: Number(r.celestial_lv40),
-      lv90: Number(r.celestial_lv90), circle: Number(r.celestial_circle), fame: Number(r.fame), carry,
+      lv90: Number(r.celestial_lv90), circle: Number(r.celestial_circle), fame: Number(r.fame),
+      reset: Number(r.celestial_reset), add120: Number(r.celestial_add120), carry,
       cythera: { index: eq1?.index ?? 0, eff: eq1?.eff ?? [] },
     };
   });
@@ -96,10 +105,10 @@ const QUEST_ITEMS = new Set<number>([...LV40_RECIPE, ITEM.pedraFuria, ...ITEM.pe
 const questCarry = (s: Saved) => s.carry.filter((x) => QUEST_ITEMS.has(x.index)).map((x) => `${x.slot}:${x.index}`).join(' ') || 'nada';
 const has = (s: Saved, index: number) => s.carry.some((x) => x.index === index);
 const at = (s: Saved, slot: number) => s.carry.find((x) => x.slot === slot)?.index ?? 0;
-const fmtS = (s: Saved) => `master ${s.classMaster} nível ${s.level} exp ${s.exp} Lv40 ${s.lv40} Lv90 ${s.lv90} Circle ${s.circle} Fame ${s.fame} `
+const fmtS = (s: Saved) => `master ${s.classMaster} nível ${s.level} exp ${s.exp} Lv40 ${s.lv40} Lv90 ${s.lv90} Circle ${s.circle} Reset ${s.reset} Add120 ${s.add120} Fame ${s.fame} `
   + `Equip[1] ${s.cythera.index}${s.cythera.eff.length ? ` [${s.cythera.eff.map(([e, v]) => `${e}:${v}`).join(',')}]` : ''} inv(quest) [${questCarry(s)}]`;
 /** Retrato comparável (para os controles). */
-const sig = (s: Saved) => `${s.classMaster}/${s.level}/${s.exp}/${s.lv40}/${s.lv90}/${s.circle}/${s.fame}/${questCarry(s)}`;
+const sig = (s: Saved) => `${s.classMaster}/${s.level}/${s.exp}/${s.lv40}/${s.lv90}/${s.circle}/${s.reset}/${s.fame}/${questCarry(s)}`;
 
 // ---------------------------------------------------------------- respostas
 
@@ -108,6 +117,8 @@ interface Answer {
   combine?: number;
   texts: string[];
   notices: number[];
+  /** SendItem do inventário (slot:índice): o legado devolve o slot da pedra recusada (SendItem). */
+  carrySlots: string[];
 }
 
 function answerOf(c: GameClient, since: number): Answer {
@@ -118,10 +129,12 @@ function answerOf(c: GameClient, since: number): Answer {
     combine: cc ? P.parseNotice(cc.body) : undefined,
     texts: frames.filter((f) => f.header.type === Op.MessagePanel || f.header.type === Op.MessageChat).map((f) => P.parseText(f.body)),
     notices: frames.filter((f) => f.header.type === Op.MessageBoxOk).map((f) => P.parseNotice(f.body)),
+    carrySlots: frames.filter((f) => f.header.type === Op.SendItem).map((f) => P.parseSendItem(f.body))
+      .filter((x) => x.place === P.PLACE_CARRY).map((x) => `${x.slot}:${x.item.index}`),
   };
 }
 
-const fmtA = (a: Answer) => [a.combine !== undefined ? `CombineComplete ${a.combine}` : 'sem CombineComplete', ...a.texts.map((t) => `"${t}"`), ...a.notices.map((n) => `notice ${n}`)].join(', ');
+const fmtA = (a: Answer) => [a.combine !== undefined ? `CombineComplete ${a.combine}` : 'sem CombineComplete', ...a.texts.map((t) => `"${t}"`), ...a.notices.map((n) => `notice ${n}`), a.carrySlots.length ? `SendItem [${a.carrySlots.join(' ')}]` : 'sem SendItem'].join(', ');
 
 interface Step {
   what: string;
@@ -240,9 +253,14 @@ const noteH = (h: Hunt) => `caça ${h.minutes} min, ${h.kills.length} kills, ${h
 
 // ---------------------------------------------------------------- Pedra da Fúria
 
-/** Controle: a 3020 fica, Fama e flags iguais. */
+/**
+ * Controle: recusa do legado (_MSG_UseItem.cpp:3472-3476 / :3655-3659, Fame < 500): só o SendItem do slot
+ * da pedra, calado; a 3020 fica, Fama e flags iguais.
+ */
 function furyRefused(s: Step): CaseResult {
-  return { pass: sig(s.after) === sig(s.before) && at(s.after, FURY_SLOT) === ITEM.pedraFuria, evidence: { ...s }, note: noteStep(s) };
+  const silentResync = s.answer.carrySlots.includes(`${FURY_SLOT}:${ITEM.pedraFuria}`) && !s.answer.texts.length && !s.answer.notices.length;
+  const pass = silentResync && sig(s.after) === sig(s.before) && at(s.after, FURY_SLOT) === ITEM.pedraFuria;
+  return { pass, evidence: { ...s }, note: `esperado (legado): SendItem do slot ${FURY_SLOT} calado; ${noteStep(s)}` };
 }
 
 const furyGone = (s: Step) => at(s.after, FURY_SLOT) !== ITEM.pedraFuria;
@@ -347,7 +365,8 @@ const quest: QuestSpec = {
         // Legado: Circle = 1 cai no ramo Reset: exp −20M, Fama −500, a 3020 some; as pedras e o Equip[1] ficam.
         const s = await useFury(ctx);
         const stonesKept = ITEM.pedraSecreta.every((p) => has(s.after, p));
-        const pass = furyGone(s) && famePaid(s) && stonesKept && s.after.exp === s.before.exp - RESET_EXP && s.after.cythera.index !== ITEM.cytheraArcana;
+        const pass = furyGone(s) && famePaid(s) && stonesKept && s.after.exp === s.before.exp - RESET_EXP && s.after.cythera.index !== ITEM.cytheraArcana
+          && s.after.reset === s.before.reset + 1;
         return { pass, evidence: { ...s }, note: noteStep(s) };
       },
     },
@@ -357,10 +376,10 @@ const quest: QuestSpec = {
       type: 'feliz',
       seed: (db, ch) => seedChar(db, ch, { ...CEL200, circle: 1, exp: celExp(199) + 30_000_000, carry: FURY, equip: { [EQUIP_SLOT.cythera]: { index: ITEM.cytheraArcana } } }),
       run: async (ctx) => {
-        // Legado: Exp −20M, nível recalculado (c[199] ≤ exp: fica 199), Fama −500, Reset +1 (o banco não tem coluna).
+        // Legado: Exp −20M, nível recalculado (c[199] ≤ exp: fica 199), Fama −500, Reset +1 (celestial_reset).
         const s = await useFury(ctx);
-        const pass = furyGone(s) && famePaid(s) && s.after.exp === s.before.exp - RESET_EXP && s.after.level === 199;
-        return { pass, evidence: { ...s }, note: `${noteStep(s)}; Reset: sem coluna no banco (internal/migrations), não dá para conferir` };
+        const pass = furyGone(s) && famePaid(s) && s.after.exp === s.before.exp - RESET_EXP && s.after.level === 199 && s.after.reset === s.before.reset + 1;
+        return { pass, evidence: { ...s }, note: noteStep(s) };
       },
     },
     {
@@ -394,11 +413,11 @@ const quest: QuestSpec = {
         const after = await saved(ctx);
         const want = SUB_ADDS[120];
         const it = { eff: after.cythera.eff };
-        const pass = after.level === 120 && effValue(it, EF_AC) === want.ac && effValue(it, EF_HP) === want.hp;
+        const pass = after.level === 120 && effValue(it, EF_AC) === want.ac && effValue(it, EF_HP) === want.hp && after.add120 === 1;
         return {
           pass,
           evidence: { before, hunt, liveEff, after },
-          note: `esperado no Equip[1] EF_AC ${want.ac} e EF_HP ${want.hp}; ${noteH(hunt)}; diadema no cliente [${liveEff.map(([e, v]) => `${e}:${v}`).join(',')}]; banco ${fmtS(before)} → ${fmtS(after)}`,
+          note: `esperado no Equip[1] EF_AC ${want.ac} e EF_HP ${want.hp} e Add120 1; ${noteH(hunt)}; diadema no cliente [${liveEff.map(([e, v]) => `${e}:${v}`).join(',')}]; banco ${fmtS(before)} → ${fmtS(after)}`,
         };
       },
     },
