@@ -171,7 +171,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CD-04 | Reiniciar | feliz | ✅ | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida no #411 | 2026-10-22: (06:57 UTC) 448, Special [60×4], Learn 0xffffff: "Skills foram reiniciadas."; SpecialBonus 200, Special [10×4], Learn 0xffff00, Equip[13] vazio, Circle 1 no banco depois do relog |
 | CD-05 | Segundo círculo comum | controle | ✅ | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida no #411 | 2026-10-22: (07:12 UTC) celestial_circle 1 semeado, 448 no Equip[13]: a Shaman diz "Você já completou esta Quest." (_NN_Youve_Done_It_Already, agora exigida); o círculo fica, Circle 1 no banco depois do relog — deixou de ser vácuo |
 | CD-06 | Círculo completo depois do comum | borda | ✅ | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida no #411 | 2026-10-22: (07:03 UTC) Circle 1, 694, Special [120×4]: aceita; SpecialBonus 400, Special [20×4], Learn 0xff00ff, Equip[13] vazio, Circle 1 no banco depois do relog |
-| CD-07 | Special abaixo do teto | borda | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | 450 no Equip[13], Special [30,60,60,60]: a Shaman não responde; Special[0] continua 30 no cliente e no banco (esperado 0, SpecialBonus 180, Learn 0x00ffff) |
+| CD-07 | Special abaixo do teto | borda | ✅ | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida no #411 | 2026-10-22: (07:06 UTC) 450, Special [30,60,60,60]: SpecialBonus 180, Special [0,10,10,10], Learn 0x00ffff, Equip[13] vazio no banco depois do relog |
 
 <a id="09"></a>
 ## 09 — Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei
