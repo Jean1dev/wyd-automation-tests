@@ -52,6 +52,9 @@ async function goTo(ctx: CaseCtx, npc: NpcSpec): Promise<void> {
   if (me.hp <= 0) throw new Error(`morreu no caminho do ${npc.name}`);
 }
 
+/** _SN_All_Villagers_Thanks_Your: a fala do Cap.Explor. com a flag ≠ 0 e ≠ 2 (_MSG_Quest.cpp:1636-1641). */
+const THANKS = /agradecem a sua ajuda/;
+
 const answer = (t: QuestTalk) => (t.notices.length ? `notices ${t.notices.join(',')}` : t.texts.length ? `"${t.texts.join(' | ')}"` : 'sem resposta');
 
 interface Talk {
@@ -85,14 +88,18 @@ async function talk(ctx: CaseCtx, npc: NpcSpec, confirm: number): Promise<Talk> 
 
 const talkEvidence = (t: Talk) => ({ npc: t.npc, confirm: t.confirm, from: t.talk.from, notices: t.talk.notices, texts: t.talk.texts, carry: t.carry, flag: t.flag });
 
-/** Controle: a flag não muda (no banco) e nada entra nem sai do inventário. */
-function control(t: Talk, what: string): CaseResult {
-  const pass = t.flag.saved === t.flag.before && !t.carry.gained.length && !t.carry.lost.length;
+/**
+ * Controle: a flag não muda (no banco) e nada entra nem sai do inventário. Com `say`, exige também a
+ * fala do legado (ex.: o agradecimento do Cap.Explor.), para o controle não passar no vácuo.
+ */
+function control(t: Talk, what: string, say?: RegExp): CaseResult {
+  const said = !say || t.talk.texts.some((x) => say.test(x));
+  const pass = said && t.flag.saved === t.flag.before && !t.carry.gained.length && !t.carry.lost.length;
   return {
     pass, evidence: talkEvidence(t),
     note: pass
       ? `${what}: ${answer(t.talk)}; terra_mistica ${t.flag.saved} no banco, inventário igual`
-      : `${what}: terra_mistica ${t.flag.before} → ${t.flag.saved}, ganhou ${t.carry.gained.map((x) => x.index).join(',') || '—'} (${answer(t.talk)})`,
+      : `${what}: ${said ? '' : `sem a fala esperada ${say}; `}terra_mistica ${t.flag.before} → ${t.flag.saved}, ganhou ${t.carry.gained.map((x) => x.index).join(',') || '—'} (${answer(t.talk)})`,
   };
 }
 
@@ -255,7 +262,7 @@ const quest: QuestSpec = {
       title: 'Recompensa antes da hora',
       type: 'controle',
       seed: async (db, n) => { await char(db, n, { flag: FLAG.aceita }); },
-      run: async (ctx) => control(await talk(ctx, NPC.capExplor, 0), 'terra_mistica 1 no Cap.Explor.'),
+      run: async (ctx) => control(await talk(ctx, NPC.capExplor, 0), 'terra_mistica 1 no Cap.Explor.', THANKS),
     },
     {
       id: 'TM-07',
@@ -300,7 +307,7 @@ const quest: QuestSpec = {
       title: 'Recompensa repetida',
       type: 'controle',
       seed: async (db, n) => { await char(db, n, { flag: FLAG.recompensada }); },
-      run: async (ctx) => control(await talk(ctx, NPC.capExplor, 0), 'terra_mistica 3 no Cap.Explor.'),
+      run: async (ctx) => control(await talk(ctx, NPC.capExplor, 0), 'terra_mistica 3 no Cap.Explor.', THANKS),
     },
     {
       id: 'TM-11',
