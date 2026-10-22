@@ -1,3 +1,5 @@
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 13`.**
+
 # 021 — Pedra da Fúria (3020) sem uso: Lv90, Arcana e Reset do Celestial
 
 **Status:** aberto.
