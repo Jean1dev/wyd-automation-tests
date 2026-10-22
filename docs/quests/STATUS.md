@@ -114,7 +114,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 |---|---|---|---|---|---|
 | CR-01 | Teleporte abaixo do nível | controle | ✅ | | Mortal exibido 199: o Guarda_Real recusa (NoticeReqNotMet 15), sem teleporte |
 | CR-02 | Teleporte | feliz | ✅ | | Mortal exibido 200: teleportado para (1740,1722), dentro da área dos Cav._Mortal |
-| CR-03 | Drop do emblema | feliz | ✅ | | o 4081 caiu ao matar um Cav._Mortal____, 15 kills (13 Cav._Mortal___, 2 Cav._Mortal____) em 8,7 min com a viagem, 0 mortes |
+| CR-03 | Drop do emblema | feliz | ✅ |  | 2026-10-22: (06:09 UTC) o 4081 caiu ao matar um Cav._Mortal____ (Carry[8], 1/4 por kill), 4 kills em 4,5 min; a 1ª rodada (05:22) teve 31 kills (só 3 do ____) sem drop — azar |
 | CR-04 | Rei abaixo do nível | controle | ✅ | | exibido 219 com o 4081 no Equip[13] e 4 safiras (preço exato): Rei_Harabard recusa (NoticeReqNotMet 15, o legado manda _NN_Need_Level); nada muda, banco igual |
 | CR-05 | Preço (ask) | feliz | ✅ | | confirm 0, exibido 220 com o 4081 e 4 safiras: "Sao necessarias 4 safiras." (preço do sapphire_balance); nada muda, banco igual |
 | CR-06 | Capa pelo emblema | feliz | ❌ | [#399](https://github.com/Jean1dev/w2pp-OpenWYD/issues/399) | exibido 220, 4081 no Equip[13], sem safiras: "Sao necessarias 4 safiras em pagamento exato."; o 4081 fica, Equip[15] vazio (banco igual) |

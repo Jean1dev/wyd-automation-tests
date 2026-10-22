@@ -218,7 +218,11 @@ async function huntEmblem(ctx: CaseCtx, untilMs: number): Promise<Hunt> {
     }
     const targets = c().liveMobs()
       .filter((m) => (EMBLEM_MOBS as readonly string[]).includes(m.name) && isInArea(AREA, m.x, m.y))
+      // O Cav._Mortal____ traz o 4081 no Carry[8] (g_pDropRate fixo 4, 1/4 por kill); o Cav._Mortal___ só nos
+      // slots 0/1/16/17/59 (~0,3%). Prefere o ____ quando há um a até 12 casas a mais que o mais próximo.
       .sort((a, b) => dist(me.x, me.y, a.x, a.y) - dist(me.x, me.y, b.x, b.y));
+    const best = targets.find((m) => m.name === EMBLEM_MOBS[1] && targets[0] && dist(me.x, me.y, m.x, m.y) <= dist(me.x, me.y, targets[0].x, targets[0].y) + 12);
+    if (best) targets.unshift(best);
     if (!targets.length) {
       const p = CAV_SPAWNS[Math.floor(Math.random() * CAV_SPAWNS.length)];
       await walkTo(c(), p.x, p.y + 1, { abort: () => me.hp <= 0 });
