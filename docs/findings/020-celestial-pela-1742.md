@@ -1,3 +1,5 @@
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 12`.**
+
 # 020 — Celestial: o Go usa a 1742 no lugar da Pedra Ideal 5338
 
 **Status:** aberto.
