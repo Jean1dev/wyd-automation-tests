@@ -1,3 +1,5 @@
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 08`.**
+
 # 017 — Círculo Divino: o Jeffi e a Shaman não têm rota no Go
 
 **Status:** aberto.

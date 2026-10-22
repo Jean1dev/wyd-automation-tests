@@ -73,3 +73,17 @@ Validado no Railway com `npm run quest -- 08`, Mortal de nível armazenado 99 co
 | CD-05 | ✅ (vácuo) | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) |
 | CD-06 | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) |
 | CD-07 | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) |
+
+## Situação (2026-10-22)
+
+Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), com `npm run quest -- 08`: 7 ✅. O Jeffi e a Shaman agora têm rota pelo byte 17 do template (Merchant 12 e 13, `handler/circle.go`). O Jeffi purifica o 447 por 1M. A Shaman devolve até 50 pontos por Special com o círculo comum, ou até 100 com o completo, apaga a árvore do círculo, esvazia o Equip[13] e grava `Circle` 1 só no comum. Tudo isso sobrevive ao relog. Os controles CD-01, CD-03 e CD-05 deixaram de passar no vácuo: agora exigem a fala de recusa do legado (`_NN_Need_1000000_Gold`, `_NN_Need_Pure_Divine` e `_NN_Youve_Done_It_Already`), além do estado inalterado.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| CD-01 | ✅ "Requer 1000000 gold.", nada muda | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida |
+| CD-02 | ✅ 447 → 448, gold −1M | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida |
+| CD-03 | ✅ "Requer Círculo Divino Puro…", nada muda | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida |
+| CD-04 | ✅ SpecialBonus 200, Special [10×4], Learn 0xffff00, Circle 1 | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida |
+| CD-05 | ✅ "Você já completou esta Quest.", o círculo fica | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida |
+| CD-06 | ✅ SpecialBonus 400, Special [20×4], Learn 0xff00ff, Circle 1 | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida |
+| CD-07 | ✅ Special[0] 30 → 0, SpecialBonus 180, Learn 0x00ffff | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida |
