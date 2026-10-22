@@ -120,7 +120,7 @@ Reteste depois do w2pp-OpenWYD#411 (2866b8c): `npm run quest -- 12` no Railway, 
 | CE-03 | ✅ | [~~#406~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/406) corrigida |
 | CE-04 | ✅ | [~~#413~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) corrigida no #414 |
 | CE-05 | ✅ | [~~#413~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) corrigida no #414 |
-| CE-06 | ❌ | [#413](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) |
+| CE-06 | ✅ | [~~#413~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) corrigida no #414 |
 | CE-07 | ✅ | [~~#407~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) corrigida |
 | CE-08 | ✅ | [~~#407~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) corrigida |
 | CE-09 | ✅ | [~~#407~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) corrigida |
