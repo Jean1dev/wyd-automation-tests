@@ -205,14 +205,30 @@ async function noStarterHelm(ctx: CaseCtx): Promise<void> {
   await ctx.reseed((db, ch) => db.clearItem(ch, 'equip', EQUIP_SLOT.cythera));
 }
 
-/** Controle: o botão direito na 5338 e na 1742 não muda nada (legado: só a 5338 tem Vol 211, e os requisitos falham). */
+/**
+ * Resposta do legado à 5338 recusada (_MSG_UseItem.cpp:3003-3024): Arch < 355 ou MortalLevel < 99 → só o
+ * SendItem do slot, calado; Equip[1] ocupado → _NN_Cant_with_armor (Language.txt 205) e nenhum notice.
+ */
+const ARMOR_TEXT = /pode equipar arma e armadura/;
+type Refusal = 'calado' | 'armadura';
 
-async function untouched(ctx: CaseCtx, keepHelm = false): Promise<CaseResult> {
-  if (!keepHelm) await noStarterHelm(ctx);
+function legacyRefusal(a: Answer, want: Refusal): boolean {
+  if (a.notices.length) return false;
+  return want === 'calado' ? a.texts.length === 0 : a.texts.length === 1 && ARMOR_TEXT.test(a.texts[0]);
+}
+
+/**
+ * Controle: o botão direito na 5338 recusa com a resposta do legado e não muda nada; a 1742 (sem
+ * EF_VOLATILE) também não muda nada.
+ */
+async function untouched(ctx: CaseCtx, want: Refusal): Promise<CaseResult> {
+  if (want !== 'armadura') await noStarterHelm(ctx);
   const before = await rows(ctx);
   const uses = [await useStone(ctx, ITEM.pedraIdeal), await useStone(ctx, ITEM.pedraImortalidade)];
-  const pass = uses.every((u) => u.answer.archEffectSlot === undefined && !u.answer.logout && sig(u.after[0]) === sig(before[0]));
-  return { pass, evidence: { before, uses }, note: `antes ${fmtRows(before)}; ${uses.map(useNote).join('; ')}` };
+  const same = uses.every((u) => u.answer.archEffectSlot === undefined && !u.answer.logout && sig(u.after[0]) === sig(before[0]));
+  const answered = legacyRefusal(uses[0].answer, want);
+  const expected = want === 'calado' ? 'esperado (legado): 5338 recusada calada' : 'esperado (legado): 5338 recusada só com _NN_Cant_with_armor';
+  return { pass: same && answered, evidence: { before, uses }, note: `${expected}; antes ${fmtRows(before)}; ${uses.map(useNote).join('; ')}` };
 }
 
 interface CelestialExpect {
@@ -284,21 +300,21 @@ const quest: QuestSpec = {
       title: 'Celestial com armadura',
       type: 'controle',
       seed: (db, ch) => seedChar(db, ch, ARCH(355, { carry: STONES_BOTH, equip: { [EQUIP_SLOT.cythera]: ITEM.elmo } })),
-      run: (ctx) => untouched(ctx, true),
+      run: (ctx) => untouched(ctx, 'armadura'),
     },
     {
       id: 'CE-05',
       title: 'Arch abaixo do nível',
       type: 'controle',
       seed: (db, ch) => seedChar(db, ch, ARCH(354, { carry: STONES_BOTH })),
-      run: untouched,
+      run: (ctx) => untouched(ctx, 'calado'),
     },
     {
       id: 'CE-06',
       title: 'Mortal de origem baixo',
       type: 'controle',
       seed: (db, ch) => seedChar(db, ch, ARCH(355, { mortalLevel: 98, carry: STONES_BOTH })),
-      run: untouched,
+      run: (ctx) => untouched(ctx, 'calado'),
     },
     {
       id: 'CE-07',
