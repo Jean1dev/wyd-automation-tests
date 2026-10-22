@@ -165,7 +165,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| CD-01 | Purificar sem gold | controle | ✅ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | 447 no Equip[13], gold 999.999: nada muda (Equip[13] 447 e gold iguais no cliente e no banco depois do relog) — vácuo: Jeffi sem rota no Go (#405); o legado manda _NN_Need_1000000_Gold |
+| CD-01 | Purificar sem gold | controle | ✅ | [~~#405~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) corrigida no #411 | 2026-10-22: (07:08 UTC) 447 no Equip[13], gold 999.999: o Jeffi diz "Requer 1000000 gold." (_NN_Need_1000000_Gold, agora exigida); Equip[13] 447 e gold iguais no banco depois do relog — deixou de ser vácuo |
 | CD-02 | Purificar | feliz | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | 447 no Equip[13], gold 1.005.000: o Jeffi não responde (Merchant 12 sem rota); Equip[13] continua 447 e gold 1.005.000 no cliente e no banco depois do relog |
 | CD-03 | Shama sem círculo puro | controle | ✅ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | 447 (não purificado) no Equip[13], Special [60,60,60,60], Learn 0xffffff: nada muda no cliente nem no banco depois do relog — vácuo: Shaman sem rota no Go (#405); o legado manda _NN_Need_Pure_Divine |
 | CD-04 | Reiniciar | feliz | ❌ | [#405](https://github.com/Jean1dev/w2pp-OpenWYD/issues/405) | 448 no Equip[13], Special [60,60,60,60], Learn 0xffffff: a Shaman não responde (Merchant 13 sem rota); nada muda no cliente nem no banco (esperado SpecialBonus 200, Special [10,10,10,10], Learn 0xffff00, Equip[13] vazio, Circle 1) |

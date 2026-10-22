@@ -94,6 +94,14 @@ async function talk(ctx: CaseCtx, npc: NpcSpec): Promise<Talk> {
   return { talk: t, before, after, db: await saved(ctx) };
 }
 
+/** Falas do legado (Language.txt) que os controles exigem: a recusa real, não só o estado igual. */
+const SAYS = {
+  need1M: /Requer 1000000 gold/,
+  needPure: /Requer C.{1,2}rculo Divino Puro/,
+  doneAlready: /completou esta Quest/,
+} as const;
+const said = (t: QuestTalk, re: RegExp) => t.texts.some((x) => re.test(x));
+
 const answer = (t: QuestTalk) => (t.notices.length ? `notices ${t.notices.join(',')}` : t.texts.length ? `"${t.texts.join(' | ')}"` : 'sem resposta');
 const hex = (n: number) => `0x${n.toString(16)}`;
 const fmt = (s: State) => `Equip[13] ${s.circle}, gold ${s.coin}, SpecialBonus ${s.specialBonus}, Special [${s.special.join(',')}], Learn ${hex(s.learn)}`;
@@ -129,7 +137,7 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         const r = await talk(ctx, NPC.jeffi);
         // Esperado: _NN_Need_1000000_Gold e nada muda.
-        const pass = same(r.before, r.after) && r.db.circle === ITEM.pedaco && r.db.coin === PRICE.pedaco - 1;
+        const pass = said(r.talk, SAYS.need1M) && same(r.before, r.after) && r.db.circle === ITEM.pedaco && r.db.coin === PRICE.pedaco - 1;
         return { pass, evidence: { ...r }, note: note(r) };
       },
     },
@@ -153,7 +161,7 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         const r = await talk(ctx, NPC.shama);
         // Esperado: _NN_Need_Pure_Divine e nada muda.
-        const pass = same(r.before, r.after) && r.db.circle === ITEM.pedaco && r.db.special.join() === SPECIAL_FULL.join() && r.db.learn === ALL_TREES;
+        const pass = said(r.talk, SAYS.needPure) && same(r.before, r.after) && r.db.circle === ITEM.pedaco && r.db.special.join() === SPECIAL_FULL.join() && r.db.learn === ALL_TREES;
         return { pass, evidence: { ...r }, note: note(r) };
       },
     },
@@ -176,7 +184,7 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         const r = await talk(ctx, NPC.shama);
         // Esperado: _NN_Youve_Done_It_Already; o círculo fica e nada muda.
-        const pass = same(r.before, r.after) && r.db.circle === PURO.min && r.db.special.join() === SPECIAL_FULL.join() && r.db.learn === ALL_TREES && r.db.circleFlag === 1;
+        const pass = said(r.talk, SAYS.doneAlready) && same(r.before, r.after) && r.db.circle === PURO.min && r.db.special.join() === SPECIAL_FULL.join() && r.db.learn === ALL_TREES && r.db.circleFlag === 1;
         return { pass, evidence: { ...r }, note: note(r) };
       },
     },

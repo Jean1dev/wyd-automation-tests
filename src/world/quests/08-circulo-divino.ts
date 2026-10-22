@@ -3,7 +3,7 @@
 //
 // - Jeffi (JEFFI, MOB.Merchant 12): _MSG_Quest.cpp:514-610 — purifica o pedaço do Equip[13].
 // - Shaman (SHAMA, MOB.Merchant 13): _MSG_Quest.cpp:612-691 — devolve Special e apaga uma árvore.
-// - Go: sem rota para os Merchants 12 e 13 (handler/misc.go:259 "quest NPC not implemented").
+// - Go: handler/circle.go (jeffi/shama, roteados pelo byte 17 do template; w2pp-OpenWYD#411).
 // - Posições: NPCGener.txt [986] Shaman (2506,1727) e [987] Jeffi (2517,1727), em Azran.
 import type { NpcSpec } from '../../bot/npc.ts';
 import type { Point } from '../coveiro.ts';
