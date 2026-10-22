@@ -21,8 +21,8 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 9 | 0 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 10 | 0 | 0 | 0 |
-| [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 7 | 0 | 0 | 0 |
-| | **Total** | **144** | **144** | **0** | **0** | **0** |
+| [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 9 | 7 | 2 | 0 | 0 |
+| | **Total** | **146** | **144** | **2** | **0** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -279,7 +279,8 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | SC-05 | Urnammu sem Fama | controle | ✅ |  | 2026-10-22: (09:55 UTC) CELESTIALCS, Fama 100: pergaminho 699 até (3235,1688), Urnammu → "Você precisa de 2000 pontos de fama." (_DN_NEEDFAME); banco igual — deixou de ser vácuo |
 | SC-06 | Trocar a subclasse | feliz | ✅ | [~~#410~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) corrigida no #411 (parcial: 4148 e caminho do Urnammu pendentes) | 2026-10-22: (09:56 UTC) Sub criado jogando (5338, ficha 2 BM) e depois Sephirot 1763 + Fama 2500 pelo banco: Urnammu → Bless1, Fama 500, Sephirot some, ficha 2 classe 3 (HT), SID 8/4/7/6, 855 pontos; continua master 4 |
 | SC-07 | Urnammu para Celestial puro | controle | ✅ |  | 2026-10-22: (09:56 UTC) Celestial puro, Sephirot, Fama 2500: Urnammu → "Somente personagem Sub Celestial." (_SN_NEEDCLASS); banco igual — deixou de ser vácuo |
-SC-08 | Pedra Misteriosa: Celestial → Sub | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta | 2026-10-22: (19:56 UTC) Sub BM criado pela 5338; 4148 em Armia: SendItem da pedra, Equip[0], MSG_SetShortSkill; banco: master 5, nível 0, exp 0, celestial_level 120, ficha 0 = TK nível 120 — mas `class` fica 0 (TK) em vez de 2 (BM): o Go não salva a classe (dbclient characterSaveToProto, store SaveCharacter) |
+| SC-08 | Pedra Misteriosa: Celestial → Sub | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta | 2026-10-22: (19:56 UTC) Sub BM criado pela 5338; 4148 em Armia: SendItem da pedra, Equip[0], MSG_SetShortSkill; banco: master 5, nível 0, exp 0, celestial_level 120, ficha 0 = TK nível 120 — mas `class` fica 0 (TK) em vez de 2 (BM): o Go não salva a classe (dbclient characterSaveToProto, store SaveCharacter) |
+| SC-09 | Pedra Misteriosa: Sub → Celestial | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta | 2026-10-22: (19:56 UTC) a ida já volta do relog com `class` 0 em vez de 2 (mesma causa do SC-08), então a volta estacionaria a classe errada em SaveCelestial[1] |
 
 ## Issues
 
