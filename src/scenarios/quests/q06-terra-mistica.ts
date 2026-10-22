@@ -132,6 +132,9 @@ async function withParty<T>(ctx: CaseCtx, leaderIsA: boolean, seedB: (db: Db, n:
 
 // ---------------------------------------------------------------- caça dos dragões (TM-07)
 
+/** Language.txt _NN_Watching_Town_Success (4), MobKilled.cpp:2918 — como o cliente o decodifica (cp1252). */
+const WATCHING_TOWN_SUCCESS = 'Quest: Você aprova a proteção da cidade.';
+
 interface Hunt {
   kills: { t: string; mob: string }[];
   /** Textos do servidor durante a caça (o legado manda _NN_Watching_Town_Success no kill que conclui). */
@@ -274,16 +277,21 @@ const quest: QuestSpec = {
         const h = await huntDragons(ctx, Date.now() + 10 * 60_000);
         await ctx.relog();
         const saved = (await ctx.query((db, n) => db.character(n))).terra_mistica;
-        const pass = saved === FLAG.concluida;
+        // #412: o legado manda o texto em Windows-1252; o cliente decodifica byte a byte (latin1 = cp1252 nestes acentos).
+        const successText = h.texts.find((x) => x.text.includes('aprova a prote'));
+        const cp1252 = successText?.text === WATCHING_TOWN_SUCCESS;
+        const pass = saved === FLAG.concluida && cp1252;
         // Legado: 1 em 20 por kill (MobKilled.cpp:2909) — a chance de nenhum sucesso em N kills é 0,95^N.
         const miss = +(0.95 ** h.kills.length * 100).toFixed(1);
         const byMob = h.kills.reduce<Record<string, number>>((a, k) => ({ ...a, [k.mob]: (a[k.mob] ?? 0) + 1 }), {});
-        const evidence = { kills: h.kills.length, byMob, texts: h.texts, checks: h.checks, deaths: h.deaths, minutes: h.minutes, saved, legacyMissPct: miss };
+        const evidence = { successText: successText?.text, cp1252, kills: h.kills.length, byMob, texts: h.texts, checks: h.checks, deaths: h.deaths, minutes: h.minutes, saved, legacyMissPct: miss };
         ctx.log.info('resultado da caça', evidence);
         return {
           pass, evidence,
           note: pass
-            ? `terra_mistica 1 → 2 depois de ${h.kills.length} kills em ${h.minutes} min`
+            ? `terra_mistica 1 → 2 depois de ${h.kills.length} kills em ${h.minutes} min; "${successText!.text}" em cp1252`
+            : saved === FLAG.concluida
+            ? `terra_mistica 1 → 2, mas a mensagem de conclusão chegou ${successText ? `como "${successText.text}" (não cp1252, #412)` : 'ausente'}`
             : `${h.kills.length} kills (${Object.entries(byMob).map(([k, v]) => `${v} ${k}`).join(', ')}) em ${h.minutes} min, ${h.deaths} mortes: nenhuma mensagem de conclusão, terra_mistica ${saved} no banco (no legado a chance de não concluir em ${h.kills.length} kills é ${miss}%)`,
         };
       },
