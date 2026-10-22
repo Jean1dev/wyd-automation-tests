@@ -276,7 +276,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | SC-02 | Sub abaixo do nível | controle | ✅ |  | 2026-10-22: (09:54 UTC) Celestial exibido 120 com Sephirot 1762: SendItem calado do slot 20 (5338); banco igual, sem ficha 2 — deixou de ser vácuo |
 | SC-03 | Criar o Sub | feliz | ✅ | [~~#410~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) corrigida no #411 (parcial: 4148 e caminho do Urnammu pendentes) | 2026-10-22: (09:54 UTC) Celestial exibido 121 com Sephirot 1762: 5338 → "Que a luz de Sephira o ilumine.", master 4, Sephirot e 5338 somem; ficha 2 (save_celestial) BM nível 0, AC 230, HP 70 / MP 55, SID 8/4/7/6, 855 pontos |
 | SC-04 | Sub de novo | controle | ✅ |  | 2026-10-22: (09:54 UTC) CELESTIALCS exibido 121 com Sephirot: SendItem calado do slot 20 (5338); banco igual — deixou de ser vácuo |
-| SC-05 | Urnammu sem Fama | controle | ✅ |  | CELESTIALCS, Fama 100: pergaminho 699 até (3235,1688), Urnammu (id 12901) sem resposta, banco igual (vácuo: Merchant 76 sem rota, #410) |
+| SC-05 | Urnammu sem Fama | controle | ✅ |  | 2026-10-22: (09:55 UTC) CELESTIALCS, Fama 100: pergaminho 699 até (3235,1688), Urnammu → "Você precisa de 2000 pontos de fama." (_DN_NEEDFAME); banco igual — deixou de ser vácuo |
 | SC-06 | Trocar a subclasse | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | CELESTIALCS, Sephirot 1763, Fama 2500: Urnammu (id 12901) sem resposta; Fama 2500 e Sephirot ficam |
 | SC-07 | Urnammu para Celestial puro | controle | ✅ |  | Celestial puro, Sephirot, Fama 2500: Urnammu sem resposta, banco igual (vácuo: Merchant 76 sem rota, #410) |
 
