@@ -1,3 +1,5 @@
+**Situação (2026-10-22): parcialmente corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 14`: criação do Sub, Urnammu e ficha 2 persistida; a Pedra Misteriosa 4148 e o caminho Deserto → Kefra seguem pendentes (#410).**
+
 # 023 — Sub-Celestial ausente: criação pela 5338 e Urnammu
 
 **Status:** aberto.
