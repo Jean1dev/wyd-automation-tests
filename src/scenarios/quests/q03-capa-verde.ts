@@ -91,6 +91,10 @@ const summary = (t: Talk) => ({
 const nothingChanged = (t: Talk) => !t.talk.teleport && !t.carry.lost.length && !t.carry.gained.length && !t.equip.lost.length && !t.equip.gained.length;
 const answer = (t: Talk) => (t.talk.notices.length ? `notices ${t.talk.notices.join(',')}` : t.talk.texts.length ? `"${t.talk.texts.join(' | ')}"` : 'sem resposta');
 
+/** Falas de recusa do Lider_Aprendiz (Language.txt _NN_Level_Limit2 340 e _SN_NEEDCLASS 524), só a parte ASCII. */
+const LIDER_REFUSAL = { level: /permite o uso disto/, needArch: /Somente personagem Arch/ } as const;
+const saidRefusal = (t: Talk, re: RegExp) => t.talk.texts.some((x) => re.test(x));
+
 const inTeleportSpread = (p: { x: number; y: number }) =>
   p.x >= TELEPORT_DEST.x + TELEPORT_SPREAD.lo && p.x <= TELEPORT_DEST.x + TELEPORT_SPREAD.hi &&
   p.y >= TELEPORT_DEST.y + TELEPORT_SPREAD.lo && p.y <= TELEPORT_DEST.y + TELEPORT_SPREAD.hi;
@@ -341,8 +345,11 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         await goToLider(ctx);
         const t = await talk(ctx, NPC.liderAprendiz);
-        const pass = nothingChanged(t) && equipAt(ctx.c, EQUIP_SLOT.capa) === 0;
-        return { pass, evidence: summary(t), note: pass ? `Arch BaseScore 98: ${answer(t)}, Equip[15] continua vazio` : `Arch BaseScore 98 recebeu Equip[15] ${equipAt(ctx.c, 15)}` };
+        // A recusa tem de vir do Lider (SendSay _NN_Level_Limit2, _MSG_Quest.cpp:2637): silêncio é NPC sem rota.
+        const refused = saidRefusal(t, LIDER_REFUSAL.level);
+        const empty = equipAt(ctx.c, EQUIP_SLOT.capa) === 0;
+        const pass = refused && nothingChanged(t) && empty;
+        return { pass, evidence: summary(t), note: pass ? `Arch BaseScore 98: o Lider recusa (${answer(t)}), Equip[15] continua vazio` : `Arch BaseScore 98: o Lider ${answer(t)}; Equip[15] ${equipAt(ctx.c, 15) || 'vazio'}` };
       },
     },
     {
@@ -353,8 +360,11 @@ const quest: QuestSpec = {
       run: async (ctx) => {
         await goToLider(ctx);
         const t = await talk(ctx, NPC.liderAprendiz);
-        const pass = nothingChanged(t) && equipAt(ctx.c, EQUIP_SLOT.capa) === 0;
-        return { pass, evidence: summary(t), note: pass ? `Mortal exibido 100: ${answer(t)}, Equip[15] continua vazio` : `Mortal recebeu Equip[15] ${equipAt(ctx.c, 15)}` };
+        // A recusa tem de vir do Lider (SendSay _SN_NEEDCLASS "Arch", _MSG_Quest.cpp:2629): silêncio é NPC sem rota.
+        const refused = saidRefusal(t, LIDER_REFUSAL.needArch);
+        const empty = equipAt(ctx.c, EQUIP_SLOT.capa) === 0;
+        const pass = refused && nothingChanged(t) && empty;
+        return { pass, evidence: summary(t), note: pass ? `Mortal exibido 100: o Lider recusa (${answer(t)}), Equip[15] continua vazio` : `Mortal exibido 100: o Lider ${answer(t)}; Equip[15] ${equipAt(ctx.c, 15) || 'vazio'}` };
       },
     },
     {
