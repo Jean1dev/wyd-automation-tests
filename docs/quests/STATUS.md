@@ -263,7 +263,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CL-07 | Arcana herdando o `Circle` | borda | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-22: (09:48 UTC) Celestial exibido 200 com Circle 1 e as 5334–5337: cai no Reset ("Reset Celestial"): exp 2219000000 → 2199000000, Reset 0 → 1, Fama 100; pedras ficam, sem 3507 (banco) |
 | CL-08 | Reset | feliz | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-22: (09:49 UTC) Circle 1, 3507 no Equip[1], Fama 600: 3020 → "Reset Celestial": exp 2219000000 → 2199000000, nível 199, Reset 0 → 1, Fama 100, a pedra some (banco) |
 | CL-09 | Comandos que pulam quest | borda | ✅ |  | Celestial exibido 40 sem receita: /destravar40 → CombineComplete 1 e celestial_lv40 1 no banco (o Go grava como o legado; não usar nos cenários) |
-| CL-10 | Adds do Sub | feliz | ❌ | [#409](https://github.com/Jean1dev/w2pp-OpenWYD/issues/409) | Sub-Celestial armazenado 119 com Cythera 3500: kill do Basilisco_Ifrit sobe para 120 (cliente e banco), mas o Equip[1] fica sem EF_AC/EF_HP |
+| CL-10 | Adds do Sub | feliz | ✅ | [~~#409~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/409) corrigida no #411 | 2026-10-22: (09:51 UTC) Sub-Celestial armazenado 119 com Cythera 3500: kill do Basilisco sobe para 120 e o Equip[1] ganha EF_AC 30 / EF_HP 40 (cliente e banco), Add120 0 → 1 |
 
 <a id="14"></a>
 ## 14 — Sub-Celestial e troca de subclasse (Urnammu)

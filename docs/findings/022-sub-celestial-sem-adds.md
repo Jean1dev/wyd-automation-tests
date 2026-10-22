@@ -1,3 +1,5 @@
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 13`.**
+
 # 022 — Sub-Celestial: adds do diadema (SetCircletSubGod) ausentes
 
 **Status:** aberto.
