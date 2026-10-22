@@ -1,3 +1,5 @@
+**Situação (2026-10-22): parcialmente corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 05`: o pagamento com sobra funciona; o Clan pela guilda do líder não foi portado.**
+
 # 012 — Rei exige pagamento exato em safiras: com sobra, a capa do reino não sai
 
 **Status:** aberto.

@@ -1,3 +1,5 @@
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 05`.**
+
 # 011 — Rei não aceita o Emblema_do_Reino (4081): sem safiras, a capa do reino não sai
 
 **Status:** aberto.
