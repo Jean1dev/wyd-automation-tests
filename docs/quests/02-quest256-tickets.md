@@ -105,3 +105,24 @@ Validado no Railway com `npm run quest -- 02`, todos os casos na arena do Coveir
 | QST-14 | ✅ |  |
 
 Finding: [008](../findings/008-trofeu-quest256-sem-bonus-de-lider.md).
+
+## Situação (2026-10-19)
+
+Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), com `npm run quest -- 02`: 14 ✅. O troféu usado sem grupo agora dá os 10 % de líder para quem usa (QST-09: +33000 exp, banco 33000 depois do relog), e em grupo o líder segue com os 3000 (QST-11). Nenhum caso mudou de código.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| QST-01 | ✅ |  |
+| QST-02 | ✅ |  |
+| QST-03 | ✅ |  |
+| QST-04 | ✅ |  |
+| QST-05 | ✅ |  |
+| QST-06 | ✅ |  |
+| QST-07 | ✅ |  |
+| QST-08 | ✅ |  |
+| QST-09 | ✅ +33000 exp, +10000 gold, sobrou 1 | [~~#396~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/396) corrigida |
+| QST-10 | ✅ |  |
+| QST-11 | ✅ |  |
+| QST-12 | ✅ (informativo, só no Go) |  |
+| QST-13 | ✅ (informativo, só no Go) |  |
+| QST-14 | ✅ |  |

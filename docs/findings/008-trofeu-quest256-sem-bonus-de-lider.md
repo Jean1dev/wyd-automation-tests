@@ -1,3 +1,5 @@
+**Situação (2026-10-19): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 02`.**
+
 # 008 — Troféu da Quest 256 sem os 10 % de líder para quem usa
 
 **Status:** aberto.
