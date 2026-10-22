@@ -278,7 +278,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | SC-04 | Sub de novo | controle | ✅ |  | 2026-10-22: (09:54 UTC) CELESTIALCS exibido 121 com Sephirot: SendItem calado do slot 20 (5338); banco igual — deixou de ser vácuo |
 | SC-05 | Urnammu sem Fama | controle | ✅ |  | 2026-10-22: (09:55 UTC) CELESTIALCS, Fama 100: pergaminho 699 até (3235,1688), Urnammu → "Você precisa de 2000 pontos de fama." (_DN_NEEDFAME); banco igual — deixou de ser vácuo |
 | SC-06 | Trocar a subclasse | feliz | ✅ | [~~#410~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) corrigida no #411 (parcial: 4148 e caminho do Urnammu pendentes) | 2026-10-22: (09:56 UTC) Sub criado jogando (5338, ficha 2 BM) e depois Sephirot 1763 + Fama 2500 pelo banco: Urnammu → Bless1, Fama 500, Sephirot some, ficha 2 classe 3 (HT), SID 8/4/7/6, 855 pontos; continua master 4 |
-| SC-07 | Urnammu para Celestial puro | controle | ✅ |  | Celestial puro, Sephirot, Fama 2500: Urnammu sem resposta, banco igual (vácuo: Merchant 76 sem rota, #410) |
+| SC-07 | Urnammu para Celestial puro | controle | ✅ |  | 2026-10-22: (09:56 UTC) Celestial puro, Sephirot, Fama 2500: Urnammu → "Somente personagem Sub Celestial." (_SN_NEEDCLASS); banco igual — deixou de ser vácuo |
 
 ## Issues abertas
 
