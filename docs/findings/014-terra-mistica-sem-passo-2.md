@@ -1,3 +1,5 @@
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 06`. A mensagem _NN_Watching_Town_Success chega em UTF-8: [w2pp-OpenWYD#412](https://github.com/Jean1dev/w2pp-OpenWYD/issues/412).**
+
 # 014 — Terra Mística: o kill dos dragões nunca conclui a missão (passo 2 ausente)
 
 **Status:** aberto.

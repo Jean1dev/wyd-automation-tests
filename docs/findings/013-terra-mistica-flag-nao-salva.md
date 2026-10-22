@@ -1,3 +1,5 @@
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 06`.**
+
 # 013 — Terra Mística: a flag `terra_mistica` não é salva e volta a 0 no relog
 
 **Status:** aberto.

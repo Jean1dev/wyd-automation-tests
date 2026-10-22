@@ -93,3 +93,21 @@ Validado no Railway com `npm run quest -- 06`, com o nível, a classe, os atribu
 | TM-09 | ❌ | [#403](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) |
 | TM-10 | ❌ | [#401](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) |
 | TM-11 | ✅ | |
+
+## Situação (2026-10-22)
+
+Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), com `npm run quest -- 06`: 11 ✅. A flag `terra_mistica` agora vai para o banco no save: o aceite grava 1 e as flags semeadas 1 e 3 sobrevivem ao relog. O passo 2 existe no `mobKilled` (rostos 239/241, 1 em 20): a flag virou 2 no 10º kill, em 2,1 min. O Cap.Explor. (Merchant 11) tem rota e entrega o amuleto pela faixa do nível armazenado, com o efeito 0 = 43 e dois adicionais, e grava a flag 3. Os controles do Cap.Explor. (TM-06, TM-10) deixaram de passar no vácuo: exigem a fala `_SN_All_Villagers_Thanks_Your`. Diferenças que ficam, sem efeito no estado: o Cap.Mercenario recusa com NoticeReqNotMet 15 onde o legado manda fala, fica calado no confirm 0 e não manda `_NN_Get_Watching_Town_Mission` no aceite; e a mensagem `_NN_Watching_Town_Success` do passo 2 sai em UTF-8 e aparece como "VocÃª aprova a proteÃ§Ã£o da cidade." ([#412](https://github.com/Jean1dev/w2pp-OpenWYD/issues/412)).
+
+| ID | Resultado | Issue |
+|---|---|---|
+| TM-01 | ✅ NoticeReqNotMet 15, flag 0 |  |
+| TM-02 | ✅ calado, flag 0 |  |
+| TM-03 | ✅ NoticeReqNotMet 15, flag 0 |  |
+| TM-04 | ✅ flag 0 → 1 no banco | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
+| TM-05 | ✅ recusa, flag 1 no banco | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
+| TM-06 | ✅ "Todos da cidade agradecem a sua ajuda", flag 1 | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
+| TM-07 | ✅ flag 1 → 2 no 10º kill (2,1 min) | [~~#402~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/402) corrigida; [#412](https://github.com/Jean1dev/w2pp-OpenWYD/issues/412) |
+| TM-08 | ✅ Amuleto_Místico 562 (43, 26:10, 5:60), flag 3 | [~~#403~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) corrigida |
+| TM-09 | ✅ Amuleto_de_Prata 554 (43, 60:6, 60:4), flag 3 | [~~#403~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) corrigida |
+| TM-10 | ✅ agradecimento, nenhum amuleto, flag 3 | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
+| TM-11 | ✅ NoticeReqNotMet 15, flag 0 |  |

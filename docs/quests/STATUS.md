@@ -13,7 +13,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 13 | 0 | 0 | 0 |
 | [04](#04) | Molar do Gárgula | 10 | 10 | 0 | 0 | 0 |
 | [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 13 | 0 | 0 | 0 |
-| [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 4 | 7 | 0 | 0 |
+| [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 11 | 0 | 0 | 0 |
 | [07](#07) | Pílula do Poder Mágico (Conquista do Castelo Orc) | 5 | 0 | 5 | 0 | 0 |
 | [08](#08) | Círculo Divino (Jeffi e Shama) | 7 | 3 | 4 | 0 | 0 |
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 10 | 2 | 0 | 0 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 5 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 5 | 5 | 0 | 0 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 5 | 2 | 0 | 0 |
-| | **Total** | **144** | **114** | **30** | **0** | **0** |
+| | **Total** | **144** | **121** | **23** | **0** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -133,9 +133,9 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| TM-01 | Sozinho | controle | ✅ |  | Mortal sem grupo, confirm 1: o Cap.Mercenario recusa (NoticeReqNotMet 15, o legado manda _NN_Party_Only); terra_mistica 0 no banco depois do relog |
-| TM-02 | Ask | controle | ✅ |  | líder de grupo (convite aceito, 0x037D), confirm 0: nada muda, terra_mistica 0 no banco; o Go não responde (o legado manda a fala _NN_Monster_Attaking_Us_Help) |
-| TM-03 | Membro, não líder | controle | ✅ |  | membro do grupo da conta B, confirm 1: recusa (NoticeReqNotMet 15, o legado manda _NN_Party_Only); terra_mistica 0 no banco |
+| TM-01 | Sozinho | controle | ✅ |  | 2026-10-22: (06:17 UTC) Mortal sem grupo, confirm 1: recusa NoticeReqNotMet 15 (o legado manda _NN_Party_Only); terra_mistica 0 no banco depois do relog |
+| TM-02 | Ask | controle | ✅ |  | 2026-10-22: líder de grupo, confirm 0: nada muda, terra_mistica 0 no banco; o Go segue calado (o legado manda a fala _NN_Monster_Attaking_Us_Help) |
+| TM-03 | Membro, não líder | controle | ✅ |  | 2026-10-22: membro do grupo da conta B, confirm 1: recusa NoticeReqNotMet 15 (o legado manda _NN_Party_Only); terra_mistica 0 no banco |
 | TM-04 | Aceitar | feliz | ✅ | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida no #411 | 2026-10-22: (06:22 UTC) líder com a conta B no grupo, confirm 1: terra_mistica 0 → 1 no banco depois do relog; o Go não manda _NN_Get_Watching_Town_Mission |
 | TM-05 | Aceitar de novo | controle | ✅ | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida no #411 | 2026-10-22: terra_mistica 1 semeado, líder com membro, confirm 1: recusa NoticeReqNotMet 15 (o legado manda _NN_Hurry_Helping_them); a flag segue 1 no banco depois do relog |
 | TM-06 | Recompensa antes da hora | controle | ✅ | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida no #411 | 2026-10-22: (06:40 UTC) terra_mistica 1 no Cap.Explor.: fala _SN_All_Villagers_Thanks_Your ("Todos da cidade agradecem a sua ajuda <nome>.", agora exigida), inventário igual, flag 1 no banco depois do relog |
@@ -143,7 +143,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | TM-08 | Recompensa | feliz | ✅ | [~~#403~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) corrigida no #411 | 2026-10-22: terra_mistica 2, exibido 101: recebeu o Amuleto_Místico 562 com efeitos [[43,0],[26,10],[5,60]], no inventário e no banco; terra_mistica 3 no banco |
 | TM-09 | Faixa do amuleto | borda | ✅ | [~~#403~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) corrigida no #411 | 2026-10-22: terra_mistica 2, exibido 50: recebeu o Amuleto_de_Prata 554 com efeitos [[43,0],[60,6],[60,4]], no inventário e no banco; terra_mistica 3 no banco |
 | TM-10 | Recompensa repetida | controle | ✅ | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida no #411 | 2026-10-22: (06:42 UTC) terra_mistica 3 no Cap.Explor.: fala _SN_All_Villagers_Thanks_Your (agora exigida), nenhum amuleto, flag 3 no banco depois do relog |
-| TM-11 | Arch | controle | ✅ |  | Arch líder de grupo (com outro Arch), confirm 1: recusa (NoticeReqNotMet 15, o legado manda _NN_Hurry_Helping_them); terra_mistica 0 no banco |
+| TM-11 | Arch | controle | ✅ |  | 2026-10-22: Arch líder de grupo (com outro Arch), confirm 1: recusa NoticeReqNotMet 15 (o legado manda _NN_Hurry_Helping_them); terra_mistica 0 no banco |
 
 <a id="07"></a>
 ## 07 — Pílula do Poder Mágico (Conquista do Castelo Orc)

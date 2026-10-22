@@ -1,3 +1,5 @@
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 06`.**
+
 # 015 — Terra Mística: o Cap.Explor. não tem rota no Go e o amuleto nunca sai (passo 3 ausente)
 
 **Status:** aberto.
