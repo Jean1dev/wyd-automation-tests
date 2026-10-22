@@ -108,3 +108,12 @@ Duas quests do Arch de nível alto:
 | CR-04 | ✅ | |
 | CR-05 | ✅ informativo (#327) | |
 | CR-06 | ✅ informativo (#348) | |
+
+## Situação (2026-10-22)
+
+Reteste de regressão no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), que não mexeu nesta quest. `npm run quest -- 10` deu 14 ✅, o mesmo de 2026-10-18. A Lindy continua destravando o 355 e o 370, e os Cristais 4106–4109 também seguem funcionando. Os casos informativos não mudaram: no LD-06 o Go aceita acima do 354, no CR-05 recusa o Mortal (#327) e no CR-06 zera a exp e recalcula o nível (#348). O LD-02 caiu uma vez com "too many connections" no banco (infraestrutura) e passou ao rodar sozinho.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| LD-01 – LD-08 | ✅ (LD-06 informativo) | |
+| CR-01 – CR-06 | ✅ (CR-05 #327 e CR-06 #348 informativos) | |
