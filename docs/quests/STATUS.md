@@ -21,8 +21,8 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 9 | 0 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 10 | 0 | 0 | 0 |
-| [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 13 | 11 | 2 | 0 | 0 |
-| | **Total** | **150** | **148** | **2** | **0** | **0** |
+| [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 14 | 11 | 2 | 1 | 0 |
+| | **Total** | **151** | **148** | **2** | **1** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -285,6 +285,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | SC-11 | Pedra Misteriosa no Celestial puro | controle | ✅ |  | 2026-10-22: (19:59 UTC) Celestial em Armia: só o SendItem [22:4148], calado; banco igual |
 | SC-12 | /kefra com o Kefra vivo | controle | ✅ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-22: (19:57 UTC) kefra_state defeated false: /kefra → (2366,3884) + "O kefra ainda esta vivo, precisa ser derrotado" |
 | SC-13 | Portal do Deserto com o Kefra vivo | controle | ✅ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-22: (19:58 UTC) /kefra → (2365,3885), a pé até o tile (2365,3925) e ReqTeleport: sem teleporte, como o legado com KefraLive 0 |
+| SC-14 | /kefra com o Kefra derrotado | feliz | ⏸️ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-22: Kefra vivo no mundo (kefra_state); o estado é global, só lido no boot do tmServer e divide o EXP de todos — não se semeia. O caso roda sozinho (precheck) quando o Kefra estiver derrotado |
 
 ## Issues
 
