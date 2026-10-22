@@ -10,7 +10,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 |---|---|---|---|---|---|---|
 | [01](#01) | Novato: os quatro treinadores do Campo de Treino | 12 | 12 | 0 | 0 | 0 |
 | [02](#02) | Quest 256: as cinco arenas e os troféus | 14 | 14 | 0 | 0 | 0 |
-| [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 12 | 1 | 0 | 0 |
+| [03](#03) | Capa Verde (Formatura Aprendiz) | 13 | 13 | 0 | 0 | 0 |
 | [04](#04) | Molar do Gárgula | 10 | 6 | 4 | 0 | 0 |
 | [05](#05) | Capa do Reino (azul / vermelha) e a borda | 13 | 10 | 3 | 0 | 0 |
 | [06](#06) | Terra Mística (Defendendo a Terra Mística) | 11 | 4 | 7 | 0 | 0 |
@@ -22,7 +22,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 5 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 5 | 5 | 0 | 0 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 5 | 2 | 0 | 0 |
-| | **Total** | **144** | **106** | **38** | **0** | **0** |
+| | **Total** | **144** | **107** | **37** | **0** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -82,7 +82,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CV-07 | Entrega com capa | controle | ✅ | | com o 4006 no Equip[15] e o 4080 no Equip[13]: o Chefe_Treina. recusa (NoticeAlreadyDone 47), o emblema fica |
 | CV-08 | Acima do nível | controle | ✅ | | exibido 151 com o 4080 no Equip[13]: o Diretor recusa (15); entrou a pé; o Chefe_Treina. recusa (NoticeReqNotMet 15), nada muda |
 | CV-09 | Reset da arena | feliz | ✅ | | entrou pelo Diretor; o reset mandou para Armia (2100,2096) 523 s depois (15:37:29 UTC), dentro do ciclo de 10 min |
-| CV-10 | Arch pelo Lider_Aprendiz | feliz | ❌ | [#397](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) | Arch armazenado 99 sem capa: o Lider_Aprendiz não responde (Merchant 100 grade 5 sem rota no Go, misc.go:259); Equip[15] vazio, também no banco |
+| CV-10 | Arch pelo Lider_Aprendiz | feliz | ✅ | [~~#397~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) corrigida no #411 | 2026-10-22: Arch armazenado 99 sem capa (04:28 UTC): Equip[15] = 4006, AC 1532→1562; banco igual depois do relog |
 | CV-11 | Arch fora da faixa | controle | ✅ | | Arch armazenado 98: nada muda, Equip[15] vazio — mas o Lider_Aprendiz não responde a ninguém no Go (#397) |
 | CV-12 | Mortal no Lider_Aprendiz | controle | ✅ | | Mortal exibido 100: nada muda, Equip[15] vazio — mas o Lider_Aprendiz não responde a ninguém no Go (#397) |
 | CV-13 | Arch no Diretor | controle | ✅ | | Arch exibido 100: o Diretor recusa (NoticeReqNotMet 15), sem teleporte |
