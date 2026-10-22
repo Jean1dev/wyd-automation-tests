@@ -152,22 +152,35 @@ const kingEvidence = (k: KingTalk) => ({ npc: k.npc, confirm: k.confirm, price: 
 const untouched = (k: KingTalk) => sameState(k.before, k.after) && sameState(k.before, k.saved);
 const kingAnswer = (k: KingTalk) => talkAnswer(k.talk);
 
-/** Controle no Rei: nada muda (na hora e no banco). */
-function kingControl(k: KingTalk, what: string): { pass: boolean; note: string } {
-  const pass = untouched(k);
-  return { pass, note: pass ? `${what}: ${kingAnswer(k)}; nada muda (${fmtState(k.after)}, banco igual)` : `${what}: ${fmtState(k.before)} → ${fmtState(k.after)} (banco ${fmtState(k.saved)}), ${kingAnswer(k)}` };
+/** Falas do legado no KING (_MSG_Quest.cpp:694-1124; Go misc.go kingCapeService/kingCapePurchase). */
+const SAY = {
+  needLevel: /possui n.vel suficiente/, // _NN_Need_Level
+  bless1: /luz de Sephira/, // _NN_My_King_Bless1 (ReiClan 7)
+  needSapphire: (price: number) => new RegExp(`necessarias ${price} safiras`), // _DN_Need_D_Sapphire
+} as const;
+/** Resposta exigida: uma fala do legado, ou 'silent' (o legado sai com break, sem mensagem). */
+type Expect = RegExp | 'silent';
+const replied = (k: KingTalk, want: Expect) => want === 'silent'
+  ? k.talk.texts.length === 0 && k.talk.notices.length === 0
+  : k.talk.texts.some((t) => want.test(t));
+
+/** Controle no Rei: a recusa do legado e nada muda (na hora e no banco). */
+function kingControl(k: KingTalk, what: string, want: Expect): { pass: boolean; note: string } {
+  const pass = untouched(k) && replied(k, want);
+  return { pass, note: pass ? `${what}: ${want === 'silent' ? 'sem resposta (o legado sai calado)' : kingAnswer(k)}; nada muda (${fmtState(k.after)}, banco igual)` : `${what}: ${fmtState(k.before)} → ${fmtState(k.after)} (banco ${fmtState(k.saved)}), ${kingAnswer(k)}` };
 }
 
 /** Troca no Rei: o que o legado deixa no Equip[13]/Equip[15] e nas safiras (na hora e no banco). */
 function kingTrade(k: KingTalk, want: { capa: number; emblema: number; sapphires: number }): { pass: boolean; note: string } {
   const ok = (s: KingState) => s.capa === want.capa && s.emblema === want.emblema && s.sapphires === want.sapphires;
-  const pass = ok(k.after) && ok(k.saved);
+  // Rei_Harabard: Bless1 e o Clan 7 que o GetCurrentScore tira da capa nova.
+  const pass = ok(k.after) && ok(k.saved) && k.saved.clan === 7 && replied(k, SAY.bless1);
   const exp = `Equip[13] ${want.emblema || '—'}, Equip[15] ${want.capa}, safiras ${want.sapphires}`;
   return {
     pass,
     note: pass
-      ? `${fmtState(k.before)} → ${fmtState(k.after)} (banco igual, clan ${k.saved.clan}); preço ${k.price.hekalotia}`
-      : `esperado ${exp}; ficou ${fmtState(k.after)} (banco ${fmtState(k.saved)}), ${kingAnswer(k)}; preço ${k.price.hekalotia}`,
+      ? `${fmtState(k.before)} → ${fmtState(k.after)} (banco igual, clan ${k.saved.clan}), ${kingAnswer(k)}; preço ${k.price.hekalotia}`
+      : `esperado ${exp}; ficou ${fmtState(k.after)} (banco ${fmtState(k.saved)}, clan ${k.saved.clan}), ${kingAnswer(k)}; preço ${k.price.hekalotia}`,
   };
 }
 
@@ -279,7 +292,7 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n, KING_LEVEL.cape - 1); await putEmblem(db, n); await putExactPayment(db, n); },
       run: async (ctx) => {
         const k = await talkKing(ctx, NPC.reiHarabard, 1);
-        const r = kingControl(k, 'Mortal exibido 219 com o 4081 e as safiras');
+        const r = kingControl(k, 'Mortal exibido 219 com o 4081 e as safiras', SAY.needLevel);
         return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
       },
     },
@@ -319,9 +332,8 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n, KING_LEVEL.cape); },
       run: async (ctx) => {
         const k = await talkKing(ctx, NPC.reiHarabard, 1);
-        const priced = k.talk.texts.some((t) => (t.match(/\d+/g) ?? ([] as string[])).includes(String(k.price.hekalotia)));
-        const r = kingControl(k, 'exibido 220, sem 4081 e sem safiras');
-        return { pass: r.pass, evidence: { ...kingEvidence(k), priced }, note: r.note };
+        const r = kingControl(k, 'exibido 220, sem 4081 e sem safiras', SAY.needSapphire(k.price.hekalotia));
+        return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
       },
     },
     {
@@ -332,7 +344,7 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n, KING_LEVEL.border); await putCape(db, n, ITEM.mantoHekalotia); await putEmblem(db, n); await putExactPayment(db, n, 'akelonia'); },
       run: async (ctx) => {
         const k = await talkKing(ctx, NPC.reiGlantuar, 1);
-        const r = kingControl(k, '545 no Rei_Glantuar (exibido 256, 4081 e safiras)');
+        const r = kingControl(k, '545 no Rei_Glantuar (exibido 256, 4081 e safiras)', 'silent');
         return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
       },
     },
@@ -343,7 +355,7 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n, KING_LEVEL.border); await putCape(db, n, ITEM.mantoDoGuerreiro); await putEmblem(db, n); await putExactPayment(db, n); },
       run: async (ctx) => {
         const k = await talkKing(ctx, NPC.reiHarabard, 1);
-        const r = kingControl(k, '543 no Rei_Harabard (exibido 256, 4081 e safiras)');
+        const r = kingControl(k, '543 no Rei_Harabard (exibido 256, 4081 e safiras)', SAY.bless1);
         return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
       },
     },
@@ -355,7 +367,7 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n, KING_LEVEL.border - 1); await putCape(db, n, ITEM.mantoHekalotia); await putEmblem(db, n); await putExactPayment(db, n); },
       run: async (ctx) => {
         const k = await talkKing(ctx, NPC.reiHarabard, 1);
-        const r = kingControl(k, '545, exibido 255, 4081 e safiras');
+        const r = kingControl(k, '545, exibido 255, 4081 e safiras', SAY.needLevel);
         return { pass: r.pass, evidence: kingEvidence(k), note: r.note };
       },
     },
