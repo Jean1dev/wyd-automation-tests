@@ -115,6 +115,13 @@ export class Db {
     return (r.rows[0].special ?? []).map(Number);
   }
 
+  /** Blob `save_celestial` (SaveCelestial[2] do tmServer, world/celestial_sheet.go); vazio = sem ficha. Só leitura. */
+  async saveCelestial(name: string): Promise<Buffer> {
+    const r = await this.c.query('SELECT save_celestial FROM character WHERE name = $1', [name]);
+    if (!r.rows[0]) throw new Error(`personagem "${name}" não está no banco`);
+    return (r.rows[0].save_celestial as Buffer | null) ?? Buffer.alloc(0);
+  }
+
   async items(name: string, kind: ItemKind): Promise<ItemRow[]> {
     return this.itemsById((await this.character(name)).id, kind);
   }
