@@ -152,7 +152,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| PO-01 | Pegar a pílula | feliz | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) | Mortal armazenado 49, a 470 largada aos pés e pega (MSG_GetItem): CNFGetItem, a pílula volta ao inventário; SkillBonus 147→147; a 470 continua no banco depois do relog |
+| PO-01 | Pegar a pílula | feliz | ✅ | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida no #411 | 2026-10-22: (06:48 UTC) a 470 largada aos pés e pega (MSG_GetItem): "Quest: Seu ponto de skill aumentou por 9.", não volta ao inventário, SkillBonus 147→156; depois do relog 470 ×0, pilula_orc 1 no banco, SkillBonus 156 |
 | PO-01b | Pegar com a flag já gravada | controle | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) | PilulaOrc não tem coluna no banco e a 1ª pílula do chão não grava a flag: as duas 470 largadas e pegas voltam ao inventário (CNFGetItem), SkillBonus 147→147; a 2ª deveria ficar no chão com _NN_Youve_Done_It_Already |
 | PO-02 | Usar a pílula | feliz | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) | MSG_UseItem na 470: MessageBoxOk 39 (NoticeCantUseHere, Vol 6 cai no rejectUnimplementedConsumable) e o slot volta; SkillBonus 147→147; a 470 continua no banco depois do relog |
 | PO-03 | Segunda pílula | controle | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) | pré-condição inalcançável (PilulaOrc sem coluna; a 1ª pílula não aplica: NoticeCantUseHere 39). A 2ª também volta com 39 sem bônus e sem consumir — vácuo, não recusa por flag (o legado não responde) |
