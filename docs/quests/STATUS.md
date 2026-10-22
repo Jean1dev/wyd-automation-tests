@@ -121,7 +121,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CR-07 | Sem emblema e sem safira | controle | ✅ |  | 2026-10-22: (05:47 UTC) exibido 220 sem 4081 e sem safiras: "Sao necessarias 8 safiras." (_DN_Need_D_Sapphire, preço do sapphire_balance); nada muda, banco igual |
 | CR-08 | Rei do outro reino | controle | ✅ |  | 2026-10-22: (05:50 UTC) 545 no Rei_Glantuar (exibido 256, 4081 e safiras): sem resposta, como o break do legado; nada muda, banco igual |
 | CR-09 | Capa já com borda | controle | ✅ |  | 2026-10-22: (05:52 UTC) 543 no Rei_Harabard: "Que a luz de Sephira o ilumine." (_NN_My_King_Bless1, CapeMode 2); nada muda, banco igual |
-| CR-10 | Borda antes do nível | controle | ✅ | | 545, exibido 255, 4081 e 4 safiras: NoticeReqNotMet 15 (o legado manda _NN_Need_Level); nada muda, banco igual |
+| CR-10 | Borda antes do nível | controle | ✅ |  | 2026-10-22: (05:55 UTC) 545, exibido 255, 4081 e safiras: "Não possui nível suficiente, retorne mais tarde." (_NN_Need_Level); nada muda, banco igual |
 | CR-11 | Borda pelo emblema | feliz | ❌ | [#399](https://github.com/Jean1dev/w2pp-OpenWYD/issues/399) | 545, exibido 256, 4081 e sem safiras: "Sao necessarias 4 safiras em pagamento exato."; a 545 e o 4081 ficam (banco igual) |
 | CR-12 | Pagamento em safiras | feliz | ❌ | [#400](https://github.com/Jean1dev/w2pp-OpenWYD/issues/400) | 1 × 4131 para o preço 4: "Sao necessarias 4 safiras em pagamento exato.", nada muda; com 4 × 697 (exato) recebe a 545 e o clan vira 7 |
 | CR-13 | Mortal acima de 254 no Guarda | controle | ✅ | | Mortal exibido 255: o Guarda_Real recusa (NoticeReqNotMet 15), sem teleporte |
