@@ -118,7 +118,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CR-04 | Rei abaixo do nível | controle | ✅ |  | 2026-10-22: (05:38 UTC) exibido 219 com 4081 e 7 safiras: "Não possui nível suficiente, retorne mais tarde." (_NN_Need_Level); nada muda, banco igual |
 | CR-05 | Preço (ask) | feliz | ✅ | | confirm 0, exibido 220 com o 4081 e 4 safiras: "Sao necessarias 4 safiras." (preço do sapphire_balance); nada muda, banco igual |
 | CR-06 | Capa pelo emblema | feliz | ✅ | [~~#399~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/399) corrigida no #411 | 2026-10-22: (05:44 UTC) exibido 220, 4081 e sem safiras: Equip[13] vazio, Equip[15] 545, clan 7 (banco igual), "Que a luz de Sephira o ilumine." |
-| CR-07 | Sem emblema e sem safira | controle | ✅ | | exibido 220 sem 4081 e sem safiras: "Sao necessarias 4 safiras em pagamento exato."; nada muda, banco igual |
+| CR-07 | Sem emblema e sem safira | controle | ✅ |  | 2026-10-22: (05:47 UTC) exibido 220 sem 4081 e sem safiras: "Sao necessarias 8 safiras." (_DN_Need_D_Sapphire, preço do sapphire_balance); nada muda, banco igual |
 | CR-08 | Rei do outro reino | controle | ✅ | | 545 no Rei_Glantuar (exibido 256, 4081 e 14 safiras): NoticeReqNotMet 15 (o legado sai calado); nada muda, banco igual |
 | CR-09 | Capa já com borda | controle | ✅ | | 543 no Rei_Harabard (exibido 256, 4081 e 4 safiras): "A capa deste reino ja esta completa."; nada muda, banco igual |
 | CR-10 | Borda antes do nível | controle | ✅ | | 545, exibido 255, 4081 e 4 safiras: NoticeReqNotMet 15 (o legado manda _NN_Need_Level); nada muda, banco igual |
