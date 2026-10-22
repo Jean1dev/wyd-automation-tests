@@ -41,7 +41,8 @@ async function char(db: Db, name: string, storedLevel: number, o: { arch?: boole
 /** Refinação semeada em cada Equip[1..5] (undefined = slot vazio). */
 type Refines = Partial<Record<(typeof MOLAR_SLOTS)[number], number | undefined>>;
 
-/** Peças de +0 a +5 e uma +7 (MG-05). */
+/** Peças de +0 a +5 e uma +7 (MG-05). Toda peça leva o par EF_SANC (mesmo +0): o BASE_SetItemSanc do
+ * legado (Basedef.cpp:2280) não cria o par, então uma peça sem ele não sobe nem no legado. */
 const MIXED: Refines = { 1: 0, 2: 3, 3: 5, 4: 7, 5: 1 };
 
 async function refines(db: Db, name: string, r: Refines): Promise<void> {
@@ -49,9 +50,17 @@ async function refines(db: Db, name: string, r: Refines): Promise<void> {
     if (!(slot in r)) continue;
     const s = r[slot];
     if (s === undefined) { await db.clearItem(name, 'equip', slot); continue; }
-    await db.putItem(name, 'equip', slot, { index: HUNT_GEAR[slot], eff: s > 0 ? [[EF_SANC, s]] : [] });
+    await db.putItem(name, 'equip', slot, { index: HUNT_GEAR[slot], eff: [[EF_SANC, s]] });
   }
 }
+
+/** Falas do legado no Vol 194 (_MSG_UseItem.cpp:2494-2546; Go molargargula.go). */
+const SAY = {
+  levelLimit: /vel Insuficiente/, // _NN_Level_limit
+  doneAlready: /completou esta Quest/, // _NN_Youve_Done_It_Already
+  played: /concluiu a Quest Molar do Gargula/, // _DN_Play_Quest
+} as const;
+const said = (u: { texts: string[] }, re: RegExp) => u.texts.some((t) => re.test(t));
 
 const putMolar = (db: Db, name: string, slot = 0) => db.putItem(name, 'carry', slot, { index: ITEM.molarDeGargula });
 
@@ -162,11 +171,12 @@ const useAnswer = (u: Use) => answer(u.notices, u.texts);
 const unchanged = (u: Use) => sameSancs(u.sancs.before, u.sancs.after) && u.molarAfter;
 
 /** Refinação e o 4122 salvos no banco (depois de um relog). */
-async function saved(ctx: CaseCtx): Promise<{ sancs: Sancs; molar: boolean }> {
+async function saved(ctx: CaseCtx): Promise<{ sancs: Sancs; molar: boolean; flag: number }> {
   return ctx.query(async (db, n) => {
     const eq = await db.items(n, 'equip');
     const ca = await db.items(n, 'carry');
-    return { sancs: sancsOf(eq), molar: ca.some((x) => x.index === ITEM.molarDeGargula) };
+    const ch = await db.character(n);
+    return { sancs: sancsOf(eq), molar: ca.some((x) => x.index === ITEM.molarDeGargula), flag: Number(ch.molar_gargula) };
   });
 }
 
@@ -176,13 +186,13 @@ async function refineCase(ctx: CaseCtx): Promise<{ pass: boolean; u: Use; db: Aw
   const want = expected(u.sancs.before);
   await ctx.relog();
   const db = await saved(ctx);
-  const pass = sameSancs(u.sancs.after, want) && !u.molarAfter && sameSancs(db.sancs, want) && !db.molar && u.ac.after > u.ac.before;
+  const pass = sameSancs(u.sancs.after, want) && !u.molarAfter && sameSancs(db.sancs, want) && !db.molar && db.flag === 1 && said(u, SAY.played) && u.ac.after > u.ac.before;
   return { pass, u, db, want };
 }
 
 const refineNote = (r: Awaited<ReturnType<typeof refineCase>>) => r.pass
-  ? `refinação ${fmt(r.u.sancs.before)} → ${fmt(r.u.sancs.after)} (banco igual), o 4122 sumiu, AC ${r.u.ac.before}→${r.u.ac.after}, dano ${r.u.damage.before}→${r.u.damage.after}`
-  : `esperado ${fmt(r.want)}; ficou ${fmt(r.u.sancs.after)} (banco ${fmt(r.db.sancs)}), 4122 ${r.u.molarAfter ? 'continua' : 'sumiu'} (${useAnswer(r.u)}), AC ${r.u.ac.before}→${r.u.ac.after}`;
+  ? `refinação ${fmt(r.u.sancs.before)} → ${fmt(r.u.sancs.after)} (banco igual, molar_gargula ${r.db.flag}), o 4122 sumiu, "${r.u.texts.join(' | ')}", AC ${r.u.ac.before}→${r.u.ac.after}, dano ${r.u.damage.before}→${r.u.damage.after}`
+  : `esperado ${fmt(r.want)}; ficou ${fmt(r.u.sancs.after)} (banco ${fmt(r.db.sancs)}), 4122 ${r.u.molarAfter ? 'continua' : 'sumiu'} (${useAnswer(r.u)}), banco molar_gargula ${r.db.flag}, AC ${r.u.ac.before}→${r.u.ac.after}`;
 
 // ---------------------------------------------------------------- caça do molar (MG-04)
 
@@ -305,17 +315,14 @@ const quest: QuestSpec = {
       id: 'MG-06',
       title: 'Uso repetido',
       type: 'controle',
-      // A flag MolarGargula não existe no banco do Go: a pré-condição sai do primeiro uso, jogando.
-      seed: async (db, n) => { await char(db, n, LEVEL.min); await refines(db, n, MIXED); await putMolar(db, n, 0); await putMolar(db, n, 1); },
+      // Pré-condição pelo banco: MolarGargula 1 (coluna molar_gargula, #411) e outro 4122.
+      seed: async (db, n) => { await char(db, n, LEVEL.min); await db.setCharacter(n, { molar_gargula: 1 }); await refines(db, n, MIXED); await putMolar(db, n); },
       run: async (ctx) => {
-        const first = await useMolar(ctx);
-        const firstOk = sameSancs(first.sancs.after, expected(first.sancs.before)) && ctx.c.findItem(ITEM.molarDeGargula) >= 0 && carryOf(ctx.c).filter((x) => x.index === ITEM.molarDeGargula).length === 1;
-        // Na mesma sessão: com a flag, o segundo 4122 tem de voltar ao slot (sem ela seria consumido à toa).
-        const second = await useMolar(ctx);
-        const ev = { first, second, firstOk };
-        if (!firstOk) return { pass: false, evidence: ev, note: `pré-condição: o primeiro uso não refinou (${fmt(first.sancs.before)} → ${fmt(first.sancs.after)}, ${useAnswer(first)}); segundo uso: ${useAnswer(second)}, refinação ${unchanged(second) ? 'intacta' : 'mudou'}` };
-        const pass = unchanged(second);
-        return { pass, evidence: ev, note: pass ? `primeiro uso refinou; segundo: recusa (${useAnswer(second)}), o 4122 volta ao slot ${second.slot}, refinação intacta` : `segundo uso: ${second.molarAfter ? 'o 4122 ficou' : 'o 4122 foi consumido'}, refinação ${fmt(second.sancs.before)} → ${fmt(second.sancs.after)}` };
+        const u = await useMolar(ctx);
+        await ctx.relog();
+        const db = await saved(ctx);
+        const pass = said(u, SAY.doneAlready) && unchanged(u) && sameSancs(db.sancs, u.sancs.before) && db.molar && db.flag === 1;
+        return { pass, evidence: { use: u, saved: db }, note: pass ? `MolarGargula 1: "${u.texts.join(' | ')}", o 4122 volta ao slot ${u.slot}, refinação ${fmt(u.sancs.after)} intacta (banco igual, flag 1)` : `MolarGargula 1: ${useAnswer(u)}; refinação ${fmt(u.sancs.before)} → ${fmt(u.sancs.after)} (banco ${fmt(db.sancs)}), 4122 ${u.molarAfter ? 'ficou' : 'consumido'}, flag ${db.flag}` };
       },
     },
     {
@@ -325,8 +332,10 @@ const quest: QuestSpec = {
       seed: async (db, n) => { await char(db, n, LEVEL.max); await refines(db, n, MIXED); await putMolar(db, n); },
       run: async (ctx) => {
         const u = await useMolar(ctx);
-        const pass = unchanged(u);
-        return { pass, evidence: { use: u }, note: pass ? `Mortal exibido 255: recusa (${useAnswer(u)}), o 4122 fica no slot ${u.slot}, refinação ${fmt(u.sancs.after)} intacta` : `exibido 255 refinou: ${fmt(u.sancs.before)} → ${fmt(u.sancs.after)}` };
+        await ctx.relog();
+        const db = await saved(ctx);
+        const pass = said(u, SAY.levelLimit) && unchanged(u) && sameSancs(db.sancs, u.sancs.before) && db.molar && db.flag === 0;
+        return { pass, evidence: { use: u, saved: db }, note: pass ? `Mortal exibido 255: "${u.texts.join(' | ')}" (_NN_Level_limit), o 4122 fica no slot ${u.slot}, refinação ${fmt(u.sancs.after)} intacta, flag 0 (banco igual)` : `exibido 255: ${useAnswer(u)}; refinação ${fmt(u.sancs.before)} → ${fmt(u.sancs.after)}, 4122 ${u.molarAfter ? 'ficou' : 'consumido'}, flag ${db.flag}` };
       },
     },
     {
@@ -344,17 +353,21 @@ const quest: QuestSpec = {
       id: 'MG-09',
       title: 'Flag persiste',
       type: 'borda',
-      seed: async (db, n) => { await char(db, n, LEVEL.min); await refines(db, n, MIXED); await putMolar(db, n, 0); await putMolar(db, n, 1); },
+      // A flag sai do primeiro uso, jogando (o caso testa se o Go a SALVA).
+      seed: async (db, n) => { await char(db, n, LEVEL.min); await refines(db, n, MIXED); await putMolar(db, n, 20); await putMolar(db, n, 21); },
       run: async (ctx) => {
         const first = await useMolar(ctx);
-        const firstOk = sameSancs(first.sancs.after, expected(first.sancs.before));
+        const firstOk = sameSancs(first.sancs.after, expected(first.sancs.before)) && said(first, SAY.played);
         // Relog com a refinação de volta a +0: só a flag salva impede o segundo uso.
         const c = await ctx.reseed(async (db, n) => { await refines(db, n, { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }); });
+        const mid = await saved(ctx);
         const second = await useMolar({ ...ctx, c });
-        const ev = { first, second, firstOk };
-        if (!firstOk) return { pass: false, evidence: ev, note: `pré-condição (MG-05) não acontece: o primeiro uso ${useAnswer(first)}, refinação ${fmt(first.sancs.after)}; depois do relog o segundo uso ${useAnswer(second)}` };
-        const pass = unchanged(second);
-        return { pass, evidence: ev, note: pass ? `depois do relog: recusa (${useAnswer(second)}), refinação +0 intacta` : `depois do relog o molar refinou de novo: ${fmt(second.sancs.after)}` };
+        await ctx.relog();
+        const after = await saved(ctx);
+        const ev = { first, mid, second, after, firstOk };
+        if (!firstOk) return { pass: false, evidence: ev, note: `pré-condição (MG-05) não acontece: o primeiro uso ${useAnswer(first)}, refinação ${fmt(first.sancs.after)}; flag no banco ${mid.flag}` };
+        const pass = mid.flag === 1 && said(second, SAY.doneAlready) && unchanged(second) && after.molar && sameSancs(after.sancs, second.sancs.before);
+        return { pass, evidence: ev, note: pass ? `primeiro uso refinou, banco molar_gargula 1; depois do relog: "${second.texts.join(' | ')}", o 4122 fica, refinação +0 intacta (banco igual)` : `banco molar_gargula ${mid.flag} depois do 1º uso; 2º uso depois do relog: ${useAnswer(second)}, refinação ${fmt(second.sancs.after)}, 4122 ${second.molarAfter ? 'ficou' : 'consumido'}` };
       },
     },
     {
