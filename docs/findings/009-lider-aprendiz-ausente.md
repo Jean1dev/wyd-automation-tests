@@ -1,3 +1,5 @@
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 03`.**
+
 # 009 — Lider_Aprendiz sem rota no Go: o Arch não recebe a capa verde
 
 **Status:** aberto.

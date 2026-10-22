@@ -106,3 +106,23 @@ Validado no Railway com `npm run quest -- 03`, com o nível, a classe, o emblema
 | CV-13 | ✅ |  |
 
 Finding: [009](../findings/009-lider-aprendiz-ausente.md).
+
+## Situação (2026-10-22)
+
+Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), com `npm run quest -- 03`: 13 ✅. O Go agora roteia o Lider_Aprendiz (Merchant 100, grade 5, Equip[0] 60 no template, `handler/liderapprentice.go`) e dá o 4006 direto no Equip[15] do Arch, salvo no banco. CV-11 e CV-12 deixaram de passar no vácuo: os casos exigem a fala de recusa do próprio Lider (`_NN_Level_Limit2` para o Arch fora da faixa, `_SN_NEEDCLASS` "Arch" para o Mortal), como o `SendSay` do legado (`_MSG_Quest.cpp:2629-2643`).
+
+| ID | Resultado | Issue |
+|---|---|---|
+| CV-01 | ✅ |  |
+| CV-02 | ✅ |  |
+| CV-03 | ✅ |  |
+| CV-04 | ✅ |  |
+| CV-05 | ✅ drop no Chefe_Taurus em 12 min |  |
+| CV-06 | ✅ |  |
+| CV-07 | ✅ |  |
+| CV-08 | ✅ |  |
+| CV-09 | ✅ |  |
+| CV-10 | ✅ Equip[15] = 4006, também no banco | [~~#397~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) corrigida |
+| CV-11 | ✅ recusa "Seu nível não permite o uso disto." | [~~#397~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) corrigida |
+| CV-12 | ✅ recusa "Somente personagem Arch." | [~~#397~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) corrigida |
+| CV-13 | ✅ |  |
