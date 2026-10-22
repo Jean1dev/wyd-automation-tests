@@ -1,3 +1,5 @@
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 04`.**
+
 # 010 — Molar_de_Gárgula sem uso no Go: o Equip[1..5] não sobe para +6
 
 **Status:** aberto.

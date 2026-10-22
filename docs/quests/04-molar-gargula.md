@@ -86,3 +86,20 @@ Validado no Railway com `npm run quest -- 04`, com o nível, a classe, os atribu
 | MG-10 | ✅ | |
 
 Finding: [010](../findings/010-molar-gargula-sem-uso.md).
+
+## Situação (2026-10-22)
+
+Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), com `npm run quest -- 04`: 10 ✅. O Go agora trata o Vol 194 (`handler/molargargula.go`, porte de `_MSG_UseItem.cpp:2494-2546`) e salva a flag na coluna `molar_gargula`. MG-06 semeia `molar_gargula 1` pelo banco; MG-09 grava a flag jogando e confere no banco depois do relog. MG-07 deixou de passar no vácuo: exige a recusa `_NN_Level_limit` com o 4122 no slot. As peças +0 do seed levam o par EF_SANC, porque o `BASE_SetItemSanc` do legado (`Basedef.cpp:2280`) não cria o par: uma peça sem ele não sobe nem no legado.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| MG-01 | ✅ |  |
+| MG-02 | ✅ |  |
+| MG-03 | ✅ |  |
+| MG-04 | ✅ drop no Gargula_Inf, 25 kills em 10,5 min |  |
+| MG-05 | ✅ +0 +3 +5 +7 +1 → +6 +6 +6 +7 +6, molar_gargula 1 | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida |
+| MG-06 | ✅ "Você já completou esta Quest." | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida |
+| MG-07 | ✅ "Nível Insuficiente. Isto não pode ser utilizado." | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida |
+| MG-08 | ✅ Equip[3] vazio pulado | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida |
+| MG-09 | ✅ flag salva, recusa depois do relog | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida |
+| MG-10 | ✅ reset 580 s depois da entrada |  |
