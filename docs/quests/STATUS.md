@@ -273,7 +273,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
 | SC-01 | Sub sem Sephirot | controle | ✅ |  | 2026-10-22: (09:53 UTC) Celestial exibido 121 sem Sephirot: a 5338 volta só com o SendItem do slot 20, calado, como o legado; banco igual, sem ficha 2 — deixou de ser vácuo |
-| SC-02 | Sub abaixo do nível | controle | ✅ |  | Celestial exibido 120 com Sephirot 1762: 5338 → notice 39, banco igual (vácuo, #410) |
+| SC-02 | Sub abaixo do nível | controle | ✅ |  | 2026-10-22: (09:54 UTC) Celestial exibido 120 com Sephirot 1762: SendItem calado do slot 20 (5338); banco igual, sem ficha 2 — deixou de ser vácuo |
 | SC-03 | Criar o Sub | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | Celestial exibido 121 com Sephirot 1762: 5338 → notice 39; continua master 3, Sephirot e 5338 ficam |
 | SC-04 | Sub de novo | controle | ✅ |  | CELESTIALCS exibido 121 com Sephirot: 5338 → notice 39, banco igual (vácuo, #410) |
 | SC-05 | Urnammu sem Fama | controle | ✅ |  | CELESTIALCS, Fama 100: pergaminho 699 até (3235,1688), Urnammu (id 12901) sem resposta, banco igual (vácuo: Merchant 76 sem rota, #410) |
