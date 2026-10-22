@@ -156,7 +156,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | PO-01b | Pegar com a flag já gravada | controle | ✅ | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida no #411 | 2026-10-22: (06:51 UTC) pilula_orc 1 semeado (base 156): a 470 largada e pedida recebe "Você já completou esta Quest." (_NN_Youve_Done_It_Already), não volta ao inventário e o mesmo id do chão recusa de novo (continua no chão); SkillBonus 156, flag 1 depois do relog |
 | PO-02 | Usar a pílula | feliz | ✅ | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida no #411 | 2026-10-22: (06:48 UTC) MSG_UseItem na 470: SkillBonus 147→156, a 470 consumida; depois do relog 470 ×0, pilula_orc 1 no banco, SkillBonus 156 |
 | PO-03 | Segunda pílula | controle | ✅ | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida no #411 | 2026-10-22: (06:48 UTC) pilula_orc 1 semeado (base 156 = 147 + 9 do deriveSkillBonus): a 470 usada não aplica nem é consumida (o slot volta); depois do relog 470 ×1, SkillBonus 156 — deixou de ser vácuo |
-| PO-04 | Persistência | borda | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) | base 147; a 1ª 470 não aplica (39); depois do relog SkillBonus 147 (sem os +9: deriveSkillBonus não soma a PilulaOrc) e as duas 470 no inventário; a 2ª volta com 39 |
+| PO-04 | Persistência | borda | ✅ | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida no #411 | 2026-10-22: (06:48 UTC) base 147; a 1ª 470 aplica (156); depois do relog SkillBonus 156, pilula_orc 1 no banco, 470 ×1; a 2ª não aplica nem é consumida |
 
 <a id="08"></a>
 ## 08 — Círculo Divino (Jeffi e Shama)
