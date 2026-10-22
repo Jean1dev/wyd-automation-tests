@@ -1,3 +1,5 @@
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 07`.**
+
 # 016 — Pílula do Poder Mágico: a 470 não faz nada no Go (chão e uso), sem flag PilulaOrc
 
 **Status:** aberto.

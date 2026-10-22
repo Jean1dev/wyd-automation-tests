@@ -61,3 +61,15 @@ Validado no Railway com `npm run quest -- 07`, Mortal de nível armazenado 49 (`
 | PO-02 | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) |
 | PO-03 | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) |
 | PO-04 | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) |
+
+## Situação (2026-10-22)
+
+Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), com `npm run quest -- 07`: 5 ✅. A pílula 470 aplica pelos dois caminhos do legado: do chão some sem ir ao inventário, com `_NN_Get_Skill_Point`, e pelo uso é consumida. Nos dois casos dá +9 de `SkillBonus` (147→156) e grava `pilula_orc` 1, que sobrevive ao relog; o `deriveSkillBonus` soma os +9 no login. Os controles agora semeiam `pilula_orc` 1 pelo banco (coluna nova do #411) e deixaram de ser vácuo. No chão, a pílula recebe `_NN_Youve_Done_It_Already` e fica lá: o mesmo id recusa de novo. No uso, ela não aplica nem é consumida. Diferença sem efeito no estado: na segunda pílula usada, o legado não responde e o Go reenvia o slot.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| PO-01 | ✅ some do chão, +9, pilula_orc 1 no banco | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida |
+| PO-01b | ✅ _NN_Youve_Done_It_Already, fica no chão | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida |
+| PO-02 | ✅ consumida, +9, pilula_orc 1 no banco | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida |
+| PO-03 | ✅ recusa com pilula_orc 1 semeado | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida |
+| PO-04 | ✅ +9 e flag depois do relog, 2ª recusada | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida |
