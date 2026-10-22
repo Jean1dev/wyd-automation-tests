@@ -290,25 +290,27 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 ## Issues
 
-Os casos rodaram pela primeira vez em 2026-10-18 (w2pp-OpenWYD b392705): 95 ✅ 49 ❌. O reteste foi em 2026-10-19/22, depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (merge 2866b8c): 141 ✅ 3 ❌. Todas as issues estão em [Jean1dev/w2pp-OpenWYD](https://github.com/Jean1dev/w2pp-OpenWYD/issues).
+Os casos rodaram pela primeira vez em 2026-10-18 (w2pp-OpenWYD b392705): 95 ✅ 49 ❌ de 144. O reteste foi em 2026-10-19/22: depois do [#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (2866b8c), 141 ✅ 3 ❌; depois do [#414](https://github.com/Jean1dev/w2pp-OpenWYD/pull/414) e do [#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) (deploy 55cbf4a3), 148 ✅ 2 ❌ 2 ⏸️ de 152 (oito casos novos da quest 14). Todas as issues estão em [Jean1dev/w2pp-OpenWYD](https://github.com/Jean1dev/w2pp-OpenWYD/issues).
 
 ### Abertas
 
-| Issue | Tipo | O que falta ou está errado no Go | Casos ❌ | Finding |
+| Issue | Tipo | O que falta ou está errado no Go | Casos | Finding |
 |---|---|---|---|---|
-| [#413](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) | bug (nova no reteste) | Nas recusas da Pedra Ideal (5338), o Go manda mensagem onde o legado fica calado, e o texto da armadura é outro. O estado não muda | CE-04, CE-05, CE-06 | [024](../findings/024-pedra-ideal-recusa-fala.md) |
-| [#412](https://github.com/Jean1dev/w2pp-OpenWYD/issues/412) | bug (nova no reteste, cosmético) | `_NN_Watching_Town_Success` chega no MessagePanel em UTF-8, com os acentos quebrados | nenhum (anotado no TM-07) | — |
-| [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | enhancement (parcial no #411) | Falta a Pedra Misteriosa 4148 e o caminho até o Urnammu (Deserto→Kefra, `/kefra`). A criação do Sub, a troca no Urnammu e a 2ª ficha estão feitas | nenhum: os casos chegam ao Urnammu por save_x/save_y + Pergaminho 699 | [023](../findings/023-sub-celestial-ausente.md) |
+| [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | enhancement (reaberta depois do #415) | A Pedra Misteriosa 4148 troca a ficha, mas o Go não salva a coluna `class`: falta em `characterSaveToProto` (dbclient/client.go:776) e no `UPDATE character SET` (store_live.go:396). Depois do relog o Sub BM volta como TK | ❌ SC-08, SC-09 | [023](../findings/023-sub-celestial-ausente.md) |
 
-### Corrigidas no #411 (verificadas no reteste)
+**⏸️ bloqueados pelo estado do mundo:** SC-14 e SC-15 (`/kefra` e o portal do Deserto com o Kefra derrotado). O Kefra está vivo; o estado fica em `kefra_state`, é global, o tmServer só lê no boot e ele mexe no EXP de todos, então não se semeia pelo banco. O `precheck` do caso marca ⏸️ enquanto o Kefra estiver vivo.
 
-#395 (NOV), #396 (QST-09), #397 (CV-10), #398 (MG), #399 (CR-06/11), #400 (CR-12), #401 (TM), #402 (TM-07), #403 (TM-08/09), #404 (PO), #405 (CD), #390 (AR-10/11), #406 (CE-01/03), #407 (CE-07/08/09), #408 (CL-05…08), #409 (CL-10). Os findings 007–022 trazem a linha "Situação" com a data do reteste.
+### Corrigidas e verificadas no reteste
+
+- No #411: #395 (NOV), #396 (QST-09), #397 (CV-10), #398 (MG), #399 (CR-06/11), #400 (CR-12), #401 (TM), #402 (TM-07), #403 (TM-08/09), #404 (PO), #405 (CD), #390 (AR-10/11), #406 (CE-01/03), #407 (CE-07/08/09), #408 (CL-05…08), #409 (CL-10). Findings 007–022.
+- No #414: #413 (CE-04/05/06, finding 024).
+- No #415: #412 (TM-07, acentos em cp1252) e, da #410, o caminho até o Urnammu com o Kefra vivo (SC-12/13) e as recusas da 4148 (SC-10/11). O #415 também fechou #392, #393 e #394, e o #416 fechou #391: essas só têm cobertura nas suítes antigas de conta fixa, que não foram rodadas.
 
 A #400 foi fechada, mas o Clan pela guilda do líder não foi portado. Nenhum caso cobre isso ainda.
 
 ## Controles e casos informativos
 
-Os controles que passavam "no vácuo" foram refeitos no reteste e agora exigem a recusa real do legado (fala ou silêncio, e estado inalterado). São eles: CV-11/12, MG-07, CD-01/03/05, CE-04/05/06, CL-04, SC-01/02/04/05/07. Todos passam, menos CE-04/05/06 (#413).
+Os controles que passavam "no vácuo" foram refeitos no reteste e agora exigem a recusa real do legado (fala ou silêncio, e estado inalterado): CV-11/12, MG-07, CD-01/03/05, CE-04/05/06, CL-04, SC-01/02/04/05/07. Todos passam.
 
 Estes casos ficam como **informativos**: o Go diverge do legado de propósito e isso não vira issue.
 - QST-12 e QST-13: atalhos que só o Go tem para a arena do Coveiro (botão direito na Vela e o Mestre_Grifo).
@@ -322,11 +324,12 @@ Diferenças sem efeito no estado, só anotadas: na segunda Pílula (07) o Go ree
 
 ## Próximos passos
 
-1. **Corrigir no servidor:** #413 (falas das recusas da 5338), #412 (codificação da mensagem) e o restante da #410 (Pedra Misteriosa 4148 e a rota até o Urnammu). Depois, rodar de novo `npm run quest -- 12` e `npm run quest -- 14`, trocando o atalho por save_x/save_y pelo caminho real.
-2. **Casos que faltam:** o Clan pela guilda do líder (#400), quando for portado.
-3. **Infraestrutura de teste:** o papel do banco aceita só 5 conexões (o tmServer usa 2). Não aninhe `ctx.query` e não mate o runner no meio, porque a conexão fica presa no proxy do Railway.
-4. **Pendências de teste sem issue:**
+1. **Corrigir no servidor:** salvar a coluna `class` (#410). Depois, `npm run quest -- 14 --case SC-08` e `--case SC-09`.
+2. **Kefra derrotado:** SC-14/SC-15 só rodam com o Kefra morto no mundo (matar o boss em grupo, ou um jeito de teste de mudar `kefra_state` com o tmServer recarregando). Rodar `npm run quest -- 14` de novo quando isso existir.
+3. **Casos que faltam:** o Clan pela guilda do líder (#400), quando for portado.
+4. **Infraestrutura de teste:** o papel do banco aceita só 5 conexões (o tmServer usa 2). Não aninhe `ctx.query` e não mate o runner no meio, porque a conexão fica presa no proxy do Railway.
+5. **Pendências de teste sem issue:**
    - Na Poeira de Fada, o Celestial usaria a curva de exp mortal (`item.go:877`, contra `_MSG_UseItem.cpp:1017`). Isso vem só da leitura do código e não foi medido.
    - O Pergaminho_Selado 4127 e a Fama ainda não têm fonte mapeada no jogo; nos casos, vêm do banco.
    - As arenas dos passos 2 a 5 da Quest 256 só estão cobertas pelo cenário 4. Os troféus delas não foram rodados.
-   - As suítes antigas de conta fixa (`npm run scenario`) não foram rodadas de novo: precisam das contas do `.env`.
+   - As suítes antigas de conta fixa (`npm run scenario`) não foram rodadas de novo: precisam das contas do `.env`. Elas cobrem #391–#394.
