@@ -82,3 +82,45 @@ A evolução do Arch para Celestial tem dois passos:
 ## Reaproveitamento
 
 - `src/scenarios/archCreation.ts` e a conta do Arch; `src/world/arch.ts`; `talkKing`.
+
+## Situação (2026-10-18)
+
+`npm run quest -- 12` no Railway: 5 ✅ 4 ❌. O Arch (ou o Mortal exibido 300) nasce no banco com a exp mínima do nível, `mortal_level`, `arch_crystal_stage`, Clan 0 e os itens (1742/Sephirot no Equip[10]/[11], Pedras Secretas, 5338 e 1742 em slots altos); nos casos de uso o elmo inicial (1103), que o 1º login põe no Equip[1], é limpo pelo banco.
+
+- **Rei (#406):** o ramo da Pedra Ideal não existe no Go. O Arch cai no serviço de capa ("13 safiras") e o Mortal com as quatro pedras vira Arch.
+- **Celestial (#407):** a suspeita do mapa se confirmou. A 5338 é recusada (notice 39) e a 1742 é que transforma o Arch. A transformação em si está certa: nível 0, Cythera pela faixa, capa 3199, SpecialBonus 855, só a Alma e a volta para a seleção.
+- Os controles CE-04/05/06 recusam nas duas pedras; na 5338 é vácuo (sem caso no Go), na 1742 são os requisitos do `useIdealStone`.
+- A Cythera 3501/3502 do Go exige Cristal 4 (#327); o CE-09 semeia Cristal 4.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| CE-01 | ❌ | [#406](https://github.com/Jean1dev/w2pp-OpenWYD/issues/406) |
+| CE-02 | ✅ | |
+| CE-03 | ❌ | [#406](https://github.com/Jean1dev/w2pp-OpenWYD/issues/406) |
+| CE-04 | ✅ (vácuo na 5338) | |
+| CE-05 | ✅ (vácuo na 5338) | |
+| CE-06 | ✅ (vácuo na 5338) | |
+| CE-07 | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) |
+| CE-08 | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) |
+| CE-09 | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) |
+
+## Situação (2026-10-22)
+
+Reteste depois do w2pp-OpenWYD#411 (2866b8c): `npm run quest -- 12` no Railway, 6 ✅ 3 ❌. Depois do w2pp-OpenWYD#414 (deploy 55cbf4a3, 19:12 UTC): **9 ✅ 0 ❌**.
+
+- **Rei (#406 corrigida):** com 1742/Sephirot equipadas e as quatro Pedras Secretas, o Rei dá a 5338 (Arch ou Mortal), consome o Equip[10]/[11] e não cria o Arch.
+- **Celestial (#407 corrigida):** a 5338 transforma o Arch (nível 0, Cythera pela faixa, capa 3199, SpecialBonus 855, só a Alma); a 1742 não faz nada.
+- **Controles:** deixaram de ser vácuo e agora exigem a resposta do legado. A recusa e o estado estão certos, mas o Go fala onde o legado fica calado (nível < 355, MortalLevel < 99) e, com armadura, manda outro texto e o notice 24 no lugar de só _NN_Cant_with_armor ([#413](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413)). Corrigido no #414: com armadura vem só _NN_Cant_with_armor, sem notice; nível < 355 e MortalLevel < 99 sem armadura ficam calados.
+- A Cythera 3501/3502 do Go continua exigindo Cristal 4 (#327); o CE-09 semeia Cristal 4.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| CE-01 | ✅ | [~~#406~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/406) corrigida |
+| CE-02 | ✅ | |
+| CE-03 | ✅ | [~~#406~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/406) corrigida |
+| CE-04 | ✅ | [~~#413~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) corrigida no #414 |
+| CE-05 | ✅ | [~~#413~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) corrigida no #414 |
+| CE-06 | ✅ | [~~#413~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) corrigida no #414 |
+| CE-07 | ✅ | [~~#407~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) corrigida |
+| CE-08 | ✅ | [~~#407~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) corrigida |
+| CE-09 | ✅ | [~~#407~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) corrigida |

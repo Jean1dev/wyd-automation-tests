@@ -37,7 +37,7 @@ Drops (templates em `npc/*`):
   - Rei em `_MSG_Quest.cpp:769-866`.
 - **Go:**
   - Oráculo em `blackOracle`, `handler/misc.go:736` ✅. A diferença: aceita **qualquer par** 1740→1741 vizinho, não só o primeiro.
-  - Pedras Arch ❌: não há caso 1752–1759 no caminho da poeira.
+  - Pedras Arch ❌: não há caso 1752–1759 no caminho da poeira. Mas o efeito é o mesmo do legado: as 1752–1759 têm `EF_NOSANC 1` no `ItemList.csv`, e o caminho PO/PL do legado recusa todo destino com EF_NOSANC (`_MSG_UseItem.cpp:188` no inventário, `:365` no equipamento) antes de chegar ao ramo das Pedras Arch (`:515`). Com esses dados, o ramo é inalcançável nos dois servidores.
   - Sephirot em `compSephi`, `misc.go:802` ⚠️: dá `1760 + Class`, um a mais que o legado (issue [#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390)).
   - Rei em `kingArch`, `misc.go:525` ✅ (cenário 5).
 
@@ -50,7 +50,7 @@ Drops (templates em `npc/*`):
 | AR-03 | Sem safiras | almas em ordem, 9 safiras | `MSG_Quest` | "precisa de 10 safiras"; nada some | controle |
 | AR-04 | Pedra da Imortalidade | almas em ordem, 10 × 697 | `MSG_Quest` | almas e safiras somem; recebe a 1742 | feliz |
 | AR-05 | Pacote de safiras | almas em ordem, 1 × 4131 | `MSG_Quest` | o 4131 some; recebe a 1742 | borda |
-| AR-06 | Refino da pedra de boss | 1752 e Poeira 412 | `MSG_UseItem` com a poeira sobre a pedra | sucesso: a 1752 vira uma de 1744–1747 e uma poeira some. Falha: a pedra fica e uma poeira some | feliz |
+| AR-06 | Refino da pedra de boss | 1752 e Poeira 412 | `MSG_UseItem` com a poeira sobre a pedra (no inventário e no Equip[11]) | pelo código do ramo: sucesso troca a 1752 por uma de 1744–1747. **Na prática, recusa**: `_NN_Cant_Refine_More`, a poeira volta e a pedra fica (ver nota abaixo) | feliz |
 | AR-07 | Sephirot (ask) | 8 pedras, 30M | `MSG_Quest` no mestre, confirm 0 | só a fala; nada muda | controle |
 | AR-08 | Sephirot sem gold | 8 pedras, gold < 30M | confirm 1 | `_NN_Need_8_Sephera`; nada some | controle |
 | AR-09 | Sephirot faltando pedra | 7 pedras diferentes e uma repetida | confirm 1 | `_NN_Need_8_Sephera`; nada some | controle |
@@ -70,7 +70,7 @@ Drops (templates em `npc/*`):
 
 ## Divergências suspeitas no Go
 
-- Refino das pedras de boss ausente (AR-06).
+- Refino das pedras de boss ausente (AR-06): sem efeito visível, porque o EF_NOSANC das pedras de boss também barra o legado.
 - Sephirot com classe deslocada (#390, já aberto).
 - O Oráculo procura qualquer par de almas vizinho: com 1740 no slot 0 e o par certo em 5/6, o legado recusa e o Go aceita. Borda informativa.
 
@@ -78,3 +78,43 @@ Drops (templates em `npc/*`):
 
 - `src/scenarios/archCreation.ts` (`talkKing`, conta do Arch) e `src/world/arch.ts` (Rei, rota, Evolucao).
 - O mestre de skill de cada classe já está em `src/world/skillTrees.ts` (cenários 6–11).
+
+## Situação (2026-10-18)
+
+`npm run quest -- 09` no Railway: 10 ✅ 2 ❌. O mortal 300 e todos os itens raros (almas, safiras, pedras de boss, Pedras Arch, Pedra da Imortalidade, Sephirot) e o gold vêm pelo banco, então nenhum caso ficou bloqueado.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| AR-01 | ✅ | |
+| AR-02 | ✅ | |
+| AR-03 | ✅ | |
+| AR-04 | ✅ | |
+| AR-05 | ✅ | |
+| AR-06 | ✅ (o legado também recusa: EF_NOSANC) | |
+| AR-07 | ✅ | |
+| AR-08 | ✅ | |
+| AR-09 | ✅ | |
+| AR-10 | ❌ 1761 no lugar da 1760 | [#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) |
+| AR-11 | ❌ 1762/1763/1764 no lugar de 1761/1762/1763 | [#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) |
+| AR-12 | ✅ | |
+
+Finding: [018](../findings/018-sephirot-classe-deslocada.md).
+
+## Situação (2026-10-22)
+
+Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), com `npm run quest -- 09`: 12 ✅. Cada mestre de skill agora entrega a Sephirot `1759 + Class` do template (Cap.Cavaleiros 1760, Foema_Ancian 1761, Mestre_Archi 1762, ForeLearner 1763), com as 8 Pedras Arch 1744–1751 e os 30M semeados. O Go escolhe a vaga livre antes de apagar as pedras, por isso a Sephirot cai na 1ª vaga já vazia (Carry[12]) e não no Carry[0], como no legado; também não fala `_NN_Sepherot_created`. O efeito é o mesmo. O AR-06 passou a ler o banco com uma conexão só: o papel do banco aceita 5 conexões e o tmServer usa 2, então a consulta aninhada podia esperar para sempre.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| AR-01 | ✅ notice 15, nada muda | |
+| AR-02 | ✅ notice 15, nada muda | |
+| AR-03 | ✅ notice 15, nada muda | |
+| AR-04 | ✅ almas e 10 safiras → 1742 | |
+| AR-05 | ✅ almas e 4131 → 1742 | |
+| AR-06 | ✅ "não pode ser mais refinado" (o legado também recusa) | |
+| AR-07 | ✅ sem resposta, nada muda | |
+| AR-08 | ✅ notice 15, nada muda | |
+| AR-09 | ✅ notice 15, nada muda | |
+| AR-10 | ✅ 1760 | [~~#390~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) corrigida |
+| AR-11 | ✅ 1761 / 1762 / 1763 | [~~#390~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) corrigida |
+| AR-12 | ✅ Arch no slot 1 (master 1, nível 0) | |

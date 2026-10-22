@@ -70,3 +70,46 @@ Atenção: no legado, a **Lindy** `[3142]` (1705,1727) também tem o byte 17 = 1
 - `src/scenarios/playerTrade.ts` (duas contas na mesma sessão de teste).
 - `src/bot/combat.ts` e `src/bot/grind.ts` para o farm do passo 2.
 - O grupo é peça nova (`src/bot/party.ts`). Ela também serve para o QST-11 (troféu em grupo).
+
+## Situação (2026-10-18)
+
+Validado no Railway com `npm run quest -- 06`, com o nível, a classe, os atributos, o equipamento e a flag `terra_mistica` semeados pelo banco. O bot vai pelo Grifo até o Jardim dos Deuses e anda até Azran, saindo pelo norte da arena do Jardineiro (quem entra nela sem a QuestFlag volta para Armia). O grupo usa uma segunda conta nova (`secondChar`/`makeParty` em `src/scenarios/quests/helpers.ts`). Resultado: 4 ✅ e 7 ❌.
+
+- As travas do Cap.Mercenario (sozinho, confirm 0, membro, Arch) estão como no legado; o Go responde NoticeReqNotMet 15 onde o legado manda fala, e fica calado no confirm 0 e no aceite.
+- O aceite grava a flag 1 só em memória: o `characterSaveToProto` não envia `MortalTerraMistica`, e todo save grava 0 (TM-04). Pelo mesmo motivo, as flags semeadas 1 e 3 viram 0 no relog (TM-05, TM-06, TM-10); com a flag 3 perdida, a quest fica refazível.
+- O passo 2 não existe: 77 kills de rosto 239/241 em 10 min sem concluir; no legado a chance disso é de 1,9 % (TM-07).
+- O passo 3 não existe: o Cap.Explor. (Merchant 11) não tem rota no Go, e nenhum amuleto sai (TM-08, TM-09).
+
+| ID | Resultado | Issue |
+|---|---|---|
+| TM-01 | ✅ | |
+| TM-02 | ✅ | |
+| TM-03 | ✅ | |
+| TM-04 | ❌ | [#401](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) |
+| TM-05 | ❌ | [#401](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) |
+| TM-06 | ❌ | [#401](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) |
+| TM-07 | ❌ | [#402](https://github.com/Jean1dev/w2pp-OpenWYD/issues/402) |
+| TM-08 | ❌ | [#403](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) |
+| TM-09 | ❌ | [#403](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) |
+| TM-10 | ❌ | [#401](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) |
+| TM-11 | ✅ | |
+
+## Situação (2026-10-22)
+
+Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), com `npm run quest -- 06`: 11 ✅. A flag `terra_mistica` agora vai para o banco no save: o aceite grava 1 e as flags semeadas 1 e 3 sobrevivem ao relog. O passo 2 existe no `mobKilled` (rostos 239/241, 1 em 20): a flag virou 2 no 10º kill, em 2,1 min. O Cap.Explor. (Merchant 11) tem rota e entrega o amuleto pela faixa do nível armazenado, com o efeito 0 = 43 e dois adicionais, e grava a flag 3. Os controles do Cap.Explor. (TM-06, TM-10) deixaram de passar no vácuo: exigem a fala `_SN_All_Villagers_Thanks_Your`. Diferenças que ficam, sem efeito no estado: o Cap.Mercenario recusa com NoticeReqNotMet 15 onde o legado manda fala, fica calado no confirm 0 e não manda `_NN_Get_Watching_Town_Mission` no aceite; e a mensagem `_NN_Watching_Town_Success` do passo 2 sai em UTF-8 e aparece como "VocÃª aprova a proteÃ§Ã£o da cidade." ([#412](https://github.com/Jean1dev/w2pp-OpenWYD/issues/412)).
+
+| ID | Resultado | Issue |
+|---|---|---|
+| TM-01 | ✅ NoticeReqNotMet 15, flag 0 |  |
+| TM-02 | ✅ calado, flag 0 |  |
+| TM-03 | ✅ NoticeReqNotMet 15, flag 0 |  |
+| TM-04 | ✅ flag 0 → 1 no banco | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
+| TM-05 | ✅ recusa, flag 1 no banco | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
+| TM-06 | ✅ "Todos da cidade agradecem a sua ajuda", flag 1 | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
+| TM-07 | ✅ flag 1 → 2 (no 50º kill, 7 min), mensagem em cp1252 | [~~#402~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/402) corrigida; [~~#412~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/412) corrigida no #415 |
+| TM-08 | ✅ Amuleto_Místico 562 (43, 26:10, 5:60), flag 3 | [~~#403~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) corrigida |
+| TM-09 | ✅ Amuleto_de_Prata 554 (43, 60:6, 60:4), flag 3 | [~~#403~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) corrigida |
+| TM-10 | ✅ agradecimento, nenhum amuleto, flag 3 | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
+| TM-11 | ✅ NoticeReqNotMet 15, flag 0 |  |
+
+Reteste depois do [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) (deploy `55cbf4a3`), com `npm run quest -- 06`: 11 ✅, sem regressão. O TM-07 agora exige que `_NN_Watching_Town_Success` chegue em Windows-1252, decodificado como o cliente: chegou "Quest: Você aprova a proteção da cidade." (19:44 UTC, flag 1 → 2 em 50 kills). A [#412](https://github.com/Jean1dev/w2pp-OpenWYD/issues/412) está corrigida.

@@ -79,3 +79,50 @@ Esta é a primeira capa do personagem, o Manto_do_Aprendiz (4006). Os guias a ch
 
 - `src/bot/travel.ts` `griffTravel(GRIFF_WARP.jardimDosDeuses)`, `src/bot/npc.ts` `talkQuest`, `src/bot/equip.ts` `equipFromCarry`, `src/bot/quest.ts` `waitForReset`.
 - Pode reaproveitar o personagem do cenário 4, se ele passar pela faixa 100–150 e tiver o slot de capa vazio.
+
+## Situação (2026-10-18)
+
+Validado no Railway com `npm run quest -- 03`, com o nível, a classe, o emblema, a capa, os atributos e o equipamento semeados pelo banco. O Mortal vai pelo Mestre Grifo até o Jardim dos Deuses e anda até o Diretor; o Arch anda de Armia até o Lider_Aprendiz. Resultado: 12 ✅ e 1 ❌.
+
+- O caminho do Mortal (Diretor_Treina. e Chefe_Treina.) está como no legado, inclusive o reset da arena.
+- O único ❌ é o Lider_Aprendiz: o Merchant 100 grade 5 não tem rota no Go, e o Arch fica sem resposta e sem capa. CV-11 e CV-12 passam só porque o NPC não responde a ninguém.
+- O 4080 pede ReqLvl 100 contra o nível **armazenado** (`Basedef.cpp:5050`, igual no Go): o exibido 100 não equipa o emblema. A entrega (CV-06) roda com o exibido 101.
+- Drop (CV-05): o Chefe_Taurus solta o 4080 com 1/4 por kill (Carry[10]) e nasce a cada ~3 min; o Taurus_Maligno, com ≈ 1/225. Uma rodada de 15 min (5 Chefe + 63 Taurus) saiu sem drop; a seguinte teve o drop no primeiro Chefe.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| CV-01 | ✅ |  |
+| CV-02 | ✅ |  |
+| CV-03 | ✅ |  |
+| CV-04 | ✅ |  |
+| CV-05 | ✅ |  |
+| CV-06 | ✅ |  |
+| CV-07 | ✅ |  |
+| CV-08 | ✅ |  |
+| CV-09 | ✅ |  |
+| CV-10 | ❌ | [#397](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) |
+| CV-11 | ✅ (o NPC não responde; ver [#397](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397)) |  |
+| CV-12 | ✅ (o NPC não responde; ver [#397](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397)) |  |
+| CV-13 | ✅ |  |
+
+Finding: [009](../findings/009-lider-aprendiz-ausente.md).
+
+## Situação (2026-10-22)
+
+Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), com `npm run quest -- 03`: 13 ✅. O Go agora roteia o Lider_Aprendiz (Merchant 100, grade 5, Equip[0] 60 no template, `handler/liderapprentice.go`) e dá o 4006 direto no Equip[15] do Arch, salvo no banco. CV-11 e CV-12 deixaram de passar no vácuo: os casos exigem a fala de recusa do próprio Lider (`_NN_Level_Limit2` para o Arch fora da faixa, `_SN_NEEDCLASS` "Arch" para o Mortal), como o `SendSay` do legado (`_MSG_Quest.cpp:2629-2643`).
+
+| ID | Resultado | Issue |
+|---|---|---|
+| CV-01 | ✅ |  |
+| CV-02 | ✅ |  |
+| CV-03 | ✅ |  |
+| CV-04 | ✅ |  |
+| CV-05 | ✅ drop no Chefe_Taurus em 12 min |  |
+| CV-06 | ✅ |  |
+| CV-07 | ✅ |  |
+| CV-08 | ✅ |  |
+| CV-09 | ✅ |  |
+| CV-10 | ✅ Equip[15] = 4006, também no banco | [~~#397~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) corrigida |
+| CV-11 | ✅ recusa "Seu nível não permite o uso disto." | [~~#397~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) corrigida |
+| CV-12 | ✅ recusa "Somente personagem Arch." | [~~#397~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) corrigida |
+| CV-13 | ✅ |  |

@@ -45,3 +45,31 @@ O `SkillBonus` chega ao bot pelo `UpdateEtc`/score. O cenário compara o valor a
 
 - `src/bot/combat.ts`, `src/bot/grind.ts`.
 - Um `pickUp` de item no chão ainda não existe no `src/bot`. Ver se o `GameClient` já trata o `MSG_CreateItem` do drop.
+
+## Situação (2026-10-18)
+
+Validado no Railway com `npm run quest -- 07`, Mortal de nível armazenado 49 (`SkillBonus` derivado 147) e as pílulas 470 semeadas no inventário pelo banco. O drop do Orc Lord não é o objeto dos casos: para o caminho do chão, o bot larga a pílula aos pés (`MSG_DropItem`) e a pega de volta (`MSG_GetItem`); como o Go não manda o `MSG_CreateItem` do item largado, o id do chão é sondado (`src/bot/ground.ts`). Resultado: 0 ✅ e 5 ❌, todos pela mesma causa (#404).
+
+- Pegar do chão: a 470 vira item comum e volta ao inventário (`CNFGetItem`), sem os +9 (PO-01, PO-01b).
+- Usar: o Vol 6 não tem caso no `useItem` e cai no `rejectUnimplementedConsumable` (NoticeCantUseHere 39), sem consumir (PO-02).
+- `PilulaOrc` não existe no Go nem no banco, e o `deriveSkillBonus` não soma os +9: as pré-condições de flag gravada (PO-01b, PO-03, PO-04) são inalcançáveis; a recusa da segunda pílula é vácuo.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| PO-01 | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) |
+| PO-01b | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) |
+| PO-02 | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) |
+| PO-03 | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) |
+| PO-04 | ❌ | [#404](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) |
+
+## Situação (2026-10-22)
+
+Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), com `npm run quest -- 07`: 5 ✅. A pílula 470 aplica pelos dois caminhos do legado: do chão some sem ir ao inventário, com `_NN_Get_Skill_Point`, e pelo uso é consumida. Nos dois casos dá +9 de `SkillBonus` (147→156) e grava `pilula_orc` 1, que sobrevive ao relog; o `deriveSkillBonus` soma os +9 no login. Os controles agora semeiam `pilula_orc` 1 pelo banco (coluna nova do #411) e deixaram de ser vácuo. No chão, a pílula recebe `_NN_Youve_Done_It_Already` e fica lá: o mesmo id recusa de novo. No uso, ela não aplica nem é consumida. Diferença sem efeito no estado: na segunda pílula usada, o legado não responde e o Go reenvia o slot.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| PO-01 | ✅ some do chão, +9, pilula_orc 1 no banco | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida |
+| PO-01b | ✅ _NN_Youve_Done_It_Already, fica no chão | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida |
+| PO-02 | ✅ consumida, +9, pilula_orc 1 no banco | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida |
+| PO-03 | ✅ recusa com pilula_orc 1 semeado | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida |
+| PO-04 | ✅ +9 e flag depois do relog, 2ª recusada | [~~#404~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/404) corrigida |

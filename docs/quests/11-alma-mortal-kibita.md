@@ -60,3 +60,28 @@ A Kibita, em Armia, destrava a "Alma do Mortal": o bit 30 do `LearnedSkill`, com
 ## Reaproveitamento
 
 - `src/scenarios/archCreation.ts` (mortal 400, relogin pela seleção, efeito do Arch), `src/world/arch.ts` (`NPC.evolucao`), `src/bot/npc.ts` `buyItem`/`talkQuest`.
+
+## Situação (2026-10-18)
+
+`npm run quest -- 11` no Railway: 7 ✅. O personagem nasce no banco (class_master, nível armazenado com a exp mínima, clan, `learned_skill`, a Pedra Secreta no slot 20 e a capa), anda até a Kibita em Armia e manda o `MSG_Quest`. O Go segue o legado: recusa com o notice 15 fora dos requisitos e, na Alma, apaga a pedra, liga o bit 30, troca a capa pela Herói do reino e volta para a seleção com o `SendArchEffect`. O bit 30 e a capa persistem no relogin.
+
+- A Pedra Secreta não foi comprada na Evolucao: os casos a recebem pelo banco.
+- O caso extra KB-08 (Alma pela Lindy, Merchant 74 no Go) não está na tabela e não foi rodado.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| KB-01 | ✅ | |
+| KB-02 | ✅ | |
+| KB-03 | ✅ | |
+| KB-04 | ✅ | |
+| KB-05 | ✅ | |
+| KB-06 | ✅ | |
+| KB-07 | ✅ | |
+
+## Situação (2026-10-22)
+
+Reteste de regressão no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), que não mexeu nesta quest: `npm run quest -- 11` deu 7 ✅, o mesmo de 2026-10-18. A Kibita consome a 5334, liga o bit 30 do LearnedSkill e troca a capa (3194 no clan 7, 3196 sem reino); tudo continua salvo depois do relog. Os controles seguem recusando com notice 15 sem mudar nada.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| KB-01 – KB-07 | ✅ | |

@@ -18,6 +18,7 @@ export const Op = {
   ReqShopList: 0x027b, // clicar num NPC mercador
   Buy: 0x0379, // comprar do NPC (C↔S; o eco S→C traz o gold novo)
   UseItem: 0x0373, // usar item do inventário (clique direito)
+  SetShortSkill: 0x0378, // barras de skill (S→C: Skill1[4] + Skill2[16]; Pedra Misteriosa, _MSG_UseItem.cpp:3256)
   Quest: 0x028b, // falar com NPC de quest (MSG_STANDARDPARM2)
   TradingItem: 0x0376, // mover item entre inventário e equipamento (C↔S; o servidor ecoa)
   Sell: 0x037a, // vender item do inventário ao NPC (C↔S)
@@ -25,6 +26,12 @@ export const Op = {
   MasterGriff: 0x0ad9, // viagem do Mestre Grifo (MSG_STANDARDPARM2: WarpID, Ty)
   Trade: 0x0383, // troca entre jogadores (C↔S; o servidor repassa a oferta ao outro lado)
   QuitTrade: 0x0384, // cancela a troca (C↔S; S→C também fecha a janela depois da troca)
+  SendReqParty: 0x037f, // convite de grupo (C↔S; o servidor repassa ao convidado)
+  AcceptParty: 0x03ab, // aceitar o convite de grupo
+  GetItem: 0x0270, // pegar item do chão (ItemID = id do chão + 10000)
+  DropItem: 0x0272, // largar item do inventário no chão
+  CombineItemLindy: 0x02c3, // combinação da Lindy (MSG_CombineItem: Item[8] + InvenPos[8])
+  CombineItemOdin: 0x02d2, // combinação do Alquimista Odin (mesmo corpo MSG_CombineItem)
   MessageChat: 0x0333,
   MessageWhisper: 0x0334,
   Ping: 0x03a0,
@@ -56,8 +63,12 @@ export const Op = {
   SendItem: 0x0182, // atualiza um slot do inventário
   UpdateCarry: 0x0185, // inventário inteiro (Carry[64]) + gold, depois da troca
   CNFCheck: 0x0386, // troca: o servidor aceitou a minha confirmação
+  DecayItem: 0x016f, // item do chão sumiu (u32 ItemID)
+  CNFGetItem: 0x0171, // pegou o item do chão: u32 slot do inventário
+  CNFDropItem: 0x0175, // largou o item: u32 slot do inventário esvaziado
   StartTime: 0x03a1, // contador das arenas de quest (legado)
   SendArchEffect: 0x03b4, // Arch criado: STANDARDPARM com o slot do novo personagem
+  CombineComplete: 0x03a7, // resultado de combinação: STANDARDPARM 0 inválida, 1 sucesso, 2 falhou
   SendAffect: 0x03b9, // buffs/debuffs do personagem: STRUCT_AFFECT[32] {Type u8, Value u8, Level u16, Time u32}
 } as const;
 

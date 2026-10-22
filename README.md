@@ -673,6 +673,29 @@ Execuções de 2026-10-17 entre 22:10 e 23:30 UTC:
 
 O mapa também sugere a ordem dos cenários. As divergências que ele aponta são suspeitas da leitura do código e só viram issue quando um cenário reprovar no Railway.
 
+### Casos das quests (`npm run quest`)
+
+Os casos de uso do mapa rodam no runner `src/scenarios/quests/runner.ts`. A situação de cada caso fica em [docs/quests/STATUS.md](docs/quests/STATUS.md).
+
+Cada caso roda isolado:
+1. cria uma **conta nova** no portal e um personagem novo nela;
+2. com o personagem na seleção, grava a pré-condição direto no banco (`src/db/seed.ts`): nível, classe, flags e itens;
+3. entra no mundo, faz a ação do bot e confere o efeito pelo estado (slots, posição, flags), não pelo texto da resposta.
+
+```
+npm run quest -- 03 --list            # casos da quest 03
+npm run quest -- 03 --case CV-06      # um caso (pode repetir --case)
+npm run quest -- 03                   # todos os casos da quest, em série
+npm run quest:status                  # recalcula o resumo do STATUS.md
+```
+
+- **Requisito:** `WYD_DATABASE_URL` no `.env`, que é o `W2PP_DB_DSN` do serviço db-server no Railway (`railway variables --service db-server`). As contas do `.env` não são usadas.
+- **Relatório:** `reports/<data>-quest-NN/<ID>/report.json` e `<ID>.events.jsonl`.
+- **Saída:**
+  - 0: todos passaram ou estão bloqueados;
+  - 1: algum reprovou;
+  - 3: erro de execução.
+
 ## Estrutura
 
 ```

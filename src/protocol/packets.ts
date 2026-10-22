@@ -189,6 +189,53 @@ export function useItem(slot: number, gridX = 0, gridY = 0): Buffer {
   return b;
 }
 
+/** MSG_UseItem do item do slot `slot` sobre outro item (ex.: poeira arrastada para uma pedra): DestType/DestPos. */
+export function useItemOn(slot: number, destSlot: number, destType = PLACE_CARRY): Buffer {
+  const b = Buffer.alloc(22);
+  b.writeInt32LE(PLACE_CARRY, 0);
+  b.writeInt32LE(slot, 4);
+  b.writeInt32LE(destType, 8);
+  b.writeInt32LE(destSlot, 12);
+  return b;
+}
+
+/** MSG_DropItem (0x0272), 16 B: SourType@0 SourPos@4 Rotate@8 GridX u16@12 GridY u16@14 (messages.go MsgDropItemBody). */
+export function dropItem(slot: number, gridX: number, gridY: number): Buffer {
+  const b = Buffer.alloc(16);
+  b.writeInt32LE(PLACE_CARRY, 0);
+  b.writeInt32LE(slot, 4);
+  b.writeUInt16LE(gridX, 12);
+  b.writeUInt16LE(gridY, 14);
+  return b;
+}
+
+/** MSG_GetItem (0x0270), 12 B: ItemID@0 (id do chão + 10000) DestType@4 DestPos@8 (messages.go MsgGetItemBody). */
+export function getItem(itemId: number, destSlot: number): Buffer {
+  const b = Buffer.alloc(12);
+  b.writeInt32LE(itemId, 0);
+  b.writeInt32LE(PLACE_CARRY, 4);
+  b.writeInt32LE(destSlot, 8);
+  return b;
+}
+
+/** MAX_COMBINE: posições da janela de combinação. */
+export const MAX_COMBINE = 8;
+
+/**
+ * MSG_CombineItem (0x03A6 e variantes como a Lindy 0x02C3), 72 B: STRUCT_ITEM Item[8]@0, InvenPos u8[8]@64
+ * (messages.go MsgCombineItemBody). Posição sem item = Item.sIndex 0 (o servidor ignora o InvenPos).
+ */
+export function combineItem(inputs: ({ slot: number; item: Item } | undefined)[]): Buffer {
+  const b = Buffer.alloc(MAX_COMBINE * 8 + MAX_COMBINE);
+  for (let i = 0; i < MAX_COMBINE; i++) {
+    const it = inputs[i];
+    if (!it || !it.item.index) continue;
+    writeItem(b, i * 8, it.item);
+    b[MAX_COMBINE * 8 + i] = it.slot;
+  }
+  return b;
+}
+
 /** MSG_Quest (0x028B), MSG_STANDARDPARM2: Parm1 = id do NPC @0, Parm2 = confirmação @4. */
 export function quest(npcId: number, confirm = 0): Buffer {
   const b = Buffer.alloc(8);
@@ -232,10 +279,46 @@ export function masterGriff(warpId: number, ty = 0): Buffer {
   return b;
 }
 
+/**
+ * MSG_SendReqParty (0x037F), 36 B: Class u8@0 PartyPos u8@1 Level u16@2 MaxHP u16@4 HP u16@6
+ * PartyID i16@8 (quem convida) MobName[16]@10 Unk i32@28 (o convidado) Target i16@32 (messages.go).
+ */
+export function sendReqParty(leaderId: number, targetId: number, o: { name: string; cls: number; level: number; hp: number; maxHp: number }): Buffer {
+  const b = Buffer.alloc(36);
+  b.writeUInt8(o.cls & 0xff, 0);
+  b.writeUInt16LE(Math.min(o.level, 0xffff), 2);
+  b.writeUInt16LE(Math.min(o.maxHp, 0xffff), 4);
+  b.writeUInt16LE(Math.min(o.hp, 0xffff), 6);
+  b.writeInt16LE(leaderId, 8);
+  putCstr(b, 10, 16, o.name);
+  b.writeInt32LE(targetId, 28);
+  b.writeInt16LE(targetId, 32);
+  return b;
+}
+
+/** MSG_AcceptParty (0x03AB), 20 B: LeaderID i16@0 MobName[16]@2 (o nome do líder). */
+export function acceptParty(leaderId: number, leaderName: string): Buffer {
+  const b = Buffer.alloc(20);
+  b.writeInt16LE(leaderId, 0);
+  putCstr(b, 2, 16, leaderName);
+  return b;
+}
+
 /** MSG_MessageChat (0x0333): String[96]. */
 export function chat(text: string): Buffer {
   const b = Buffer.alloc(96);
   putCstr(b, 0, 95, text);
+  return b;
+}
+
+/**
+ * MSG_MessageWhisper (0x0334): MobName[16] + String[128]. O cliente manda "/x args" como cochicho
+ * para "x"; o servidor trata os comandos pelo MobName (chat.go runCommand).
+ */
+export function whisper(name: string, text = ''): Buffer {
+  const b = Buffer.alloc(16 + 128);
+  putCstr(b, 0, 15, name);
+  putCstr(b, 16, 127, text);
   return b;
 }
 

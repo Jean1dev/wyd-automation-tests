@@ -87,14 +87,17 @@ export interface QuestTalk {
   clearedSlots: number[];
 }
 
-/** Fala com o NPC de quest (MSG_Quest) e observa a reação por `waitMs`. */
-export async function talkQuest(c: GameClient, log: Logger, npc: NpcSpec, waitMs = 5000): Promise<QuestTalk> {
+/**
+ * Fala com o NPC de quest (MSG_Quest) e observa a reação por `waitMs`. `confirm` vai no Parm2: o
+ * Rei, o COMP_SEPHI e o Cap.Mercenario só agem com confirm ≠ 0.
+ */
+export async function talkQuest(c: GameClient, log: Logger, npc: NpcSpec, waitMs = 5000, confirm = 0): Promise<QuestTalk> {
   const me = c.self!;
   const ent = await approachNpc(c, npc);
   await sleep(500);
   const from = { x: me.x, y: me.y };
   const since = c.mark;
-  c.send(Op.Quest, P.quest(ent.id, 0));
+  c.send(Op.Quest, P.quest(ent.id, confirm));
   try {
     await c.waitFor((f) => isSelfTeleport(c, f), { timeoutMs: waitMs, since, what: 'teleporte da quest' });
     await sleep(1000); // SendItem e CreateMob do destino
