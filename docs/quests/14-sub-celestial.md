@@ -97,3 +97,22 @@ Depois, o Urnammu troca a classe dessa ficha por 2000 de Fama e outra Sephirot.
 | SC-05 | ✅ (`_DN_NEEDFAME`) | |
 | SC-06 | ✅ | ~~#410~~ corrigida no #411 (parcial) |
 | SC-07 | ✅ (`_SN_NEEDCLASS`) | |
+
+## Situação (2026-10-22, depois do #415)
+
+`npm run quest -- 14` no Railway depois do [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) (deploy `55cbf4a3`): 11 ✅ 2 ❌ 2 ⏸️. SC-01…07 seguem passando. Os casos SC-08…15 são novos e cobrem a Pedra Misteriosa e o caminho ao Urnammu.
+
+- **Pedra Misteriosa 4148:** a troca acontece. `class_master` vira 5, nível/exp vêm da ficha do Sub, `celestial_level` recebe o nível que saiu, a ficha do Celestial vai para `SaveCelestial[0]`, chega `MSG_SetShortSkill` e a pedra some. Mas a **classe ativa não persiste**: depois do relog `class` continua 0 (TK) em vez de 2 (BM). O Go não salva a coluna `class` (`characterSaveToProto` em dbclient/client.go:776, `SaveCharacter` em store_live.go:396). A volta (SC-09) então estacionaria a classe errada na ficha do Sub. [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta. Fora da cidade sai `_NN_OnlyVillage` (notice 42), e no Celestial puro só o SendItem calado, como o legado.
+- **Caminho ao Urnammu:** com o Kefra vivo, `/kefra` leva a (2366,3884) com "O kefra ainda esta vivo, precisa ser derrotado", e o portal do Deserto (2364,3924), alcançado a pé a partir dali, não teleporta. Os casos com o Kefra derrotado ficam ⏸️ pelo `precheck`. O estado do Kefra (`kefra_state`) é global, o tmServer só o lê no boot e ele divide o EXP de todos, então não se semeia. Eles rodam sozinhos quando o mundo tiver o Kefra derrotado. SC-05…07 seguem chegando ao Urnammu pelo `save_x/save_y` e pelo Pergaminho 699, porque não são sobre o caminho.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| SC-01…07 | ✅ (sem regressão) | |
+| SC-08 | ❌ `class` não persiste depois da 4148 | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta |
+| SC-09 | ❌ mesma causa | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta |
+| SC-10 | ✅ `_NN_OnlyVillage` | |
+| SC-11 | ✅ SendItem calado | |
+| SC-12 | ✅ /kefra → cidade de Kefra | |
+| SC-13 | ✅ portal sem teleporte | |
+| SC-14 | ⏸️ Kefra vivo no mundo | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) |
+| SC-15 | ⏸️ Kefra vivo no mundo | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) |

@@ -1,3 +1,5 @@
+**Situação (2026-10-22): reaberto após w2pp-OpenWYD#415 (55cbf4a3), verificado com `npm run quest -- 14`: a Pedra Misteriosa 4148 troca a ficha, mas a classe ativa não é salva (coluna `class` fora do save), SC-08/09 ❌; o `/kefra` e o portal do Deserto com o Kefra vivo batem com o legado (SC-12/13); os casos com o Kefra derrotado (SC-14/15) ficam ⏸️ porque o mundo está com o Kefra vivo. [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta.**
+
 **Situação (2026-10-22): parcialmente corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 14`: criação do Sub, Urnammu e ficha 2 persistida; a Pedra Misteriosa 4148 e o caminho Deserto → Kefra seguem pendentes (#410).**
 
 # 023 — Sub-Celestial ausente: criação pela 5338 e Urnammu
