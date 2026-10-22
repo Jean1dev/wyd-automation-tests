@@ -1,3 +1,5 @@
+**Situação (2026-10-19): corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 09`.**
+
 # 018 — Sephirot: cada mestre de skill entrega a Sephirot da classe seguinte
 
 **Status:** aberto.

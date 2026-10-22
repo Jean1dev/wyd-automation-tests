@@ -99,3 +99,22 @@ Drops (templates em `npc/*`):
 | AR-12 | ✅ | |
 
 Finding: [018](../findings/018-sephirot-classe-deslocada.md).
+
+## Situação (2026-10-22)
+
+Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), com `npm run quest -- 09`: 12 ✅. Cada mestre de skill agora entrega a Sephirot `1759 + Class` do template (Cap.Cavaleiros 1760, Foema_Ancian 1761, Mestre_Archi 1762, ForeLearner 1763), com as 8 Pedras Arch 1744–1751 e os 30M semeados. O Go escolhe a vaga livre antes de apagar as pedras, por isso a Sephirot cai na 1ª vaga já vazia (Carry[12]) e não no Carry[0], como no legado; também não fala `_NN_Sepherot_created`. O efeito é o mesmo. O AR-06 passou a ler o banco com uma conexão só: o papel do banco aceita 5 conexões e o tmServer usa 2, então a consulta aninhada podia esperar para sempre.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| AR-01 | ✅ notice 15, nada muda | |
+| AR-02 | ✅ notice 15, nada muda | |
+| AR-03 | ✅ notice 15, nada muda | |
+| AR-04 | ✅ almas e 10 safiras → 1742 | |
+| AR-05 | ✅ almas e 4131 → 1742 | |
+| AR-06 | ✅ "não pode ser mais refinado" (o legado também recusa) | |
+| AR-07 | ✅ sem resposta, nada muda | |
+| AR-08 | ✅ notice 15, nada muda | |
+| AR-09 | ✅ notice 15, nada muda | |
+| AR-10 | ✅ 1760 | [~~#390~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) corrigida |
+| AR-11 | ✅ 1761 / 1762 / 1763 | [~~#390~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) corrigida |
+| AR-12 | ✅ Arch no slot 1 (master 1, nível 0) | |
