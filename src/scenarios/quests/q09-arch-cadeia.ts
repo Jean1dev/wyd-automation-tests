@@ -60,11 +60,13 @@ interface State {
 
 const live = (c: GameClient): State => ({ coin: c.self!.coin, carry: carryOf(c) });
 
+const savedIn = async (db: Db, ch: string): Promise<State> => ({
+  coin: Number((await db.character(ch)).coin),
+  carry: (await db.items(ch, 'carry')).filter((x) => x.index).map((x) => ({ slot: x.slot, index: x.index, eff: x.eff })),
+});
+
 async function saved(ctx: CaseCtx): Promise<State> {
-  return ctx.query(async (db, ch) => ({
-    coin: Number((await db.character(ch)).coin),
-    carry: (await db.items(ch, 'carry')).filter((x) => x.index).map((x) => ({ slot: x.slot, index: x.index, eff: x.eff })),
-  }));
+  return ctx.query(savedIn);
 }
 
 interface Talk {
@@ -140,9 +142,10 @@ async function refine(ctx: CaseCtx, src: number, dest: Refine['dest']): Promise<
   const frames = c.framesSince(since);
   const after = snap();
   await ctx.relog();
+  // Uma conexão só: o papel do banco aceita 5 e o tmServer usa 2 (uma consulta aninhada pode esperar para sempre).
   const db = await ctx.query(async (d, ch) => {
     const eq = (await d.items(ch, 'equip')).find((x) => x.slot === EQUIP_SLOT.sephirot)?.index ?? 0;
-    return withEq((await saved(ctx)).carry, eq);
+    return withEq((await savedIn(d, ch)).carry, eq);
   });
   const r: Refine = {
     t: new Date().toISOString(),

@@ -185,7 +185,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | AR-03 | Sem safiras | controle | ✅ |  | almas em ordem, 9 safiras: notice 15 (o legado manda _DN_Need_D_Sapphire); nada some no cliente nem no banco depois do relog |
 | AR-04 | Pedra da Imortalidade | feliz | ✅ |  | almas nos slots 0/1 e 10 × 697: as 12 somem e a 1742 entra no slot 0, no cliente e no banco depois do relog |
 | AR-05 | Pacote de safiras | borda | ✅ |  | almas nos slots 0/1 e 1 × 4131: o pacote e as almas somem e a 1742 entra no slot 0, no cliente e no banco depois do relog |
-| AR-06 | Refino da pedra de boss | feliz | ✅ |  | 412 sobre a 1752 no inventário e no Equip[11]: "não pode ser mais refinado", poeira e pedra ficam (cliente e banco). O legado faz o mesmo: EF_NOSANC das 1752–1759 barra o PO/PL (_MSG_UseItem.cpp:188/365) antes do ramo :515 |
+| AR-06 | Refino da pedra de boss | feliz | ✅ |  | 2026-10-22: (08:17 UTC) 412 sobre a 1752 no inventário e no Equip[11]: "não pode ser mais refinado", poeira e pedra ficam (cliente e banco); o legado também recusa (EF_NOSANC, _MSG_UseItem.cpp:188/365) |
 | AR-07 | Sephirot (ask) | controle | ✅ |  | 8 Pedras Arch, 30.001.000 de gold, confirm 0 no Cap.Cavaleiros: sem resposta (o legado só fala _NN_Soul_n_8_Sephera); nada muda no cliente nem no banco |
 | AR-08 | Sephirot sem gold | controle | ✅ |  | 8 Pedras Arch, gold 29.999.999, confirm 1: notice 15 (o legado fala _NN_Need_8_Sephera); pedras e gold iguais no cliente e no banco |
 | AR-09 | Sephirot faltando pedra | controle | ✅ |  | 1744–1750 + outra 1750 (falta a 1751), 30.001.000 de gold, confirm 1: notice 15; nada some no cliente nem no banco |
