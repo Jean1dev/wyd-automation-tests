@@ -106,8 +106,10 @@ Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp
 | TM-04 | ✅ flag 0 → 1 no banco | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
 | TM-05 | ✅ recusa, flag 1 no banco | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
 | TM-06 | ✅ "Todos da cidade agradecem a sua ajuda", flag 1 | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
-| TM-07 | ✅ flag 1 → 2 no 10º kill (2,1 min) | [~~#402~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/402) corrigida; [#412](https://github.com/Jean1dev/w2pp-OpenWYD/issues/412) |
+| TM-07 | ✅ flag 1 → 2 (no 50º kill, 7 min), mensagem em cp1252 | [~~#402~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/402) corrigida; [~~#412~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/412) corrigida no #415 |
 | TM-08 | ✅ Amuleto_Místico 562 (43, 26:10, 5:60), flag 3 | [~~#403~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) corrigida |
 | TM-09 | ✅ Amuleto_de_Prata 554 (43, 60:6, 60:4), flag 3 | [~~#403~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/403) corrigida |
 | TM-10 | ✅ agradecimento, nenhum amuleto, flag 3 | [~~#401~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/401) corrigida |
 | TM-11 | ✅ NoticeReqNotMet 15, flag 0 |  |
+
+Reteste depois do [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) (deploy `55cbf4a3`), com `npm run quest -- 06`: 11 ✅, sem regressão. O TM-07 agora exige que `_NN_Watching_Town_Success` chegue em Windows-1252, decodificado como o cliente: chegou "Quest: Você aprova a proteção da cidade." (19:44 UTC, flag 1 → 2 em 50 kills). A [#412](https://github.com/Jean1dev/w2pp-OpenWYD/issues/412) está corrigida.
