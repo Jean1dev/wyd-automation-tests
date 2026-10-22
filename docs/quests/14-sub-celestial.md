@@ -70,3 +70,21 @@ Depois, o Urnammu troca a classe dessa ficha por 2000 de Fama e outra Sephirot.
 | SC-05 | ✅ (vácuo) | |
 | SC-06 | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) |
 | SC-07 | ✅ (vácuo) | |
+
+## Situação (2026-10-22)
+
+`npm run quest -- 14` no Railway depois do w2pp-OpenWYD#411 (2866b8c): 7 ✅. Os controles deixaram de ser vácuo e agora exigem a recusa do legado. A ficha 2 (`SaveCelestial[1]`) é lida do blob `save_celestial` (`db.saveCelestial`, layout de `world/celestial_sheet.go`), sem semear o blob à mão.
+
+- **Criar o Sub (#410, parte feita):** a 5338 vira o Celestial com Sephirot em `CELESTIALCS` e fala `_NN_My_King_Bless1`. A Sephirot e a pedra somem. A ficha 2 persiste com a classe da Sephirot, nível 0, AC 230, 855 pontos, Str..Con da classe ativa e HP/MP da classe da Sephirot. Sem Sephirot, abaixo do 120 ou já `CELESTIALCS`, a pedra volta só com o SendItem do slot, calado, como o legado.
+- **Urnammu (#410, parte feita):** troca a classe da ficha 2 (BM → HT), cobra 2000 de Fama e tira a Sephirot. As recusas falam `_DN_NEEDFAME` e `_SN_NEEDCLASS`, como o legado. No SC-06 o Sub nasce jogando, pela 5338, antes do Urnammu.
+- **Pendente no #410:** a Pedra Misteriosa 4148 e o caminho até o Urnammu (Deserto → Kefra, `/kefra`). O bot segue chegando pelo `save_x/save_y` e o Pergaminho 699. Nenhum caso desta quest depende disso.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| SC-01 | ✅ (recusa calada do legado) | |
+| SC-02 | ✅ (recusa calada do legado) | |
+| SC-03 | ✅ | ~~#410~~ corrigida no #411 (parcial) |
+| SC-04 | ✅ (recusa calada do legado) | |
+| SC-05 | ✅ (`_DN_NEEDFAME`) | |
+| SC-06 | ✅ | ~~#410~~ corrigida no #411 (parcial) |
+| SC-07 | ✅ (`_SN_NEEDCLASS`) | |

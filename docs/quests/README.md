@@ -47,7 +47,7 @@ Trocas repetíveis, serviços, instâncias com horário, eventos e a quest diár
 | [11](11-alma-mortal-kibita.md) | Alma do Mortal (Kibita) | Mortal | 370+ | Kibita (Armia) | ✅ | `npm run quest -- 11`: 7 ✅ (2026-10-22, sem regressão após o #411) | 10 |
 | [12](12-celestial.md) | Pedra Ideal e Arch → Celestial | Arch | 356+ | Rei; Pedra Ideal por uso | ✅ (recusas da 5338 falam, #413) | `npm run quest -- 12`: 6 ✅ 3 ❌ (2026-10-22, #406/#407 corrigidas no #411; [#413](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413)) | 11 |
 | [13](13-celestial-destravas.md) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e adds do Sub | Celestial | 40–200 | Alquimista_Odin; Pedra da Fúria por uso | ✅ | `npm run quest -- 13`: 10 ✅ (2026-10-22, [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) e [~~#409~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/409) corrigidas no #411) | 12 |
-| [14](14-sub-celestial.md) | Sub-Celestial e troca de subclasse (Urnammu) | Celestial | 121+ | Pedra Ideal por uso; Urnammu | ❌ | `npm run quest -- 14`: 5 ✅ (vácuo) 2 ❌ ([#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410)) | 13 |
+| [14](14-sub-celestial.md) | Sub-Celestial e troca de subclasse (Urnammu) | Celestial | 121+ | Pedra Ideal por uso; Urnammu | ⚠️ (sem a Pedra Misteriosa e o caminho do Urnammu, #410) | `npm run quest -- 14`: 7 ✅ (2026-10-22, [~~#410~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) parcialmente corrigida no #411) | 13 |
 
 A coluna **Prioridade** dá a ordem sugerida para os próximos cenários. Ela pesa duas coisas: o custo para o bot (nível com Poeira de Fada, itens à venda, nada de boss em grupo) e o valor (divergência já suspeita, ou peça da cadeia de progressão).
 
