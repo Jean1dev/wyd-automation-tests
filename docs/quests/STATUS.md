@@ -19,10 +19,10 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 12 | 0 | 0 | 0 |
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 14 | 0 | 0 | 0 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
-| [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 4 | 5 | 0 | 0 |
+| [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 3 | 6 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 5 | 5 | 0 | 0 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 5 | 2 | 0 | 0 |
-| | **Total** | **144** | **132** | **12** | **0** | **0** |
+| | **Total** | **144** | **131** | **13** | **0** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -242,7 +242,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CE-03 | Mortal com as 4 pedras no Rei | borda | ✅ | [~~#406~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/406) corrigida no #411 | 2026-10-22: (09:27 UTC) Mortal exibido 300 com as quatro pedras: Bless1, 5338 no Carry[20], 5335–5337 e Equip[10]/[11] somem, nenhum Arch criado |
 | CE-04 | Celestial com armadura | controle | ❌ | [#413](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) | 2026-10-22: (09:32 UTC) elmo 100 no Equip[1]: a 5338 é recusada e nada muda (banco), mas o Go manda "Remova a armadura antes de usar a Pedra Ideal." + notice 24 no lugar de só _NN_Cant_with_armor — deixou de ser vácuo |
 | CE-05 | Arch abaixo do nível | controle | ❌ | [#413](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) | 2026-10-22: (09:33 UTC) Arch exibido 355: a 5338 é recusada e nada muda (banco), mas o Go fala "Seu Arch precisa atingir o nivel 356…" + notice 15; o legado fica calado — deixou de ser vácuo |
-| CE-06 | Mortal de origem baixo | controle | ✅ |  | Arch exibido 356 com MortalLevel 98: 5338 → notice 39 (vácuo, #407); 1742 → "O Mortal de origem precisa ter atingido o nivel 100"; banco igual |
+| CE-06 | Mortal de origem baixo | controle | ❌ | [#413](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) | 2026-10-22: (09:34 UTC) MortalLevel 98: a 5338 é recusada e nada muda (banco), mas o Go fala "O Mortal de origem precisa ter atingido o nivel 100…" + notice 15; o legado fica calado — deixou de ser vácuo |
 | CE-07 | Celestial | feliz | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) | Arch exibido 356 sem armadura, MortalLevel 99: 5338 → notice 39, nada muda; a 1742 é que vira Celestial (nível 0, Cythera 3500, capa 3199, SpecialBonus 855) |
 | CE-08 | 1742 com o botão direito | borda | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) | Arch exibido 356 com a 1742: SendArchEffect, vira Celestial (master 3, Cythera 3500, capa 3199); no legado a 1742 não faz nada |
 | CE-09 | Faixa da Cythera | borda | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) | Arch exibido 400, Cristal 4: 5338 → notice 39, nada muda; pela 1742 o Go dá Cythera 3502 e ArchLevel 5 (faixa certa) |
