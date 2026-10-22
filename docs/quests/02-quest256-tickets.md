@@ -126,3 +126,7 @@ Reteste no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp
 | QST-12 | ✅ (informativo, só no Go) |  |
 | QST-13 | ✅ (informativo, só no Go) |  |
 | QST-14 | ✅ |  |
+
+## Situação (2026-10-22)
+
+Regressão no Railway depois do [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) (deploy `55cbf4a3`), com `npm run quest -- 02`: 14 ✅, sem mudança. O #389 passou a mandar `MSG_StartTime` a cada segundo nas arenas da Quest 256: no QST-05 chegaram 460 quadros nos 461 s de espera até o reset (20:17:54 UTC), e nenhum caso foi afetado. A nota do QST-05 agora conta esses quadros.

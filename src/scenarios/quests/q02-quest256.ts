@@ -260,7 +260,7 @@ const quest: QuestSpec = {
         return {
           pass, evidence: { handin: summary(t), reset: r },
           note: pass
-            ? `mandado para (${r.kicked!.to.x},${r.kicked!.to.y}) ${r.kicked!.secondsAfterEntry} s depois da entrada (${r.kicked!.t.slice(11, 19)} UTC)`
+            ? `mandado para (${r.kicked!.to.x},${r.kicked!.to.y}) ${r.kicked!.secondsAfterEntry} s depois da entrada (${r.kicked!.t.slice(11, 19)} UTC), ${r.startTimeFrames} MSG_StartTime na espera (#389)`
             : `12 min na arena sem reset (final ${r.final.x},${r.final.y})`,
         };
       },
