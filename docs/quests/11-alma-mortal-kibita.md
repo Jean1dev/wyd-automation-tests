@@ -77,3 +77,11 @@ A Kibita, em Armia, destrava a "Alma do Mortal": o bit 30 do `LearnedSkill`, com
 | KB-05 | ✅ | |
 | KB-06 | ✅ | |
 | KB-07 | ✅ | |
+
+## Situação (2026-10-22)
+
+Reteste de regressão no Railway depois do [w2pp-OpenWYD#411](https://github.com/Jean1dev/w2pp-OpenWYD/pull/411) (`main` `2866b8c`), que não mexeu nesta quest: `npm run quest -- 11` deu 7 ✅, o mesmo de 2026-10-18. A Kibita consome a 5334, liga o bit 30 do LearnedSkill e troca a capa (3194 no clan 7, 3196 sem reino); tudo continua salvo depois do relog. Os controles seguem recusando com notice 15 sem mudar nada.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| KB-01 – KB-07 | ✅ | |
