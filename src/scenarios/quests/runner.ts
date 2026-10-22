@@ -54,6 +54,11 @@ export interface QuestCase {
   charClass?: number;
   /** Motivo, quando o caso não dá para rodar (vira status "bloqueado" sem conectar). */
   blocked?: string;
+  /**
+   * Bloqueio que depende do estado do mundo (ex.: Kefra vivo/derrotado), lido no banco antes de criar a conta:
+   * devolve o motivo para virar ⏸️ ou undefined para rodar.
+   */
+  precheck?: (db: Db) => Promise<string | undefined>;
   /** Pré-condição gravada no banco antes de entrar no mundo. */
   seed?: (db: Db, char: string) => Promise<void>;
   run?: (ctx: CaseCtx) => Promise<CaseResult>;
@@ -104,6 +109,15 @@ export async function runCase(quest: QuestSpec, k: QuestCase, dir: string, log: 
   }
 
   const db = loadDbConfig();
+  const pre = k.precheck ? await withDb(db, (d) => k.precheck!(d)) : undefined;
+  if (pre) {
+    rep.status = 'bloqueado';
+    rep.note = pre;
+    rep.finishedAt = new Date().toISOString();
+    clog.info('resultado', { id: k.id, status: rep.status, note: rep.note });
+    writeReportFile(join(dir, k.id), rep, clog);
+    return rep;
+  }
   let c: GameClient | undefined;
   let timer: NodeJS.Timeout | undefined;
   try {

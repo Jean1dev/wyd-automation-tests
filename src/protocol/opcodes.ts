@@ -18,6 +18,7 @@ export const Op = {
   ReqShopList: 0x027b, // clicar num NPC mercador
   Buy: 0x0379, // comprar do NPC (C↔S; o eco S→C traz o gold novo)
   UseItem: 0x0373, // usar item do inventário (clique direito)
+  SetShortSkill: 0x0378, // barras de skill (S→C: Skill1[4] + Skill2[16]; Pedra Misteriosa, _MSG_UseItem.cpp:3256)
   Quest: 0x028b, // falar com NPC de quest (MSG_STANDARDPARM2)
   TradingItem: 0x0376, // mover item entre inventário e equipamento (C↔S; o servidor ecoa)
   Sell: 0x037a, // vender item do inventário ao NPC (C↔S)

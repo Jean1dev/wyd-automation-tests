@@ -15,7 +15,8 @@ Depois, o Urnammu troca a classe dessa ficha por 2000 de Fama e outra Sephirot.
 | Criar o Sub | uso da 5338 (Vol 211) | `ClassMaster == CELESTIAL`; armazenado ≥ 120; Sephirot 1760–1763 no Equip[11] | `ClassMaster = CELESTIALCS`; `SaveCelestial[1]` montado com a classe = Sephirot − 1760; a Sephirot e uma 5338 somem; fala `_NN_My_King_Bless1` |
 | Trocar a subclasse | `MSG_Quest` no Urnammu `[4235]` (3232,1685), Merchant 76 | `CELESTIALCS`; Sephirot no Equip[11]; `Fame ≥ 2000` | Fama −2000; a classe do `SaveCelestial[1]` muda; atributos base da classe; devolve até 55 por Special; barras de skill limpas; `LearnedSkill &= 0xFF000000`; a Sephirot some |
 
-- A alternância entre Celestial e Sub-Celestial (`SCELESTIAL`) usa a Pedra Misteriosa, que é tratada no Go fora do caminho de equipar (`item.go`). Ela não faz parte desta quest.
+- A alternância entre Celestial e Sub-Celestial (`SCELESTIAL`) usa a Pedra Misteriosa 4148 (`_MSG_UseItem.cpp:3186-3289`; Go `usePedraMisteriosa`, `handler/subcelestial.go`, w2pp-OpenWYD#415): casos SC-08…SC-11.
+- O caminho ao Urnammu (Continente desconhecido) é o portal do Deserto (2364,3924) → (3250,1703) e o `/kefra` (`GetFunc.cpp:1006-1010`, `_MSG_MessageWhisper.cpp:836-850`), os dois dependentes do Kefra derrotado: casos SC-12…SC-15. O estado do Kefra é global (tabela `kefra_state`), o tmServer só o lê no boot e ele divide o EXP de todos por 2 quando vivo: não se semeia. Os casos do estado que o mundo não tem viram ⏸️ (`precheck` do runner).
 - Os adds do Sub-Celestial estão no arquivo 13.
 
 ## Fluxo
@@ -39,6 +40,14 @@ Depois, o Urnammu troca a classe dessa ficha por 2000 de Fama e outra Sephirot.
 | SC-05 | Urnammu sem Fama | `CELESTIALCS`, Sephirot, `Fame` < 2000 | `MSG_Quest` no Urnammu | recusa; nada muda | controle |
 | SC-06 | Trocar a subclasse | `CELESTIALCS`, Sephirot 1763 (HT), `Fame` ≥ 2000 | `MSG_Quest` no Urnammu | Fama −2000; a ficha 2 vira HT, com os pontos devolvidos; a Sephirot some | feliz |
 | SC-07 | Urnammu para Celestial puro | `CELESTIAL` | `MSG_Quest` no Urnammu | recusa | controle |
+| SC-08 | Pedra Misteriosa: Celestial → Sub | `CELESTIALCS` (Sub criado pela 5338), em Armia, 4148 no inventário | `MSG_UseItem` na 4148 | `SCELESTIAL`; a ficha do Sub vira a ativa (classe, nível, exp, atributos, skills, Soul); a do Celestial vai para `SaveCelestial[0]`; `CelestialLevel` = nível que saiu; `MSG_SetShortSkill`; rosto = MortalFace + 5 + classe; a 4148 some | feliz |
+| SC-09 | Pedra Misteriosa: Sub → Celestial | `SCELESTIAL` (depois do SC-08), em Armia | `MSG_UseItem` na 4148 | `CELESTIALCS`; volta a ficha do Celestial de antes; a do Sub vai para `SaveCelestial[1]`; `SubCelestialLevel` = nível que saiu | feliz |
+| SC-10 | Pedra Misteriosa fora da cidade | `CELESTIALCS` no Continente desconhecido | `MSG_UseItem` na 4148 | `_NN_OnlyVillage` + SendItem da pedra; nada muda | controle |
+| SC-11 | Pedra Misteriosa no Celestial puro | `CELESTIAL` em Armia | `MSG_UseItem` na 4148 | só o SendItem da pedra, calado; nada muda | controle |
+| SC-12 | /kefra com o Kefra vivo | Kefra vivo no mundo | `/kefra` | (2365..2367,3884..3886) + "O kefra ainda esta vivo, precisa ser derrotado" | controle |
+| SC-13 | Portal do Deserto com o Kefra vivo | Kefra vivo; `/kefra` e a pé até (2364,3924) | `MSG_ReqTeleport` | sem teleporte (`KefraLive == 0`, GetFunc.cpp:1006) | controle |
+| SC-14 | /kefra com o Kefra derrotado | Kefra derrotado; `CELESTIALCS`, Fama 100 | `/kefra` e `MSG_Quest` no Urnammu | (3250..3252,1695..1697) + `_NN_TP_KEFRA`; o Urnammu responde (`_DN_NEEDFAME`) | feliz |
+| SC-15 | Portal do Deserto com o Kefra derrotado | Kefra derrotado; no tile (2364,3924) | `MSG_ReqTeleport` | (3250..3252,1703..1705) | feliz |
 
 ## Viabilidade do bot
 

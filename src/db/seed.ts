@@ -122,6 +122,13 @@ export class Db {
     return (r.rows[0].save_celestial as Buffer | null) ?? Buffer.alloc(0);
   }
 
+  /** Ciclo do Kefra (tabela kefra_state, store/kefra_state.go). O tmServer só o lê no boot: não semeie. Só leitura. */
+  async kefraState(): Promise<{ defeated: boolean; nextSpawnUnix: number; revision: number } | undefined> {
+    const r = await this.c.query('SELECT defeated, next_spawn_unix, revision FROM kefra_state WHERE id = 1');
+    const x = r.rows[0];
+    return x ? { defeated: !!x.defeated, nextSpawnUnix: Number(x.next_spawn_unix), revision: Number(x.revision) } : undefined;
+  }
+
   async items(name: string, kind: ItemKind): Promise<ItemRow[]> {
     return this.itemsById((await this.character(name)).id, kind);
   }

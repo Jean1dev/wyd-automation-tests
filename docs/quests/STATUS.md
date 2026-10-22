@@ -279,6 +279,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | SC-05 | Urnammu sem Fama | controle | ✅ |  | 2026-10-22: (09:55 UTC) CELESTIALCS, Fama 100: pergaminho 699 até (3235,1688), Urnammu → "Você precisa de 2000 pontos de fama." (_DN_NEEDFAME); banco igual — deixou de ser vácuo |
 | SC-06 | Trocar a subclasse | feliz | ✅ | [~~#410~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) corrigida no #411 (parcial: 4148 e caminho do Urnammu pendentes) | 2026-10-22: (09:56 UTC) Sub criado jogando (5338, ficha 2 BM) e depois Sephirot 1763 + Fama 2500 pelo banco: Urnammu → Bless1, Fama 500, Sephirot some, ficha 2 classe 3 (HT), SID 8/4/7/6, 855 pontos; continua master 4 |
 | SC-07 | Urnammu para Celestial puro | controle | ✅ |  | 2026-10-22: (09:56 UTC) Celestial puro, Sephirot, Fama 2500: Urnammu → "Somente personagem Sub Celestial." (_SN_NEEDCLASS); banco igual — deixou de ser vácuo |
+SC-08 | Pedra Misteriosa: Celestial → Sub | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta | 2026-10-22: (19:56 UTC) Sub BM criado pela 5338; 4148 em Armia: SendItem da pedra, Equip[0], MSG_SetShortSkill; banco: master 5, nível 0, exp 0, celestial_level 120, ficha 0 = TK nível 120 — mas `class` fica 0 (TK) em vez de 2 (BM): o Go não salva a classe (dbclient characterSaveToProto, store SaveCharacter) |
 
 ## Issues
 
