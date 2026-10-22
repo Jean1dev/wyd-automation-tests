@@ -106,11 +106,11 @@ A evolução do Arch para Celestial tem dois passos:
 
 ## Situação (2026-10-22)
 
-Reteste depois do w2pp-OpenWYD#411 (2866b8c): `npm run quest -- 12` no Railway, 6 ✅ 3 ❌.
+Reteste depois do w2pp-OpenWYD#411 (2866b8c): `npm run quest -- 12` no Railway, 6 ✅ 3 ❌. Depois do w2pp-OpenWYD#414 (deploy 55cbf4a3, 19:12 UTC): **9 ✅ 0 ❌**.
 
 - **Rei (#406 corrigida):** com 1742/Sephirot equipadas e as quatro Pedras Secretas, o Rei dá a 5338 (Arch ou Mortal), consome o Equip[10]/[11] e não cria o Arch.
 - **Celestial (#407 corrigida):** a 5338 transforma o Arch (nível 0, Cythera pela faixa, capa 3199, SpecialBonus 855, só a Alma); a 1742 não faz nada.
-- **Controles:** deixaram de ser vácuo e agora exigem a resposta do legado. A recusa e o estado estão certos, mas o Go fala onde o legado fica calado (nível < 355, MortalLevel < 99) e, com armadura, manda outro texto e o notice 24 no lugar de só _NN_Cant_with_armor ([#413](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413)).
+- **Controles:** deixaram de ser vácuo e agora exigem a resposta do legado. A recusa e o estado estão certos, mas o Go fala onde o legado fica calado (nível < 355, MortalLevel < 99) e, com armadura, manda outro texto e o notice 24 no lugar de só _NN_Cant_with_armor ([#413](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413)). Corrigido no #414: com armadura vem só _NN_Cant_with_armor, sem notice; nível < 355 e MortalLevel < 99 sem armadura ficam calados.
 - A Cythera 3501/3502 do Go continua exigindo Cristal 4 (#327); o CE-09 semeia Cristal 4.
 
 | ID | Resultado | Issue |

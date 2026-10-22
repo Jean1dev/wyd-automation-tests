@@ -1,6 +1,8 @@
 # 024 — Pedra Ideal 5338: as recusas do Arch falam onde o legado fica calado
 
-**Status:** aberto.
+**Situação (2026-10-22): corrigido em w2pp-OpenWYD#414 (deploy 55cbf4a3), verificado com `npm run quest -- 12`.**
+
+**Status:** corrigido.
 **Issue:** [Jean1dev/w2pp-OpenWYD#413](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) (aberta no reteste do w2pp-OpenWYD#411)
 **Cenário:** `npm run quest -- 12 --case CE-04 --case CE-05 --case CE-06` (casos em [docs/quests/12-celestial.md](../quests/12-celestial.md))
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `2866b8c`)
