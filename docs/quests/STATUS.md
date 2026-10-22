@@ -19,10 +19,10 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [09](#09) | Cadeia do Arch: almas, Pedra da Imortalidade, Pedras Arch, Sephirot e Rei | 12 | 12 | 0 | 0 | 0 |
 | [10](#10) | Destravas do Arch: Lindy 355/370 e Cristais | 14 | 14 | 0 | 0 | 0 |
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
-| [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 5 | 4 | 0 | 0 |
+| [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 6 | 3 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 5 | 5 | 0 | 0 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 7 | 5 | 2 | 0 | 0 |
-| | **Total** | **144** | **133** | **11** | **0** | **0** |
+| | **Total** | **144** | **134** | **10** | **0** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -245,7 +245,7 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | CE-06 | Mortal de origem baixo | controle | ❌ | [#413](https://github.com/Jean1dev/w2pp-OpenWYD/issues/413) | 2026-10-22: (09:34 UTC) MortalLevel 98: a 5338 é recusada e nada muda (banco), mas o Go fala "O Mortal de origem precisa ter atingido o nivel 100…" + notice 15; o legado fica calado — deixou de ser vácuo |
 | CE-07 | Celestial | feliz | ✅ | [~~#407~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) corrigida no #411 | 2026-10-22: (09:30 UTC) Arch exibido 356 pela 5338: SendArchEffect, a 5338 some; banco e cliente: Celestial nível 0, Cythera 3500, capa 3199, SpecialBonus 855, só a Alma, ArchLevel 1 |
 | CE-08 | 1742 com o botão direito | borda | ✅ | [~~#407~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) corrigida no #411 | 2026-10-22: (09:31 UTC) Arch exibido 356 com a 1742: sem SendArchEffect, nada muda (banco), como o legado |
-| CE-09 | Faixa da Cythera | borda | ❌ | [#407](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) | Arch exibido 400, Cristal 4: 5338 → notice 39, nada muda; pela 1742 o Go dá Cythera 3502 e ArchLevel 5 (faixa certa) |
+| CE-09 | Faixa da Cythera | borda | ✅ | [~~#407~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/407) corrigida no #411 | 2026-10-22: (09:32 UTC) Arch exibido 400 (Cristal 4, #327) pela 5338: Celestial nível 0, Cythera 3502, ArchLevel 5, capa 3199 |
 
 <a id="13"></a>
 ## 13 — Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial
