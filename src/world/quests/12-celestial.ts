@@ -1,16 +1,15 @@
 // Quest 12 — Pedra Ideal e Arch → Celestial (docs/quests/12-celestial.md).
-// NPCs, itens e faixas como estão no servidor (Jean1dev/w2pp-OpenWYD, main b392705).
+// NPCs, itens e faixas como estão no servidor (Jean1dev/w2pp-OpenWYD, main 2866b8c, depois do #411).
 //
 // - Pedra Ideal no Rei: _MSG_Quest.cpp:769-840 — com confirm ≠ 0, Equip[10] = 1742, Equip[11] ∈
 //   1760–1763 e as quatro Pedras Secretas no inventário, a 5334 vira 5338, as 5335–5337 somem e o
-//   Equip[10]/[11] ficam vazios, ANTES da criação do Arch (:842). Qualquer ClassMaster. No Go, kingQuest
-//   (handler/misc.go:262) não tem esse ramo (comentário em misc.go:514-524): o Mortal ≥ 299 vai direto
-//   para o kingArch e o Arch cai no serviço de capa.
+//   Equip[10]/[11] ficam vazios, ANTES da criação do Arch (:842). Qualquer ClassMaster. No Go,
+//   kingPedraIdeal (handler/misc.go:334, #406).
 // - Celestial: _MSG_UseItem.cpp:3003-3159 (Vol 211 = 5338 Pedra_Ideal no ItemList). Arch com
-//   CurrentScore.Level ≥ 355, Equip[1] vazio e QuestInfo.Arch.MortalLevel ≥ 99. No Go, useIdealStone
-//   (handler/item.go:1525) é disparado pela 1742 (Pedra_da_Imortalidade, item.go:509, issue #222);
-//   a 5338 não tem caso. A Cythera do Go também exige Cristal 4 para a 3501/3502 (penalidade pedida
-//   no #327); o legado olha só o nível.
+//   CurrentScore.Level ≥ 355, Equip[1] vazio e QuestInfo.Arch.MortalLevel ≥ 99; recusas caladas, só a
+//   armadura fala _NN_Cant_with_armor. No Go, useIdealStone (handler/item.go:1537) pela 5338 (#407);
+//   as recusas falam (#413). A Cythera do Go também exige Cristal 4 para a 3501/3502 (penalidade
+//   pedida no #327); o legado olha só o nível.
 // - Rei: Rei_Glantuar (cenário 5, src/world/arch.ts); Clan 0 passa em qualquer rei.
 import type { NpcSpec } from '../../bot/npc.ts';
 import { NPC as ARCH_NPC, ROUTE_TO_KING } from '../arch.ts';
