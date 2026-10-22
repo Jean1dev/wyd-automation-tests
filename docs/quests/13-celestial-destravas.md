@@ -73,3 +73,24 @@ As runas vêm da **Pista de Runas** (Uxmal), uma quest secundária que fica fora
 | CL-08 | ❌ | [#408](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) |
 | CL-09 | ✅ (registro: o comando pula a quest) | |
 | CL-10 | ❌ | [#409](https://github.com/Jean1dev/w2pp-OpenWYD/issues/409) |
+
+## Situação (2026-10-22)
+
+`npm run quest -- 13` no Railway depois do w2pp-OpenWYD#411 (2866b8c): 10 ✅, sem regressão. Os casos agora semeiam e conferem as colunas novas `celestial_reset` e `celestial_add120`.
+
+- **Pedra da Fúria (~~#408~~ corrigida):** a 3020 faz o Lv90 (3502, Fama −500), a Arcana (3507 no Equip[1], `Circle` 1, as quatro Pedras Secretas somem) e o Reset (exp −20M, `celestial_reset` +1). Com `Circle` 1 herdado ela cai no Reset, como o legado. Sem Fama a recusa é a do legado: só o SendItem do slot, calado (o CL-04 deixou de ser vácuo). A chance é 114/115.
+- **Adds do Sub (~~#409~~ corrigida):** o Sub-Celestial que sobe para o 120 por kill ganha EF_AC 30 / EF_HP 40 no diadema (cliente e banco) e `celestial_add120` 1.
+- O Lv40 do Odin e o `/destravar40` seguem como antes.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| CL-01 | ✅ | |
+| CL-02 | ✅ | |
+| CL-03 | ✅ | |
+| CL-04 | ✅ (recusa calada do legado) | ~~#408~~ corrigida no #411 |
+| CL-05 | ✅ | ~~#408~~ corrigida no #411 |
+| CL-06 | ✅ | ~~#408~~ corrigida no #411 |
+| CL-07 | ✅ | ~~#408~~ corrigida no #411 |
+| CL-08 | ✅ | ~~#408~~ corrigida no #411 |
+| CL-09 | ✅ (registro: o comando pula a quest) | |
+| CL-10 | ✅ | ~~#409~~ corrigida no #411 |
