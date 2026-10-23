@@ -14,6 +14,7 @@ export const Op = {
   AttackOne: 0x039d,
   AttackTwo: 0x039e,
   Restart: 0x0289, // reviver após a morte
+  NoViewMob: 0x0369, // pede o CreateMob de uma entidade que o cliente não conhece
   ApplyBonus: 0x0277, // distribuir ponto de atributo
   ReqShopList: 0x027b, // clicar num NPC mercador
   Buy: 0x0379, // comprar do NPC (C↔S; o eco S→C traz o gold novo)

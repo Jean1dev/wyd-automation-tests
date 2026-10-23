@@ -205,7 +205,8 @@ async function main(): Promise<number> {
   }
 
   // Banco primeiro: saturado, desiste em até 5 min sem gastar contas nem logins.
-  await openDb(loadDbConfig());
+  // --no-db: só para casos que funcionam sem seed (o caso decide o que fazer sem ele).
+  if (!argv.includes('--no-db')) await openDb(loadDbConfig());
   const dir = reportDirFor(`quest-${qid}`);
   const reports: CaseReport[] = [];
   for (const k of cases) reports.push(await runCase(quest, k, dir, log));
