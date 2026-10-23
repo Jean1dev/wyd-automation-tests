@@ -18,6 +18,7 @@
     "scenario:trade": "tsx src/scenarios/playerTrade.ts",
     "scenario:quest256": "tsx src/scenarios/quest256Chain.ts",
     "scenario:arch": "tsx src/scenarios/archCreation.ts",
+    "scenario:guild": "tsx src/scenarios/guild.ts",
     "scenario:foema-black": "tsx src/scenarios/skillTree.ts --tree negra",
     "scenario:foema-white": "tsx src/scenarios/skillTree.ts --tree branca",
     "scenario:foema-special": "tsx src/scenarios/skillTree.ts --tree especial",

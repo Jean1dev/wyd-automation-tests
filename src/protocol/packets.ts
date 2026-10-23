@@ -244,6 +244,14 @@ export function quest(npcId: number, confirm = 0): Buffer {
   return b;
 }
 
+/** _MSG_InviteGuild (0x03D5), MSG_STANDARDPARM2: TargetID i32@0 (id do alvo), InviteType i32@4 (0 = membro; 1..3 só o líder). */
+export function inviteGuild(targetId: number, inviteType = 0): Buffer {
+  const b = Buffer.alloc(8);
+  b.writeInt32LE(targetId, 0);
+  b.writeInt32LE(inviteType, 4);
+  return b;
+}
+
 /**
  * MSG_TradingItem (0x0376), 8 B: DestPlace u8@0 DestSlot u8@1 SrcPlace u8@2 SrcSlot u8@3
  * WarpID i32@4 (messages.go MsgTradingItemBody). O servidor troca os dois slots e ecoa o corpo.
@@ -512,12 +520,15 @@ export interface MobView {
   maxHp: number;
   hp: number;
   merchant: number;
+  /** Guild u16@118 e GuildMemberType u8@120 (= GuildLevel: 0 membro, 6..8 sub-líder, 9 líder). */
+  guild: number;
+  guildLevel: number;
   isPlayer: boolean;
 }
 
 /**
- * CreateMob (0x0364), 220 B: PosX@0 PosY@2 MobID@4 Name[16]@6, Score@124
- * {Level@0 Merchant@12 MaxHp@16 Hp@24}.
+ * CreateMob (0x0364), 220 B: PosX@0 PosY@2 MobID@4 Name[16]@6, Guild u16@118, GuildMemberType u8@120,
+ * Score@124 {Level@0 Merchant@12 MaxHp@16 Hp@24} (protocol/createmob.go EncodeCreateMobBody).
  */
 export function parseCreateMob(body: Buffer): MobView {
   const id = body.readUInt16LE(4);
@@ -532,6 +543,8 @@ export function parseCreateMob(body: Buffer): MobView {
     merchant: body[score + 12],
     maxHp: body.readInt32LE(score + 16),
     hp: body.readInt32LE(score + 24),
+    guild: body.readUInt16LE(118),
+    guildLevel: body[120],
     isPlayer: id < MAX_USER,
   };
 }

@@ -28,6 +28,8 @@ export const CHAR_COLUMNS = [
   // Migrações 0028–0033 (w2pp-OpenWYD#411).
   'newbie_quest', 'molar_gargula', 'pilula_orc', 'celestial_reset',
   'celestial_add120', 'celestial_add150', 'celestial_add180', 'celestial_add200', 'celestial_level', 'sub_celestial_level',
+  // Guilda (0001_init; o save de logout grava por cima, store_live.go).
+  'guild_id', 'guild_level',
 ] as const;
 export type CharColumn = (typeof CHAR_COLUMNS)[number];
 export type CharRow = Record<CharColumn, number> & { id: number; account_id: number; slot: number; name: string };
@@ -41,6 +43,14 @@ const OWNER: Record<ItemKind, string> = { equip: 'char_equip', carry: 'char_carr
 export interface SeedItem {
   index: number;
   eff?: [number, number][];
+}
+
+export interface GuildRow {
+  id: number;
+  name: string;
+  clan: number;
+  citizen: number;
+  members: { name: string; level: number }[];
 }
 
 export interface ItemRow {
@@ -127,6 +137,14 @@ export class Db {
     const r = await this.c.query('SELECT defeated, next_spawn_unix, revision FROM kefra_state WHERE id = 1');
     const x = r.rows[0];
     return x ? { defeated: !!x.defeated, nextSpawnUnix: Number(x.next_spawn_unix), revision: Number(x.revision) } : undefined;
+  }
+
+  /** Guilda pelo nome (tabelas guild e guild_member, migração 0012); undefined se não existe. Só leitura. */
+  async guild(name: string): Promise<GuildRow | undefined> {
+    const g = await this.c.query('SELECT id, name, clan, citizen FROM guild WHERE name = $1', [name]);
+    if (!g.rows[0]) return undefined;
+    const m = await this.c.query('SELECT name, guild_level FROM guild_member WHERE guild_id = $1 ORDER BY name', [g.rows[0].id]);
+    return { ...g.rows[0], members: m.rows.map((r) => ({ name: r.name as string, level: Number(r.guild_level) })) } as GuildRow;
   }
 
   async items(name: string, kind: ItemKind): Promise<ItemRow[]> {

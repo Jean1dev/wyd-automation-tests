@@ -3,6 +3,11 @@ import * as P from '../../src/protocol/packets.ts';
 
 // Tamanhos e offsets conferidos contra tmserver/internal/protocol/*.go (corpo = pacote − 12).
 describe('builders C→S', () => {
+  it('InviteGuild: TargetID@0, InviteType@4', () => {
+    expect([...P.inviteGuild(17)]).toEqual([17, 0, 0, 0, 0, 0, 0, 0]);
+    expect(P.inviteGuild(300, 2).readInt32LE(4)).toBe(2);
+  });
+
   it('AccountLogin: 104 B, senha@0, conta@12, versão@80', () => {
     const b = P.accountLogin('conta', 'senha123', 12000);
     expect(b.length).toBe(104);
@@ -180,7 +185,13 @@ describe('parsers S→C', () => {
     b.writeInt16LE(2120, 0); b.writeInt16LE(2020, 2); b.writeUInt16LE(1500, 4);
     b.write('Porco', 6, 'latin1');
     b.writeInt32LE(3, 124); b.writeInt32LE(2, 124 + 4); b.writeInt32LE(80, 124 + 16); b.writeInt32LE(80, 124 + 24);
-    expect(P.parseCreateMob(b)).toMatchObject({ id: 1500, name: 'Porco', x: 2120, y: 2020, level: 3, ac: 2, hp: 80, merchant: 0, isPlayer: false });
+    expect(P.parseCreateMob(b)).toMatchObject({ id: 1500, name: 'Porco', x: 2120, y: 2020, level: 3, ac: 2, hp: 80, merchant: 0, guild: 0, guildLevel: 0, isPlayer: false });
+  });
+
+  it('CreateMob: Guild u16@118, GuildMemberType u8@120', () => {
+    const b = Buffer.alloc(220);
+    b.writeUInt16LE(42, 4); b.writeUInt16LE(4097, 118); b[120] = 6;
+    expect(P.parseCreateMob(b)).toMatchObject({ id: 42, guild: 4097, guildLevel: 6, isPlayer: true });
   });
 
   it('SELCHAR: rosto do slot em Equip[4][16]@272 (128 B por slot)', () => {
