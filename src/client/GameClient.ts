@@ -60,6 +60,9 @@ export interface SelfState {
   /** Pontos de atributo livres; undefined até o servidor mandar um UpdateEtc. */
   scoreBonus?: number;
   coin: number;
+  /** Guilda e cargo do último CreateMob do próprio personagem (undefined até o servidor mandar um). */
+  guild?: number;
+  guildLevel?: number;
   /** Inventário (Carry[64]) do CNFCharacterLogin, atualizado a cada SendItem e UpdateCarry. */
   carry: P.Item[];
   /** Equipamento (Equip[16]) do CNFCharacterLogin, atualizado a cada SendItem. */
@@ -290,6 +293,7 @@ export class GameClient extends EventEmitter {
           const m = P.parseCreateMob(b);
           if (me && m.id === me.clientId) {
             me.x = m.x; me.y = m.y;
+            me.guild = m.guild; me.guildLevel = m.guildLevel;
           } else {
             this.mobs.set(m.id, { ...m, seenAt: f.at });
           }

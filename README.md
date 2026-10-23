@@ -663,6 +663,40 @@ Execuções de 2026-10-17 entre 22:10 e 23:30 UTC:
   - o controle de MP da Carga procurava mob a −1 tile;
   - o HP do Possuído não levava em conta o EF_HPADD +5% do equipamento inicial do TK.
 
+## Cenário 12 — Guilda
+
+`npm run scenario:guild` (exige `WYD_DATABASE_URL` no `.env`; as contas do `.env` não são usadas)
+
+1. Cria quatro contas novas no portal, com um personagem em cada:
+   - L: líder, 300M;
+   - S: membro que vira sub-líder, 10M;
+   - R: recruta do sub-líder, sem gold;
+   - X: controles, 50M.
+2. Com os personagens na seleção, grava pelo banco Clan 7, cidadania e o gold. Depois os quatro entram juntos em Armia.
+3. Roda os casos de [docs/guild.md](docs/guild.md) em série. Um caso que reprova bloqueia os que dependem dele:
+   - criar a guilda (`/create`) e o controle sem gold;
+   - o líder recruta S (`_MSG_InviteGuild` 0x03D5) e o controle do membro que tenta recrutar;
+   - o líder promove S a sub-líder (`/subcreate`);
+   - o sub-líder recruta R;
+   - relogin;
+   - `/nick`.
+
+Cada passo confere o CreateMob do alvo (guilda e cargo), o gold de quem pagou (UpdateEtc) e as tabelas `guild`/`guild_member`.
+
+Códigos de saída: `0` passou · `1` algum caso reprovou · `3` erro de execução. Cada execução grava `reports/<data>-guild/` com `report.json` (casos, frames de cada passo, gold e linhas do banco) e `events.jsonl`.
+
+### Situação (2026-10-22): 6 ✅, GD-07 e GD-08 sem resultado
+
+Execução no Railway em 2026-10-22, de 21:55 a 22:09 UTC. Não gerou `report.json`: o processo foi encerrado por falta de memória da máquina de teste durante o relogin do GD-07.
+
+| Caso | Resultado |
+|---|---|
+| GD-01 a GD-06 | ✅ (criar, recrutar, promover a sub-líder, sub-líder recruta, e os dois controles) |
+| GD-07 persistência | ⏹️ interrompido no relogin |
+| GD-08 `/nick` | não rodou |
+
+GD-08 é suspeita de leitura, sem issue ainda. O `/create` do Go não chama `SetGuildName` (`guild.go:108-117`; só o boot, `guild_state.go:81`). O legado registra o nome na hora (`_MSG_MessageWhisper.cpp:248-292`, `BASE_InitializeGuildName`).
+
 ## Mapa das quests principais
 
 [docs/quests/README.md](docs/quests/README.md) mapeia as quests principais do jogo para os próximos cenários. São 14 grupos, do novato ao Sub-Celestial. Para cada quest, o mapa traz:

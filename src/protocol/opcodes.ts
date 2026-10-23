@@ -28,6 +28,7 @@ export const Op = {
   QuitTrade: 0x0384, // cancela a troca (C↔S; S→C também fecha a janela depois da troca)
   SendReqParty: 0x037f, // convite de grupo (C↔S; o servidor repassa ao convidado)
   AcceptParty: 0x03ab, // aceitar o convite de grupo
+  InviteGuild: 0x03d5, // recrutar para a guilda (MSG_STANDARDPARM2: TargetID, InviteType); entra direto, sem aceite
   GetItem: 0x0270, // pegar item do chão (ItemID = id do chão + 10000)
   DropItem: 0x0272, // largar item do inventário no chão
   CombineItemLindy: 0x02c3, // combinação da Lindy (MSG_CombineItem: Item[8] + InvenPos[8])
