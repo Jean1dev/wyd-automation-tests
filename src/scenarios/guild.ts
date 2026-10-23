@@ -23,7 +23,7 @@ import { randomFrom, signupAccount } from '../bot/account.ts';
 import { createGuild, GUILD_LEADER, GUILD_MEMBER, type GuildAttempt, inviteToGuild, isSubLeader, nickInfo, NOTICE_NOT_ENOUGH_COIN, promoteSub } from '../bot/guild.ts';
 import { createCharacter, enterWorld, login } from '../bot/session.ts';
 import { sleep } from '../bot/util.ts';
-import { type Db, loadDbConfig, withDb } from '../db/seed.ts';
+import { type Db, loadDbConfig, openDb, withDb } from '../db/seed.ts';
 import { newCharName, reportDirFor, runMain, writeReportFile } from './common.ts';
 
 const SCENARIO = 'guild';
@@ -137,6 +137,9 @@ async function main(): Promise<number> {
   };
 
   try {
+    // Banco primeiro: saturado, desiste em até 5 min sem gastar contas nem logins.
+    await openDb(db);
+    log.info('banco conectado');
     // Em série: quatro POST /api/signup simultâneos levam 503 do portal.
     const base: Omit<Player, 'c'>[] = [];
     for (const role of ['L', 'S', 'R', 'X'] as const) base.push(await setup(role));

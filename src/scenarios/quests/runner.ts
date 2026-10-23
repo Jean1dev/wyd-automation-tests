@@ -17,7 +17,7 @@ import type { BotConfig } from '../../config.ts';
 import { signupAccount } from '../../bot/account.ts';
 import { createCharacter, enterWorld, login } from '../../bot/session.ts';
 import { sleep } from '../../bot/util.ts';
-import { type Db, type DbConfig, loadDbConfig, withDb } from '../../db/seed.ts';
+import { type Db, type DbConfig, loadDbConfig, openDb, withDb } from '../../db/seed.ts';
 import { newCharName, reportDirFor, runMain, writeReportFile } from '../common.ts';
 import { QUESTS } from './index.ts';
 
@@ -204,6 +204,8 @@ async function main(): Promise<number> {
     return 3;
   }
 
+  // Banco primeiro: saturado, desiste em até 5 min sem gastar contas nem logins.
+  await openDb(loadDbConfig());
   const dir = reportDirFor(`quest-${qid}`);
   const reports: CaseReport[] = [];
   for (const k of cases) reports.push(await runCase(quest, k, dir, log));
