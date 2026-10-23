@@ -31,6 +31,7 @@
     "scenario:tk-1": "tsx src/scenarios/skillTree.ts --tree tk-1",
     "scenario:tk-2": "tsx src/scenarios/skillTree.ts --tree tk-2",
     "scenario:tk-3": "tsx src/scenarios/skillTree.ts --tree tk-3",
+    "scenario:coliseu": "tsx src/scenarios/quests/runner.ts 90",
     "quest": "tsx src/scenarios/quests/runner.ts",
     "quest:status": "tsx scripts/quest-status.ts"
   },

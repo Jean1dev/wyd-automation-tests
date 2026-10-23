@@ -133,6 +133,14 @@ export class GameClient extends EventEmitter {
     this.closed = true;
   }
 
+  /** Para de ler o socket por `ms` (simula um cliente lento: o servidor acumula na fila de saída). */
+  pauseReading(ms: number): void {
+    const sock = this.sock;
+    if (!sock || this.isClosed) return;
+    sock.pause();
+    setTimeout(() => { if (!sock.destroyed) sock.resume(); }, ms).unref();
+  }
+
   /** Último seq recebido; use como `since` para não perder respostas que chegam rápido. */
   get mark(): number {
     return this.seq;

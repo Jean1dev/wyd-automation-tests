@@ -708,6 +708,31 @@ O Postgres do db-server (Clever Cloud) limita conexões por role, e o db-server 
 - **Uma conexão por processo:** a conexão fica aberta até o fim, e só o primeiro uso pode esperar. Antes, cada leitura ou escrita abria e fechava uma conexão e disputava a vaga de novo.
 - **Não rode dois cenários com banco ao mesmo tempo**, nem em worktrees diferentes.
 
+## Cenário 13 — Caminhada até os Coliseus (Azran)
+
+`npm run scenario:coliseu` (casos `CL-01` a `CL-05` em [q90-coliseu.ts](src/scenarios/quests/q90-coliseu.ts); usa o runner das quests e precisa de `WYD_DATABASE_URL`). Com `--no-db`, roda com personagem nível 1 sem seed e salta do Jardim até Azran; serve para quando o banco está saturado.
+
+Cada caso pega o Grifo até o Jardim dos Deuses, segue até Azran (2510,1730), caminha até o centro do Coliseu (2630,1726) e volta. O `report.json` registra:
+- onde e quando a conexão caiu;
+- os frames por segundo antes da queda, por opcode;
+- o máximo de mobs à vista e os avisos do servidor.
+
+As variantes:
+- CL-01: passos de 4 tiles;
+- CL-02: passos de 1 tile;
+- CL-03: leitura pausada por 2 s;
+- CL-04: `MSG_NoViewMob` como o cliente legado;
+- CL-05: passos de 7 tiles, como o cliente com velocidade 6.
+
+### Situação (2026-10-23): queda confirmada
+
+| Caso | Resultado |
+|---|---|
+| CL-01 a CL-04 | ✅ ida e volta sem queda; até 159 mobs à vista, pico de 61 CreateMob/s |
+| CL-05 passos de 7 tiles | ❌ caiu em (2603,1726) às 14:02:25Z: `session out queue full; dropping connection` (200 CreateMob na sessão) |
+
+Também reproduzido com o cliente real (`testeup`, 13:58:33Z). O Go limita a fila de saída a 64 frames; o legado aceitava 128 KB. [finding 026](docs/findings/026-coliseu-fila-de-saida.md), [w2pp-OpenWYD#419](https://github.com/Jean1dev/w2pp-OpenWYD/issues/419).
+
 ## Mapa das quests principais
 
 [docs/quests/README.md](docs/quests/README.md) mapeia as quests principais do jogo para os próximos cenários. São 14 grupos, do novato ao Sub-Celestial. Para cada quest, o mapa traz:

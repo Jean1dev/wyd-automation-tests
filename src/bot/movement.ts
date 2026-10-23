@@ -43,17 +43,19 @@ export function stepTo(c: GameClient, tx: number, ty: number): void {
 export interface WalkOptions {
   /** Interrompe a caminhada (ex.: teleporte forçado pelo servidor). Retorna true para parar. */
   abort?: () => boolean;
+  /** Tiles por passo (padrão 4). */
+  stepTiles?: number;
 }
 
 /** Anda até (tx, ty) em passos. Retorna false se foi interrompido. */
 export async function walkTo(c: GameClient, tx: number, ty: number, opts: WalkOptions = {}): Promise<boolean> {
-  for (let guard = 0; guard < 400; guard++) {
+  for (let guard = 0; guard < 2000; guard++) {
     const me = c.self!;
     const dx = tx - me.x, dy = ty - me.y;
     const d = Math.max(Math.abs(dx), Math.abs(dy));
     if (d === 0) return true;
     if (opts.abort?.()) return false;
-    const n = Math.min(STEP_TILES, d);
+    const n = Math.min(opts.stepTiles ?? STEP_TILES, d);
     const nx = me.x + Math.round((dx * n) / d);
     const ny = me.y + Math.round((dy * n) / d);
     stepTo(c, nx, ny);
