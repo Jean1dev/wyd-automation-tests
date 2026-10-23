@@ -685,17 +685,17 @@ Cada passo confere o CreateMob do alvo (guilda e cargo), o gold de quem pagou (U
 
 Códigos de saída: `0` passou · `1` algum caso reprovou · `3` erro de execução. Cada execução grava `reports/<data>-guild/` com `report.json` (casos, frames de cada passo, gold e linhas do banco) e `events.jsonl`.
 
-### Situação (2026-10-22): 6 ✅, GD-07 e GD-08 sem resultado
+### Situação (2026-10-23): 7 ✅ 1 ❌
 
-Execução no Railway em 2026-10-22, de 21:55 a 22:09 UTC. Não gerou `report.json`: o processo foi encerrado por falta de memória da máquina de teste durante o relogin do GD-07.
+Execução no Railway em 2026-10-23, de 12:13 a 12:20 UTC (`reports/2026-10-23T12-00-30-412Z-guild`).
 
 | Caso | Resultado |
 |---|---|
-| GD-01 a GD-06 | ✅ (criar, recrutar, promover a sub-líder, sub-líder recruta, e os dois controles) |
-| GD-07 persistência | ⏹️ interrompido no relogin |
-| GD-08 `/nick` | não rodou |
+| GD-01 a GD-06 | ✅ criar, recrutar, promover a sub-líder, sub-líder recruta, e os dois controles |
+| GD-07 persistência | ✅ banco e CreateMob conferem depois do relogin |
+| GD-08 `/nick` | ❌ "Guild #3 (nao registrada)": o `/create` do Go não chama `SetGuildName`. [finding 025](docs/findings/025-guilda-nome-nao-registrado.md), [w2pp-OpenWYD#417](https://github.com/Jean1dev/w2pp-OpenWYD/issues/417) |
 
-GD-08 é suspeita de leitura, sem issue ainda. O `/create` do Go não chama `SetGuildName` (`guild.go:108-117`; só o boot, `guild_state.go:81`). O legado registra o nome na hora (`_MSG_MessageWhisper.cpp:248-292`, `BASE_InitializeGuildName`).
+O MessagePanel vazio onde o legado manda `_SN_CREATEGUILD`/`_SN_JOINGUILD` só fica registrado; não reprova caso.
 
 ## Mapa das quests principais
 
