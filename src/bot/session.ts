@@ -16,6 +16,9 @@ export interface Credentials {
 
 export class SessionError extends Error {}
 
+/** NoticeDBError do tmServer Go (handler/notice.go, iota 8): a chamada ao banco falhou. */
+const NOTICE_DB_ERROR = 8;
+
 /** Conecta e loga na conta até a tela de seleção (com PIN verificado). */
 export async function login(creds: Credentials, log: Logger): Promise<GameClient> {
   const c = new GameClient(log.child('net'));
@@ -31,8 +34,14 @@ export async function login(creds: Credentials, log: Logger): Promise<GameClient
       await sleep(3000);
       continue;
     }
-    c.close();
     const notice = r.header.type === Op.MessageBoxOk && r.body.length >= 4 ? r.body.readInt32LE(0) : undefined;
+    if (notice === NOTICE_DB_ERROR && attempt < 10) {
+      // O Postgres do db-server recusa conexões ("too many connections") por alguns minutos.
+      log.warn('login: erro de banco no servidor; tentando de novo', { attempt });
+      await sleep(30_000);
+      continue;
+    }
+    c.close();
     throw new SessionError(`login recusado: ${opName(r.header.type)}${notice !== undefined ? ` (notice ${notice})` : ''}`);
   }
   log.info('login ok', { account: creds.account, chars: c.selChars.map((s) => `${s.slot}:${s.name}`) });
