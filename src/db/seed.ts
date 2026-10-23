@@ -59,31 +59,63 @@ export interface ItemRow {
   eff: [number, number][];
 }
 
-/** Uma conexão por uso; fecha sempre (a máquina de teste tem pouca memória). */
+/** Espera máxima por uma conexão com o banco saturado (WYD_DB_WAIT_MS, padrão 5 min). */
+const DB_WAIT_MS = Number(process.env.WYD_DB_WAIT_MS ?? 300_000);
+const DB_RETRY_MS = 15_000;
+
+export class DbBusyError extends Error {}
+
+let shared: Promise<pg.Client> | undefined;
+
+/**
+ * Uma conexão por processo, aberta no primeiro uso e mantida até o fim (o runMain encerra com
+ * process.exit). O Postgres do db-server tem poucas conexões por role: abrir e fechar a cada uso
+ * disputava a vaga a cada passo; com a conexão presa, só o primeiro uso pode esperar.
+ */
 export async function withDb<T>(cfg: DbConfig, fn: (db: Db) => Promise<T>): Promise<T> {
-  const client = await connectWithRetry(cfg);
-  try {
-    return await fn(new Db(client));
-  } finally {
-    await client.end();
-  }
+  return fn(new Db(await sharedClient(cfg)));
+}
+
+/** Abre (ou espera) a conexão já, antes de gastar contas e logins; falha em até WYD_DB_WAIT_MS. */
+export async function openDb(cfg: DbConfig): Promise<void> {
+  await sharedClient(cfg);
+}
+
+function sharedClient(cfg: DbConfig): Promise<pg.Client> {
+  shared ??= connectWithRetry(cfg).then(
+    (c) => {
+      // Conexão caída: o próximo uso abre outra.
+      c.on('error', () => { shared = undefined; });
+      c.on('end', () => { shared = undefined; });
+      return c;
+    },
+    (e) => {
+      shared = undefined;
+      throw e;
+    },
+  );
+  return shared;
 }
 
 /**
- * O Postgres do db-server tem poucas conexões e às vezes recusa com "too many connections"
- * (53300) por alguns minutos; espera e tenta de novo até ~25 min antes de desistir.
+ * O Postgres do db-server às vezes recusa com "too many connections" (53300) por minutos; tenta
+ * de novo a cada 15 s até WYD_DB_WAIT_MS e então desiste com DbBusyError.
  */
 async function connectWithRetry(cfg: DbConfig): Promise<pg.Client> {
+  const deadline = Date.now() + DB_WAIT_MS;
   for (let attempt = 1; ; attempt++) {
-    const client = new pg.Client({ connectionString: cfg.url });
+    const client = new pg.Client({ connectionString: cfg.url, connectionTimeoutMillis: 15_000 });
     try {
       await client.connect();
       return client;
     } catch (e) {
       await client.end().catch(() => {});
       const full = (e as { code?: string }).code === '53300' || /too many connections/i.test(String(e));
-      if (!full || attempt >= 50) throw e;
-      await new Promise((r) => setTimeout(r, 30_000));
+      if (!full) throw e;
+      if (Date.now() + DB_RETRY_MS > deadline) {
+        throw new DbBusyError(`banco saturado: "too many connections" (53300) por ${Math.round(DB_WAIT_MS / 1000)} s, ${attempt} tentativas`);
+      }
+      await new Promise((r) => setTimeout(r, DB_RETRY_MS));
     }
   }
 }

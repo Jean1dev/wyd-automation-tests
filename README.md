@@ -685,17 +685,28 @@ Cada passo confere o CreateMob do alvo (guilda e cargo), o gold de quem pagou (U
 
 Códigos de saída: `0` passou · `1` algum caso reprovou · `3` erro de execução. Cada execução grava `reports/<data>-guild/` com `report.json` (casos, frames de cada passo, gold e linhas do banco) e `events.jsonl`.
 
-### Situação (2026-10-23): 7 ✅ 1 ❌
+### Situação (2026-10-23): GD-08 corrigido, reteste pendente
 
-Execução no Railway em 2026-10-23, de 12:13 a 12:20 UTC (`reports/2026-10-23T12-00-30-412Z-guild`).
+Execução no Railway em 2026-10-23, de 12:13 a 12:20 UTC (`reports/2026-10-23T12-00-30-412Z-guild`): 7 ✅ 1 ❌.
 
 | Caso | Resultado |
 |---|---|
 | GD-01 a GD-06 | ✅ criar, recrutar, promover a sub-líder, sub-líder recruta, e os dois controles |
 | GD-07 persistência | ✅ banco e CreateMob conferem depois do relogin |
-| GD-08 `/nick` | ❌ "Guild #3 (nao registrada)": o `/create` do Go não chama `SetGuildName`. [finding 025](docs/findings/025-guilda-nome-nao-registrado.md), [w2pp-OpenWYD#417](https://github.com/Jean1dev/w2pp-OpenWYD/issues/417) |
+| GD-08 `/nick` | ❌ "Guild #3 (nao registrada)": o `/create` do Go não chamava `SetGuildName`. [finding 025](docs/findings/025-guilda-nome-nao-registrado.md), [w2pp-OpenWYD#417](https://github.com/Jean1dev/w2pp-OpenWYD/issues/417) |
+
+Reteste depois de [w2pp-OpenWYD#418](https://github.com/Jean1dev/w2pp-OpenWYD/pull/418) (deploy `4b661398`, 12:44 UTC): nenhum caso rodou. Entre 12:44 e 13:10 UTC (`reports/2026-10-23T12-44-56-589Z-guild`), o seed não conseguiu conexão com o banco ("too many connections") e desistiu antes do primeiro personagem. O GD-08 segue sem reteste.
 
 O MessagePanel vazio onde o legado manda `_SN_CREATEGUILD`/`_SN_JOINGUILD` só fica registrado; não reprova caso.
+
+### Banco saturado
+
+O Postgres do db-server (Clever Cloud) limita conexões por role, e o db-server (pgxpool), o portal e os bots de todas as sessões disputam as mesmas vagas. Quando lota, a conexão nova recebe 53300 "too many connections", e o tm-server responde notice 8 (`NoticeDBError`) no login. Isso já foi investigado em [w2pp-OpenWYD#256](https://github.com/Jean1dev/w2pp-OpenWYD/issues/256): sem `MaxConns`, cada pool pgx usa `max(4, NumCPU)`, até 8 no Railway, e db-server e api-server dividem o mesmo role. A issue foi fechada como *not planned*, porque o banco é provisório e vai ser trocado. Por isso o contorno fica no bot:
+
+- **Espera máxima de 5 min** (`WYD_DB_WAIT_MS`, padrão 300000). O bot tenta a cada 15 s e então sai com código 3 e "banco saturado". O login também tenta de novo a cada 30 s com notice 8, por no máximo ~5 min.
+- **Banco primeiro:** o cenário e o `npm run quest` abrem a conexão antes de criar contas ou logar. Se o banco estiver lotado, desistem sem gastar nada.
+- **Uma conexão por processo:** a conexão fica aberta até o fim, e só o primeiro uso pode esperar. Antes, cada leitura ou escrita abria e fechava uma conexão e disputava a vaga de novo.
+- **Não rode dois cenários com banco ao mesmo tempo**, nem em worktrees diferentes.
 
 ## Mapa das quests principais
 
