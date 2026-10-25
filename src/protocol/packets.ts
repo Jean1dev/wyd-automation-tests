@@ -312,6 +312,35 @@ export function acceptParty(leaderId: number, leaderName: string): Buffer {
   return b;
 }
 
+/** MSG_STANDARDPARM (4 B): Parm i32@0. */
+export function standardParm(parm: number): Buffer {
+  const b = Buffer.alloc(4);
+  b.writeInt32LE(parm, 0);
+  return b;
+}
+
+/** MSG_STANDARDPARM2 (8 B): Parm1 i32@0, Parm2 i32@4. */
+export function standardParm2(parm1: number, parm2: number): Buffer {
+  const b = Buffer.alloc(8);
+  b.writeInt32LE(parm1, 0);
+  b.writeInt32LE(parm2, 4);
+  return b;
+}
+
+/** MSG_PKMode (0x0399): a tecla K (_MSG_PKMode.cpp, handler/pkmode.go). */
+export function pkMode(on: boolean): Buffer {
+  return standardParm(on ? 1 : 0);
+}
+
+/** Parm2 do MSG_ReqRanking: 0 = pedido de duelo 1x1, 4 = aceite (_MSG_ReqRanking.cpp). */
+export const DUEL_REQUEST = 0;
+export const DUEL_ACCEPT = 4;
+
+/** MSG_ReqRanking (0x039F): Parm1 = o alvo (pedido) ou quem desafiou (aceite), Parm2 = DUEL_REQUEST/DUEL_ACCEPT. */
+export function reqRanking(targetId: number, kind: number): Buffer {
+  return standardParm2(targetId, kind);
+}
+
 /** MSG_MessageChat (0x0333): String[96]. */
 export function chat(text: string): Buffer {
   const b = Buffer.alloc(96);
@@ -524,11 +553,13 @@ export interface MobView {
   guild: number;
   guildLevel: number;
   isPlayer: boolean;
+  /** Jogador: MobName[12] = ponto caos visível (75 neutro, 0 = Guilty/nick vermelho; GetFunc.cpp GetCreateMob, pkmode.go). */
+  pkPoint?: number;
 }
 
 /**
- * CreateMob (0x0364), 220 B: PosX@0 PosY@2 MobID@4 Name[16]@6, Guild u16@118, GuildMemberType u8@120,
- * Score@124 {Level@0 Merchant@12 MaxHp@16 Hp@24} (protocol/createmob.go EncodeCreateMobBody).
+ * CreateMob (0x0364), 220 B: PosX@0 PosY@2 MobID@4 Name[16]@6 (jogador: Name[12], PKPoint@18), Guild u16@118,
+ * GuildMemberType u8@120, Score@124 {Level@0 Merchant@12 MaxHp@16 Hp@24} (protocol/createmob.go EncodeCreateMobBody).
  */
 export function parseCreateMob(body: Buffer): MobView {
   const id = body.readUInt16LE(4);
@@ -546,7 +577,28 @@ export function parseCreateMob(body: Buffer): MobView {
     guild: body.readUInt16LE(118),
     guildLevel: body[120],
     isPlayer: id < MAX_USER,
+    pkPoint: id < MAX_USER ? body[6 + 12] : undefined,
   };
+}
+
+/** MSG_STANDARDPARM (PKInfo, StartTime, …): Parm i32@0. */
+export function parseStandardParm(body: Buffer): number {
+  return body.length >= 4 ? body.readInt32LE(0) : -1;
+}
+
+/** MSG_STANDARDPARM2 (ReqRanking, …): Parm1 i32@0, Parm2 i32@4. */
+export function parseStandardParm2(body: Buffer): { parm1: number; parm2: number } {
+  return { parm1: body.readInt32LE(0), parm2: body.readInt32LE(4) };
+}
+
+/** MSG_EnvEffect (0x03A2), 12 B: X1 Y1 X2 Y2 Effect EffectParm (u16; messages.go EncodeEnvEffect). */
+export function parseEnvEffect(body: Buffer): { x1: number; y1: number; x2: number; y2: number; effect: number; parm: number } {
+  return { x1: body.readUInt16LE(0), y1: body.readUInt16LE(2), x2: body.readUInt16LE(4), y2: body.readUInt16LE(6), effect: body.readUInt16LE(8), parm: body.readUInt16LE(10) };
+}
+
+/** SetHpDam (0x018A): Hp@0 Dam@4 (o muro do duelo no legado, Server.cpp SendDamage). */
+export function parseHpDam(body: Buffer): { hp: number; dam: number } {
+  return { hp: body.readInt32LE(0), dam: body.length >= 8 ? body.readInt32LE(4) : 0 };
 }
 
 export function parseAction(body: Buffer): ActionBody {

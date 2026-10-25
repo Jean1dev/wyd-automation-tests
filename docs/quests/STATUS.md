@@ -22,7 +22,8 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 9 | 0 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 10 | 0 | 0 | 0 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 15 | 11 | 2 | 2 | 0 |
-| | **Total** | **152** | **148** | **2** | **2** | **0** |
+| [15](#15) | PvP em Armia e duelo 1x1 | 20 | 5 | 15 | 0 | 0 |
+| | **Total** | **172** | **153** | **17** | **2** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -280,6 +281,10 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | SC-06 | Trocar a subclasse | feliz | ✅ | [~~#410~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) corrigida no #411 (criação e Urnammu ok; reaberta após o #415 pela classe da 4148, SC-08/09) | 2026-10-22: (09:56 UTC) Sub criado jogando (5338, ficha 2 BM) e depois Sephirot 1763 + Fama 2500 pelo banco: Urnammu → Bless1, Fama 500, Sephirot some, ficha 2 classe 3 (HT), SID 8/4/7/6, 855 pontos; continua master 4 |
 | SC-07 | Urnammu para Celestial puro | controle | ✅ |  | 2026-10-22: (09:56 UTC) Celestial puro, Sephirot, Fama 2500: Urnammu → "Somente personagem Sub Celestial." (_SN_NEEDCLASS); banco igual — deixou de ser vácuo |
 | SC-08 | Pedra Misteriosa: Celestial → Sub | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta | 2026-10-22: (19:56 UTC) Sub BM criado pela 5338; 4148 em Armia: SendItem da pedra, Equip[0], MSG_SetShortSkill; banco: master 5, nível 0, exp 0, celestial_level 120, ficha 0 = TK nível 120 — mas `class` fica 0 (TK) em vez de 2 (BM): o Go não salva a classe (dbclient characterSaveToProto, store SaveCharacter) |
+| [#420](https://github.com/Jean1dev/w2pp-OpenWYD/issues/420) | bug | O golpe em alvo sem K passa nos tiles `0x40` (arena de Armia) e na arena do duelo: `combat.go:223` exige só o K do atacante e não lê o AttributeMap; `dueling()` libera tudo | PV-02, DU-03 | [026](../findings/026-pvp-golpe-tile-0x40.md) |
+| [#421](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421) | bug | Na cidade e na arena, Guilty, perda de EXP e perda de CP seguem a regra do campo (`combat.go:231/313`, `pvpkilled.go:50`) | PV-04, PV-05, PV-06 | [027](../findings/027-pvp-cidade-regra-de-campo.md) |
+| [#422](https://github.com/Jean1dev/w2pp-OpenWYD/issues/422) | enhancement | Textos do CantKill (`combat.go:232`) e da troca com K (`pkmode.go:153`) divergem do legado | PV-08, PV-09 | [028](../findings/028-pk-textos.md) |
+| [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | bug | Duelo 1x1 (`duel.go`): dura 121 s com `StartTime` 121; sem `_NN_Battle_Started`; resultado e recusas por código, sem os textos com nomes; perdedor com HP 0; pedido recusado na cidade; empate sem teleporte (leitura) | DU-02, DU-04…08, DU-10, DU-11 | [029](../findings/029-duelo-paridade.md) |
 | SC-09 | Pedra Misteriosa: Sub → Celestial | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta | 2026-10-22: (19:56 UTC) a ida já volta do relog com `class` 0 em vez de 2 (mesma causa do SC-08), então a volta estacionaria a classe errada em SaveCelestial[1] |
 | SC-10 | Pedra Misteriosa fora da cidade | controle | ✅ |  | 2026-10-22: (19:59 UTC) CELESTIALCS no Continente desconhecido (3235,1688): notice 42 (_NN_OnlyVillage) + SendItem [22:4148]; banco igual |
 | SC-11 | Pedra Misteriosa no Celestial puro | controle | ✅ |  | 2026-10-22: (19:59 UTC) Celestial em Armia: só o SendItem [22:4148], calado; banco igual |
@@ -287,6 +292,34 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | SC-13 | Portal do Deserto com o Kefra vivo | controle | ✅ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-22: (19:58 UTC) /kefra → (2365,3885), a pé até o tile (2365,3925) e ReqTeleport: sem teleporte, como o legado com KefraLive 0 |
 | SC-14 | /kefra com o Kefra derrotado | feliz | ⏸️ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-22: Kefra vivo no mundo (kefra_state); o estado é global, só lido no boot do tmServer e divide o EXP de todos — não se semeia. O caso roda sozinho (precheck) quando o Kefra estiver derrotado |
 | SC-15 | Portal do Deserto com o Kefra derrotado | feliz | ⏸️ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-22: Kefra vivo no mundo (mesmo motivo do SC-14) |
+
+<a id="15"></a>
+## 15 — PvP em Armia e duelo 1x1
+
+[Casos de uso](15-pvp-duelo.md) · `npm run quest -- 15`
+
+| ID | Caso | Tipo | Resultado | Issue | Nota |
+|---|---|---|---|---|---|
+| PV-01 | Arena de Armia, ninguém com K | controle | ✅ |  | 2026-10-25: (17:58 UTC, reconfirmado depois do rebase) 5 golpes com dano 0, HP de B 945; ninguém Guilty |
+| PV-02 | Arena de Armia, A com K e B sem | controle | ❌ | [#420](https://github.com/Jean1dev/w2pp-OpenWYD/issues/420) | 2026-10-23: (11:17 UTC) em (2135,2147), tile `0x40`, o golpe entra: 771 (945→253) e 778 (253→0); o legado zera o golpe contra alvo sem K |
+| PV-03 | Arena de Armia, os dois com K | feliz | ✅ |  | 2026-10-23: (11:18 UTC) o golpe tira HP: 808 (945→137) e 748 (137→0); PKInfo 1 para os dois |
+| PV-04 | Arena de Armia, sem Guilty | controle | ❌ | [#421](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421) | 2026-10-23: (11:18 UTC) o golpe entra, mas A e B chegam com `MobName[12]` 0 (Guilty) dentro da cidade |
+| PV-05 | Arena de Armia, A mata B | feliz | ❌ | [#421](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421) | 2026-10-23: (11:19 UTC) B perde EXP (590000 → 588678, "Voce perdeu 1322 pontos de experiencia") e não recebe "Na arena não há perda de EXP"; `pk_point` de A fica 75 (B já estava Guilty); B revive em Armia |
+| PV-06 | Praça de Armia | borda | ❌ | [#421](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421) | 2026-10-23: (11:20 UTC) em (2110,2095), tile `0x01`, o golpe entra (certo), mas A e B ficam Guilty dentro da cidade |
+| PV-07 | Campo | feliz | ✅ |  | 2026-10-23: (14:41 UTC) em (2185,2100) o golpe entra (824, 824) e os dois ficam Guilty |
+| PV-08 | Campo, A sem CP | borda | ❌ | [#422](https://github.com/Jean1dev/w2pp-OpenWYD/issues/422) | 2026-10-23: (11:45 UTC) dano 0 (certo), mas o texto é "Voce nao pode atacar este jogador (Pontos Caos: -65)" em vez do `_DN_CantKillUser` |
+| PV-09 | K com troca aberta | borda | ❌ | [#422](https://github.com/Jean1dev/w2pp-OpenWYD/issues/422) | 2026-10-23: (11:59 UTC) a troca fecha para os dois e o PKInfo vem 1/0 (certo), mas sem `_NN_Cant_trade_pkmode` |
+| DU-01 | Declaração | feliz | ✅ |  | 2026-10-23: (14:42 UTC) B recebe 0x039F com Parm1 = A e Parm2 = 0 |
+| DU-02 | Aceite | feliz | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-23: (12:44 UTC) A em (147,4044) e B em (189,4044) (certo), mas `StartTime` 121 em vez de 240 e sem "Batalha entre … foi iniciada" |
+| DU-03 | Duelo, alvo sem K | borda | ❌ | [#420](https://github.com/Jean1dev/w2pp-OpenWYD/issues/420) | 2026-10-23: (14:43 UTC) A com K acerta B sem K: 763 (945→182) e 816 (261→0) |
+| DU-04 | Duelo, A mata B | feliz | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-23: (14:44 UTC) os dois vão para (2572,1752) e B não perde EXP (certo), mas o resultado vem como avisos 35/36, sem os nomes, e B sai com HP 0 em vez de 1 |
+| DU-05 | B sai do jogo | controle | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-23: (14:45 UTC) A vence e vai para (2572,1752) (certo), com aviso 35 e sem o texto do vencedor |
+| DU-06 | B sai da caixa | controle | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-25: (17:51 UTC) A vence e vai para (2572,1752) (certo), com aviso 35 e sem o texto do vencedor |
+| DU-07 | Arena ocupada | controle | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-23: (14:52 UTC) o pedido de C chega a D e ninguém é teleportado (certo), mas vem o aviso 34 em vez de "Há uma partida em progresso." |
+| DU-08 | Duelo dentro de Armia | borda | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-25: (17:51 UTC) na praça, o pedido é recusado com o aviso 38 (`NoticeDuelInCity`) e não chega a B; o legado não olha a posição |
+| DU-09 | Aceite forjado | controle | ✅ |  | 2026-10-25: (17:52 UTC, reconfirmado às 17:58 depois do rebase) sem pedido, o aceite com Parm1 = A não leva ninguém para a arena |
+| DU-10 | Fim do tempo | borda | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-25: (17:53–17:56 UTC) empate em 121 s em vez de cerca de 242 s, com o aviso 37 em vez de "Este jogo com … finalizou em empate"; o muro (`EnvEffect` 32) aparece |
+| DU-11 | Alvo com sussurro bloqueado | controle | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-25: (17:52 UTC) sem repasse (certo), mas A recebe o aviso 12 em vez de "Não é possível sussurrar para este jogador." |
 
 ## Issues
 
@@ -325,10 +358,11 @@ Diferenças sem efeito no estado, só anotadas: na segunda Pílula (07) o Go ree
 ## Próximos passos
 
 1. **Corrigir no servidor:** salvar a coluna `class` (#410). Depois, `npm run quest -- 14 --case SC-08` e `--case SC-09`.
-2. **Kefra derrotado:** SC-14/SC-15 só rodam com o Kefra morto no mundo (matar o boss em grupo, ou um jeito de teste de mudar `kefra_state` com o tmServer recarregando). Rodar `npm run quest -- 14` de novo quando isso existir.
-3. **Casos que faltam:** o Clan pela guilda do líder (#400), quando for portado.
-4. **Infraestrutura de teste:** o papel do banco aceita só 5 conexões (o tmServer usa 2). Não aninhe `ctx.query` e não mate o runner no meio, porque a conexão fica presa no proxy do Railway.
-5. **Pendências de teste sem issue:**
+2. **PvP e duelo (15):** depois das correções do #420, #421, #422 e #424, rodar `npm run quest -- 15`. São 20 casos, e o DU-10 leva cerca de 5 min.
+3. **Kefra derrotado:** SC-14/SC-15 só rodam com o Kefra morto no mundo (matar o boss em grupo, ou um jeito de teste de mudar `kefra_state` com o tmServer recarregando). Rodar `npm run quest -- 14` de novo quando isso existir.
+4. **Casos que faltam:** o Clan pela guilda do líder (#400), quando for portado.
+5. **Infraestrutura de teste:** o papel do banco aceita só 5 conexões (o tmServer usa 2). Não aninhe `ctx.query` e não mate o runner no meio, porque a conexão fica presa no proxy do Railway.
+6. **Pendências de teste sem issue:**
    - Na Poeira de Fada, o Celestial usaria a curva de exp mortal (`item.go:877`, contra `_MSG_UseItem.cpp:1017`). Isso vem só da leitura do código e não foi medido.
    - O Pergaminho_Selado 4127 e a Fama ainda não têm fonte mapeada no jogo; nos casos, vêm do banco.
    - As arenas dos passos 2 a 5 da Quest 256 só estão cobertas pelo cenário 4. Os troféus delas não foram rodados.

@@ -253,3 +253,43 @@ describe('troca entre jogadores (MsgTradeBody)', () => {
     expect(P.sameItem(vela, undefined)).toBe(false);
   });
 });
+
+// PvP e duelo (suíte 15): STANDARDPARM/2, PKMode, ReqRanking, PKPoint do CreateMob, EnvEffect, SetHpDam.
+describe('PvP e duelo', () => {
+  it('PKMode: STANDARDPARM 4 B, Parm 1/0', () => {
+    expect([...P.pkMode(true)]).toEqual([1, 0, 0, 0]);
+    expect(P.parseStandardParm(P.pkMode(false))).toBe(0);
+  });
+
+  it('ReqRanking: STANDARDPARM2 8 B, Parm1 = alvo, Parm2 = 0 pedido / 4 aceite (_MSG_ReqRanking.cpp)', () => {
+    const b = P.reqRanking(321, P.DUEL_ACCEPT);
+    expect(b.length).toBe(8);
+    expect(P.parseStandardParm2(b)).toEqual({ parm1: 321, parm2: 4 });
+    expect(P.parseStandardParm2(P.reqRanking(7, P.DUEL_REQUEST)).parm2).toBe(0);
+  });
+
+  it('CreateMob de jogador: MobName[12]@18 = ponto caos; mob não tem', () => {
+    const b = Buffer.alloc(220);
+    b.writeUInt16LE(42, 4);
+    b.write('fulano', 6, 'latin1');
+    b[18] = 0;
+    expect(P.parseCreateMob(b)).toMatchObject({ id: 42, name: 'fulano', isPlayer: true, pkPoint: 0 });
+    b[18] = 75;
+    expect(P.parseCreateMob(b).pkPoint).toBe(75);
+    b.writeUInt16LE(2000, 4);
+    expect(P.parseCreateMob(b).pkPoint).toBeUndefined();
+  });
+
+  it('EnvEffect: 12 B de u16 (messages.go EncodeEnvEffect)', () => {
+    const b = Buffer.alloc(12);
+    [142, 4007, 168, 4018, 32, 0].forEach((v, i) => b.writeUInt16LE(v, i * 2));
+    expect(P.parseEnvEffect(b)).toEqual({ x1: 142, y1: 4007, x2: 168, y2: 4018, effect: 32, parm: 0 });
+  });
+
+  it('SetHpDam: Hp@0 Dam@4', () => {
+    const b = Buffer.alloc(8);
+    b.writeInt32LE(1, 0);
+    b.writeInt32LE(2000, 4);
+    expect(P.parseHpDam(b)).toEqual({ hp: 1, dam: 2000 });
+  });
+});
