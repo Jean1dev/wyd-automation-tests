@@ -1,6 +1,6 @@
 # 027 — PvP em cidade/arena: Guilty, perda de EXP e CP seguem a regra do campo
 
-**Status:** aberto.
+**Situação (2026-10-25): corrigido em w2pp-OpenWYD#425 (deploy 66102a6b), verificado com `npm run quest -- 15`.**
 **Issue:** [Jean1dev/w2pp-OpenWYD#421](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421)
 **Cenário:** `npm run quest -- 15 --case PV-04 --case PV-05 --case PV-06 --case PV-07` (casos em [docs/quests/15-pvp-duelo.md](../quests/15-pvp-duelo.md))
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `4b661398`)

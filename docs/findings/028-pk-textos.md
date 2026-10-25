@@ -1,6 +1,6 @@
 # 028 — PK: textos do CantKill e da troca com K
 
-**Status:** aberto.
+**Situação (2026-10-25): corrigido em w2pp-OpenWYD#425 (deploy 66102a6b), verificado com `npm run quest -- 15`.**
 **Issue:** [Jean1dev/w2pp-OpenWYD#422](https://github.com/Jean1dev/w2pp-OpenWYD/issues/422) (`enhancement`)
 **Cenário:** `npm run quest -- 15 --case PV-08 --case PV-09` (casos em [docs/quests/15-pvp-duelo.md](../quests/15-pvp-duelo.md))
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `4b661398`)

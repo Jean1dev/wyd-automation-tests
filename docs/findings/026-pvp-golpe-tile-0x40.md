@@ -1,6 +1,6 @@
 # 026 — PvP: o golpe em alvo sem K passa nos tiles 0x40
 
-**Status:** aberto.
+**Situação (2026-10-25): corrigido em w2pp-OpenWYD#425 (deploy 66102a6b), verificado com `npm run quest -- 15`.**
 **Issue:** [Jean1dev/w2pp-OpenWYD#420](https://github.com/Jean1dev/w2pp-OpenWYD/issues/420) (relacionada à #67)
 **Cenário:** `npm run quest -- 15 --case PV-01 --case PV-02 --case PV-03 --case DU-03` (casos em [docs/quests/15-pvp-duelo.md](../quests/15-pvp-duelo.md))
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `4b661398`)

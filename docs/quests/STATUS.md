@@ -22,8 +22,8 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 9 | 0 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 10 | 0 | 0 | 0 |
 | [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 15 | 11 | 2 | 2 | 0 |
-| [15](#15) | PvP em Armia e duelo 1x1 | 20 | 5 | 15 | 0 | 0 |
-| | **Total** | **172** | **153** | **17** | **2** | **0** |
+| [15](#15) | PvP em Armia e duelo 1x1 | 20 | 19 | 1 | 0 | 0 |
+| | **Total** | **172** | **167** | **3** | **2** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -281,10 +281,6 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | SC-06 | Trocar a subclasse | feliz | ✅ | [~~#410~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) corrigida no #411 (criação e Urnammu ok; reaberta após o #415 pela classe da 4148, SC-08/09) | 2026-10-22: (09:56 UTC) Sub criado jogando (5338, ficha 2 BM) e depois Sephirot 1763 + Fama 2500 pelo banco: Urnammu → Bless1, Fama 500, Sephirot some, ficha 2 classe 3 (HT), SID 8/4/7/6, 855 pontos; continua master 4 |
 | SC-07 | Urnammu para Celestial puro | controle | ✅ |  | 2026-10-22: (09:56 UTC) Celestial puro, Sephirot, Fama 2500: Urnammu → "Somente personagem Sub Celestial." (_SN_NEEDCLASS); banco igual — deixou de ser vácuo |
 | SC-08 | Pedra Misteriosa: Celestial → Sub | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta | 2026-10-22: (19:56 UTC) Sub BM criado pela 5338; 4148 em Armia: SendItem da pedra, Equip[0], MSG_SetShortSkill; banco: master 5, nível 0, exp 0, celestial_level 120, ficha 0 = TK nível 120 — mas `class` fica 0 (TK) em vez de 2 (BM): o Go não salva a classe (dbclient characterSaveToProto, store SaveCharacter) |
-| [#420](https://github.com/Jean1dev/w2pp-OpenWYD/issues/420) | bug | O golpe em alvo sem K passa nos tiles `0x40` (arena de Armia) e na arena do duelo: `combat.go:223` exige só o K do atacante e não lê o AttributeMap; `dueling()` libera tudo | PV-02, DU-03 | [026](../findings/026-pvp-golpe-tile-0x40.md) |
-| [#421](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421) | bug | Na cidade e na arena, Guilty, perda de EXP e perda de CP seguem a regra do campo (`combat.go:231/313`, `pvpkilled.go:50`) | PV-04, PV-05, PV-06 | [027](../findings/027-pvp-cidade-regra-de-campo.md) |
-| [#422](https://github.com/Jean1dev/w2pp-OpenWYD/issues/422) | enhancement | Textos do CantKill (`combat.go:232`) e da troca com K (`pkmode.go:153`) divergem do legado | PV-08, PV-09 | [028](../findings/028-pk-textos.md) |
-| [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | bug | Duelo 1x1 (`duel.go`): dura 121 s com `StartTime` 121; sem `_NN_Battle_Started`; resultado e recusas por código, sem os textos com nomes; perdedor com HP 0; pedido recusado na cidade; empate sem teleporte (leitura) | DU-02, DU-04…08, DU-10, DU-11 | [029](../findings/029-duelo-paridade.md) |
 | SC-09 | Pedra Misteriosa: Sub → Celestial | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta | 2026-10-22: (19:56 UTC) a ida já volta do relog com `class` 0 em vez de 2 (mesma causa do SC-08), então a volta estacionaria a classe errada em SaveCelestial[1] |
 | SC-10 | Pedra Misteriosa fora da cidade | controle | ✅ |  | 2026-10-22: (19:59 UTC) CELESTIALCS no Continente desconhecido (3235,1688): notice 42 (_NN_OnlyVillage) + SendItem [22:4148]; banco igual |
 | SC-11 | Pedra Misteriosa no Celestial puro | controle | ✅ |  | 2026-10-22: (19:59 UTC) Celestial em Armia: só o SendItem [22:4148], calado; banco igual |
@@ -300,26 +296,26 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| PV-01 | Arena de Armia, ninguém com K | controle | ✅ |  | 2026-10-25: (17:58 UTC, reconfirmado depois do rebase) 5 golpes com dano 0, HP de B 945; ninguém Guilty |
-| PV-02 | Arena de Armia, A com K e B sem | controle | ❌ | [#420](https://github.com/Jean1dev/w2pp-OpenWYD/issues/420) | 2026-10-23: (11:17 UTC) em (2135,2147), tile `0x40`, o golpe entra: 771 (945→253) e 778 (253→0); o legado zera o golpe contra alvo sem K |
-| PV-03 | Arena de Armia, os dois com K | feliz | ✅ |  | 2026-10-23: (11:18 UTC) o golpe tira HP: 808 (945→137) e 748 (137→0); PKInfo 1 para os dois |
-| PV-04 | Arena de Armia, sem Guilty | controle | ❌ | [#421](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421) | 2026-10-23: (11:18 UTC) o golpe entra, mas A e B chegam com `MobName[12]` 0 (Guilty) dentro da cidade |
-| PV-05 | Arena de Armia, A mata B | feliz | ❌ | [#421](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421) | 2026-10-23: (11:19 UTC) B perde EXP (590000 → 588678, "Voce perdeu 1322 pontos de experiencia") e não recebe "Na arena não há perda de EXP"; `pk_point` de A fica 75 (B já estava Guilty); B revive em Armia |
-| PV-06 | Praça de Armia | borda | ❌ | [#421](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421) | 2026-10-23: (11:20 UTC) em (2110,2095), tile `0x01`, o golpe entra (certo), mas A e B ficam Guilty dentro da cidade |
-| PV-07 | Campo | feliz | ✅ |  | 2026-10-23: (14:41 UTC) em (2185,2100) o golpe entra (824, 824) e os dois ficam Guilty |
-| PV-08 | Campo, A sem CP | borda | ❌ | [#422](https://github.com/Jean1dev/w2pp-OpenWYD/issues/422) | 2026-10-23: (11:45 UTC) dano 0 (certo), mas o texto é "Voce nao pode atacar este jogador (Pontos Caos: -65)" em vez do `_DN_CantKillUser` |
-| PV-09 | K com troca aberta | borda | ❌ | [#422](https://github.com/Jean1dev/w2pp-OpenWYD/issues/422) | 2026-10-23: (11:59 UTC) a troca fecha para os dois e o PKInfo vem 1/0 (certo), mas sem `_NN_Cant_trade_pkmode` |
-| DU-01 | Declaração | feliz | ✅ |  | 2026-10-23: (14:42 UTC) B recebe 0x039F com Parm1 = A e Parm2 = 0 |
-| DU-02 | Aceite | feliz | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-23: (12:44 UTC) A em (147,4044) e B em (189,4044) (certo), mas `StartTime` 121 em vez de 240 e sem "Batalha entre … foi iniciada" |
-| DU-03 | Duelo, alvo sem K | borda | ❌ | [#420](https://github.com/Jean1dev/w2pp-OpenWYD/issues/420) | 2026-10-23: (14:43 UTC) A com K acerta B sem K: 763 (945→182) e 816 (261→0) |
-| DU-04 | Duelo, A mata B | feliz | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-23: (14:44 UTC) os dois vão para (2572,1752) e B não perde EXP (certo), mas o resultado vem como avisos 35/36, sem os nomes, e B sai com HP 0 em vez de 1 |
-| DU-05 | B sai do jogo | controle | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-23: (14:45 UTC) A vence e vai para (2572,1752) (certo), com aviso 35 e sem o texto do vencedor |
-| DU-06 | B sai da caixa | controle | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-25: (17:51 UTC) A vence e vai para (2572,1752) (certo), com aviso 35 e sem o texto do vencedor |
-| DU-07 | Arena ocupada | controle | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-23: (14:52 UTC) o pedido de C chega a D e ninguém é teleportado (certo), mas vem o aviso 34 em vez de "Há uma partida em progresso." |
-| DU-08 | Duelo dentro de Armia | borda | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-25: (17:51 UTC) na praça, o pedido é recusado com o aviso 38 (`NoticeDuelInCity`) e não chega a B; o legado não olha a posição |
-| DU-09 | Aceite forjado | controle | ✅ |  | 2026-10-25: (17:52 UTC, reconfirmado às 17:58 depois do rebase) sem pedido, o aceite com Parm1 = A não leva ninguém para a arena |
-| DU-10 | Fim do tempo | borda | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-25: (17:53–17:56 UTC) empate em 121 s em vez de cerca de 242 s, com o aviso 37 em vez de "Este jogo com … finalizou em empate"; o muro (`EnvEffect` 32) aparece |
-| DU-11 | Alvo com sussurro bloqueado | controle | ❌ | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) | 2026-10-25: (17:52 UTC) sem repasse (certo), mas A recebe o aviso 12 em vez de "Não é possível sussurrar para este jogador." |
+| PV-01 | Arena de Armia, ninguém com K | controle | ✅ |  | 2026-10-25: (20:40 UTC, depois do #425, deploy `66102a6b`) controle: 5 golpes com dano 0, HP de B 945; ninguém Guilty |
+| PV-02 | Arena de Armia, A com K e B sem | controle | ✅ | [~~#420~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/420) corrigida no #425 | 2026-10-25: (20:41 UTC, depois do #425, deploy `66102a6b`) em (2135,2147), tile `0x40`, A com K e B sem: 5 golpes com dano 0, HP de B 945 |
+| PV-03 | Arena de Armia, os dois com K | feliz | ✅ |  | 2026-10-25: (20:41 UTC, depois do #425, deploy `66102a6b`) o golpe tira HP: 801 (945→223) e 801 (223→0); PKInfo 1 para os dois; ninguém Guilty (cidade) |
+| PV-04 | Arena de Armia, sem Guilty | controle | ✅ | [~~#421~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421) corrigida no #425 | 2026-10-25: (20:42 UTC, depois do #425, deploy `66102a6b`) o golpe entra (763, 808) e nenhum CreateMob de A ou B chega com `MobName[12]` 0 |
+| PV-05 | Arena de Armia, A mata B | feliz | ✅ | [~~#421~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421) corrigida no #425 | 2026-10-25: (20:42 UTC, depois do #425, deploy `66102a6b`) B recebe "Na arena não há perda de EXP." e a EXP continua 590000 no banco; A recebe "Seu ponto caos é -9" e fica com `pk_point` 66; B revive em Armia |
+| PV-06 | Praça de Armia | borda | ✅ | [~~#421~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421) corrigida no #425 | 2026-10-25: (20:43 UTC, depois do #425, deploy `66102a6b`) em (2110,2095), tile `0x01`, o golpe entra (1039) e ninguém fica Guilty |
+| PV-07 | Campo | feliz | ✅ |  | 2026-10-25: (20:43 UTC, depois do #425, deploy `66102a6b`) em (2185,2100) o golpe entra (1059) e os dois ficam Guilty (sem regressão) |
+| PV-08 | Campo, A sem CP | borda | ✅ | [~~#422~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/422) corrigida no #425 | 2026-10-25: (20:44 UTC, depois do #425, deploy `66102a6b`) dano 0 e "Você não pode mais derrotar jogadores. (Atual : 10)" a cada golpe |
+| PV-09 | K com troca aberta | borda | ✅ | [~~#422~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/422) corrigida no #425 | 2026-10-25: (20:45 UTC, depois do #425, deploy `66102a6b`) a troca fecha para os dois, PKInfo 1/0 e o texto 331 chega aos dois |
+| DU-01 | Declaração | feliz | ✅ |  | 2026-10-25: (20:45 UTC, depois do #425, deploy `66102a6b`) B recebe 0x039F com Parm1 = A e Parm2 = 0 |
+| DU-02 | Aceite | feliz | ✅ | [~~#424~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) corrigida no #425 | 2026-10-25: (20:46 UTC, depois do #425, deploy `66102a6b`) A em (147,4044), B em (189,4044), `StartTime` 240 e "Batalha entre … foi iniciada." aos dois |
+| DU-03 | Duelo, alvo sem K | borda | ✅ | [~~#420~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/420) corrigida no #425 | 2026-10-25: (20:46 UTC, depois do #425, deploy `66102a6b`) A com K e B sem K na arena do duelo: 5 golpes com dano 0 |
+| DU-04 | Duelo, A mata B | feliz | ❌ | [#427](https://github.com/Jean1dev/w2pp-OpenWYD/issues/427) ([~~#424~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) corrigida no #425) | 2026-10-25: (20:47 UTC, depois do #425, deploy `66102a6b`) os dois em (2572,1752), B com HP 1, "A é o vencedor, B é o perdedor desta partida." e EXP de B igual no banco (#424 ok); falta "Na arena não há perda de EXP." para B, o ramo `ZoneUnk` do mapa (1,31) |
+| DU-05 | B sai do jogo | controle | ✅ | [~~#424~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) corrigida no #425 | 2026-10-25: (20:48 UTC, depois do #425, deploy `66102a6b`) B desconecta: A vai para (2572,1752) com "A é o vencedor, B é o perdedor desta partida." |
+| DU-06 | B sai da caixa | controle | ✅ | [~~#424~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) corrigida no #425 | 2026-10-25: (20:49 UTC, depois do #425, deploy `66102a6b`) B sai da caixa: A vai para (2572,1752) com o texto do vencedor |
+| DU-07 | Arena ocupada | controle | ✅ | [~~#424~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) corrigida no #425 | 2026-10-25: (20:50 UTC, depois do #425, deploy `66102a6b`) o pedido de C chega a D, ninguém é teleportado e os dois recebem "Há uma partida em progresso." |
+| DU-08 | Duelo dentro de Armia | borda | ✅ | [~~#424~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) corrigida no #425 | 2026-10-25: (20:52 UTC, depois do #425, deploy `66102a6b`) na praça de Armia, o pedido chega a B e o aceite leva os dois à arena |
+| DU-09 | Aceite forjado | controle | ✅ |  | 2026-10-25: (20:52 UTC, depois do #425, deploy `66102a6b`) sem pedido, o aceite com Parm1 = A não leva ninguém para a arena |
+| DU-10 | Fim do tempo | borda | ✅ | [~~#424~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) corrigida no #425 | 2026-10-25: (20:53 UTC, depois do #425, deploy `66102a6b`) empate em 242 s com "Este jogo com … finalizou em empate" aos dois e o muro (`EnvEffect` 32) |
+| DU-11 | Alvo com sussurro bloqueado | controle | ✅ | [~~#424~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) corrigida no #425 | 2026-10-25: (20:57 UTC, depois do #425, deploy `66102a6b`) sem repasse e "Não é possível sussurrar para este jogador." para A |
 
 ## Issues
 
@@ -330,6 +326,7 @@ Os casos rodaram pela primeira vez em 2026-10-18 (w2pp-OpenWYD b392705): 95 ✅ 
 | Issue | Tipo | O que falta ou está errado no Go | Casos | Finding |
 |---|---|---|---|---|
 | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | enhancement (reaberta depois do #415) | A Pedra Misteriosa 4148 troca a ficha, mas o Go não salva a coluna `class`: falta em `characterSaveToProto` (dbclient/client.go:776) e no `UPDATE character SET` (store_live.go:396). Depois do relog o Sub BM volta como TK | ❌ SC-08, SC-09 | [023](../findings/023-sub-celestial-ausente.md) |
+| [#427](https://github.com/Jean1dev/w2pp-OpenWYD/issues/427) | enhancement | Duelo: a morte no mapa (1,31) não manda o texto 143 "Na arena não há perda de EXP" (`ZoneUnk` do `MobKilled.cpp:3133-3139`); `pvpkilled.go:57` só olha o `PvPZone` | DU-04 | [029](../findings/029-duelo-paridade.md) |
 
 **⏸️ bloqueados pelo estado do mundo:** SC-14 e SC-15 (`/kefra` e o portal do Deserto com o Kefra derrotado). O Kefra está vivo; o estado fica em `kefra_state`, é global, o tmServer só lê no boot e ele mexe no EXP de todos, então não se semeia pelo banco. O `precheck` do caso marca ⏸️ enquanto o Kefra estiver vivo.
 
@@ -338,6 +335,7 @@ Os casos rodaram pela primeira vez em 2026-10-18 (w2pp-OpenWYD b392705): 95 ✅ 
 - No #411: #395 (NOV), #396 (QST-09), #397 (CV-10), #398 (MG), #399 (CR-06/11), #400 (CR-12), #401 (TM), #402 (TM-07), #403 (TM-08/09), #404 (PO), #405 (CD), #390 (AR-10/11), #406 (CE-01/03), #407 (CE-07/08/09), #408 (CL-05…08), #409 (CL-10). Findings 007–022.
 - No #414: #413 (CE-04/05/06, finding 024).
 - No #415: #412 (TM-07, acentos em cp1252) e, da #410, o caminho até o Urnammu com o Kefra vivo (SC-12/13) e as recusas da 4148 (SC-10/11). O #415 também fechou #392, #393 e #394, e o #416 fechou #391: essas só têm cobertura nas suítes antigas de conta fixa, que não foram rodadas.
+- No #425 (deploy `66102a6b`, reteste de 2026-10-25 20:40–20:58 UTC): #420 (PV-02, DU-03), #421 (PV-04/05/06), #422 (PV-08/09) e #424 (DU-02, DU-05…08, DU-10/11; DU-04 só falta o texto da #427). Findings 026–029.
 
 A #400 foi fechada, mas o Clan pela guilda do líder não foi portado. Nenhum caso cobre isso ainda.
 
@@ -358,7 +356,7 @@ Diferenças sem efeito no estado, só anotadas: na segunda Pílula (07) o Go ree
 ## Próximos passos
 
 1. **Corrigir no servidor:** salvar a coluna `class` (#410). Depois, `npm run quest -- 14 --case SC-08` e `--case SC-09`.
-2. **PvP e duelo (15):** depois das correções do #420, #421, #422 e #424, rodar `npm run quest -- 15`. São 20 casos, e o DU-10 leva cerca de 5 min.
+2. **Duelo (15):** depois da #427, `npm run quest -- 15 --case DU-04`.
 3. **Kefra derrotado:** SC-14/SC-15 só rodam com o Kefra morto no mundo (matar o boss em grupo, ou um jeito de teste de mudar `kefra_state` com o tmServer recarregando). Rodar `npm run quest -- 14` de novo quando isso existir.
 4. **Casos que faltam:** o Clan pela guilda do líder (#400), quando for portado.
 5. **Infraestrutura de teste:** o papel do banco aceita só 5 conexões (o tmServer usa 2). Não aninhe `ctx.query` e não mate o runner no meio, porque a conexão fica presa no proxy do Railway.

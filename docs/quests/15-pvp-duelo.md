@@ -135,3 +135,13 @@ Tudo roda com `npm run quest -- 15`.
 | DU-02, DU-04…08, DU-10, DU-11 | ❌ duração, textos, HP do perdedor e recusa na cidade | [#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) |
 
 Findings: [026](../findings/026-pvp-golpe-tile-0x40.md), [027](../findings/027-pvp-cidade-regra-de-campo.md), [028](../findings/028-pk-textos.md) e [029](../findings/029-duelo-paridade.md).
+
+## Situação (2026-10-25, depois do #425)
+
+`npm run quest -- 15` no Railway depois do [w2pp-OpenWYD#425](https://github.com/Jean1dev/w2pp-OpenWYD/pull/425) (main `2b10e77b`, deploy `66102a6b`), de 20:40 a 20:58 UTC: **19 ✅ 1 ❌**. As #420, #421, #422 e #424 foram verificadas.
+
+| ID | Resultado | Issue |
+|---|---|---|
+| PV-01…09 | ✅ | [~~#420~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/420), [~~#421~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/421), [~~#422~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/422) |
+| DU-01…03, DU-05…11 | ✅ | [~~#420~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/420), [~~#424~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) |
+| DU-04 | ❌ falta "Na arena não há perda de EXP." para B; o resto (HP 1, saída, texto com os nomes, EXP igual) passa | [#427](https://github.com/Jean1dev/w2pp-OpenWYD/issues/427) |
