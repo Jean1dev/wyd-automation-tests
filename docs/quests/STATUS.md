@@ -95,16 +95,16 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| MG-01 | Teleporte abaixo do nível | controle | ✅ | | Mortal exibido 199: a Patrulha__ recusa (NoticeReqNotMet 15), sem teleporte |
-| MG-02 | Teleporte | feliz | ✅ | | Mortal exibido 200: teleportado para (817,4060), dentro da arena |
-| MG-03 | Arch | controle | ✅ | | Arch exibido 200: a Patrulha__ recusa (NoticeReqNotMet 15), sem teleporte |
-| MG-04 | Drop | feliz | ✅ | | o 4122 caiu ao matar um Gargula_Inf, 7 kills (6 Servo, 1 Inf) em 4,5 min com a viagem |
-| MG-05 | Uso do molar | feliz | ✅ | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida no #411 | 2026-10-22: (05:00 UTC) refinação +0 +3 +5 +7 +1 → +6 +6 +6 +7 +6 (banco igual), o 4122 some, "Você concluiu a Quest Molar do Gargula.", molar_gargula 1 no banco, AC 1992→2324 |
-| MG-06 | Uso repetido | controle | ✅ | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida no #411 | 2026-10-22: (05:00 UTC) molar_gargula 1 semeado: "Você já completou esta Quest." (_NN_Youve_Done_It_Already), o 4122 volta ao slot, refinação intacta (banco igual) |
-| MG-07 | Uso fora da faixa | controle | ✅ | [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) | 2026-10-22: (05:01 UTC) Mortal exibido 255: "Nível Insuficiente. Isto não pode ser utilizado." (_NN_Level_limit), o 4122 fica, refinação intacta, molar_gargula 0 — deixou de ser vácuo |
-| MG-08 | Slot vazio | borda | ✅ | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida no #411 | 2026-10-22: (05:01 UTC) Equip[3] vazio: +0 +3 — +7 +1 → +6 +6 — +7 +6 (banco igual), o 4122 some, molar_gargula 1, AC 1512→1812 |
-| MG-09 | Flag persiste | borda | ✅ | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida no #411 | 2026-10-22: (05:02 UTC) primeiro uso jogando refinou e gravou molar_gargula 1; relog com as peças em +0: "Você já completou esta Quest.", o 4122 fica, +0 intacto (banco igual) |
-| MG-10 | Reset da arena | feliz | ✅ | | entrou pela Patrulha__; mandado para Armia (2097,2095) 53 s depois, às 16:17:29 UTC |
+| MG-01 | Teleporte abaixo do nível | controle | ✅ | | 2026-10-26 18:21 UTC: Mortal exibido 199: a Patrulha__ recusa (NoticeReqNotMet 15), sem teleporte, ficou em (789,4060) |
+| MG-02 | Teleporte | feliz | ✅ | | 2026-10-26 18:25 UTC: Mortal exibido 200: teleportado para (817,4060), dentro da arena |
+| MG-03 | Arch | controle | ✅ | | 2026-10-26 18:28 UTC: Arch exibido 200: a Patrulha__ recusa (NoticeReqNotMet 15), sem teleporte |
+| MG-04 | Drop | feliz | ✅ | | 2026-10-26 18:32 UTC: o 4122 caiu ao matar um Gargula_Inf, 7 kills (6 Servo, 1 Inf) em 4,3 min com a viagem |
+| MG-05 | Uso do molar | feliz | ✅ | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida no #411 | 2026-10-26 18:33 UTC: refinação +0 +3 +5 +7 +1 → +6 +6 +6 +7 +6 (banco igual), o 4122 some, "Você concluiu a Quest Molar do Gargula.", molar_gargula 1 no banco, AC 1992→2324 |
+| MG-06 | Uso repetido | controle | ✅ | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida no #411 | 2026-10-26 18:33 UTC: molar_gargula 1 semeado: "Você já completou esta Quest.", o 4122 volta ao slot, refinação intacta (banco igual) |
+| MG-07 | Uso fora da faixa | controle | ✅ | [#398](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) | 2026-10-26 18:34 UTC: Mortal exibido 255: "Nível Insuficiente. Isto não pode ser utilizado." (_NN_Level_limit), o 4122 fica, refinação intacta, molar_gargula 0 |
+| MG-08 | Slot vazio | borda | ✅ | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida no #411 | 2026-10-26 18:34 UTC: Equip[3] vazio: +0 +3 — +7 +1 → +6 +6 — +7 +6 (banco igual), o 4122 some, molar_gargula 1, AC 1512→1812 |
+| MG-09 | Flag persiste | borda | ✅ | [~~#398~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/398) corrigida no #411 | 2026-10-26 18:35 UTC: primeiro uso refinou e gravou molar_gargula 1; relog com as peças em +0: "Você já completou esta Quest.", o 4122 fica, +0 intacto (banco igual) |
+| MG-10 | Reset da arena | feliz | ✅ | | 2026-10-26 18:38 UTC: entrou pela Patrulha__; mandado para Armia (2091,2103) 18 s depois, às 18:38:58 UTC |
 
 <a id="05"></a>
 ## 05 — Capa do Reino (azul / vermelha) e a borda
