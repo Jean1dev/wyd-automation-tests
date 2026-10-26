@@ -71,6 +71,19 @@ A trava foi corrigida em [Jean1dev/w2pp-OpenWYD#388](https://github.com/Jean1dev
 
 Como no legado, o personagem que vira 36 dentro do campo é mandado para Armia no primeiro passo. Na execução anterior, das 13:01, o bot tentava voltar pela rota de saída e era expulso de novo a cada ~13 s, até reconectar 7 min depois. Agora a saída trata esse teleporte como chegada a Armia.
 
+### Situação (2026-10-26): regressão passa
+
+Execução de 2026-10-26 21:18–21:26 UTC (`--fresh --until-done`), servidor com o deploy de main das 12:49 UTC (até o #429). Report: `reports/2026-10-26T21-18-52-844Z-training-field-lv35/`. Veredito: **passou**, sem quedas nem desistências (68 kills).
+
+| Verificação | Resultado |
+|---|---|
+| Começa no nível exibido 1 | ✅ 21:18:57 |
+| Nível exibido 35 em até 15 min | ✅ **6,1 min** |
+| Controle positivo (o 35 entra no campo) | ✅ 21:25:46, entra em (2100,2032) |
+| Controle negativo (o 36 é barrado) | ✅ 21:26:41, recebe "Somente nível 35 ou inferior pode entrar no campo de treinamento." e é teleportado para Armia (2091,2103) |
+
+A conta `WYD_ACCOUNT` do `.env` estava com os 4 slots ocupados por personagens de outros cenários, e a primeira tentativa (21:17) parou em "conta sem slot livre". Para não apagar esses personagens, a execução usou uma conta nova do portal, passada só no ambiente do comando (`WYD_ACCOUNT`/`WYD_PASSWORD`/`WYD_PIN`).
+
 ### Antes da correção (2026-10-16): meta de tempo cumprida, trava ausente
 
 Execução de 2026-10-16 22:06–22:15 UTC (`--fresh --until-done`), com o multiplicador de exp do campo no servidor ([Jean1dev/w2pp-OpenWYD#384](https://github.com/Jean1dev/w2pp-OpenWYD/pull/384)). Veredito: **falhou**, só pela trava.
