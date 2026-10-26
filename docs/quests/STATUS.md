@@ -201,20 +201,20 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| LD-01 | Mortal na Lindy | controle | ✅ |  | Mortal exibido 355 com a receita, ao lado da Lindy (1707,1728): CombineComplete 0; inventário e banco iguais, Level355 0 |
-| LD-02 | Arch fora do nível | controle | ✅ |  | Arch exibido 354 (armazenado 353) com a receita: CombineComplete 0; inventário e banco iguais, Level355 0 |
-| LD-03 | Receita errada | controle | ✅ |  | Arch exibido 355 sem a 4127 (posição 2 vazia): CombineComplete 0; as 413 ficam, banco igual, Level355 0 |
-| LD-04 | Destrava 355 | feliz | ✅ |  | Arch exibido 355, clan 8: Poeira antes recusada ("Conclua a liberacao de nivel na Lindy"); combinação: CombineComplete 1, receita some, Level355 1, capa 3192 no Equip[15] (banco); Poeira depois sobe para exibido 356 (banco nível 355) |
-| LD-05 | 355 de novo | controle | ✅ |  | Arch exibido 355 com Level355 1 e a receita: CombineComplete 0; nada some, banco igual (Level370 0) |
-| LD-06 | 355 acima do nível | borda | ✅ |  | informativo (o legado recusa fora do 354): Arch exibido 360 sem Level355 — o Go aceita, CombineComplete 1, Level355 1, capa 3192; coerente com a trava archExpLocked (≥ 354), sem a qual o Arch ficaria preso |
-| LD-07 | 370 sem Fame | controle | ✅ |  | Arch exibido 370 com Level355 1 e Fame 0: CombineComplete 0; nada some, Level370 0 no banco |
-| LD-08 | Destrava 370 | feliz | ✅ |  | Arch exibido 370, Level355 1, Fame 3 (semeada): CombineComplete 1, receita some, Level370 1 e Fame 2 no banco |
-| CR-01 | Cristal fora de ordem | controle | ✅ |  | Arch exibido 356, Cristal 0, com o 4107: "Conclua a etapa anterior da quest dos cristais primeiro."; o 4107 volta, exp/nível/Cristal/MaxHp/MaxMp iguais no banco, AC igual |
-| CR-02 | Etapa 1 | feliz | ✅ |  | Arch exibido 356, Cristal 0: 4106 some; banco MaxMp 3000→3080, exp 2150M→2050M, nível igual, Cristal 1 |
-| CR-03 | Etapa repetida | controle | ✅ |  | Cristal 1 com outro 4106: "Voce ja concluiu esta etapa da quest dos cristais."; o 4106 volta, banco igual |
-| CR-04 | Quatro etapas | feliz | ✅ |  | 4106→4109 em sequência: banco MaxHp 25000→25140, MaxMp 3000→3140, exp −400M, nível igual, Cristal 4; AC do score 613→663 depois do relog; os quatro cristais somem |
-| CR-05 | Mortal com cristal | borda | ✅ |  | informativo (o legado aceita, checagem comentada): Mortal exibido 356 com o 4106 — o Go recusa de propósito (#327), "Quest permitida somente a Archs de nivel 356 ou superior."; o 4106 volta, banco igual |
-| CR-06 | Exp abaixo de 100M | borda | ✅ |  | informativo (o legado deixa a exp negativa e não rebaixa): Arch exibido 356 com exp 50M — o Go (#348) zera a exp e recalcula o nível: banco nível 355→0, exp 0, Cristal 1, MaxHp 25000→23935, MaxMp 3000→2725 (−355 níveis +80) |
+| LD-01 | Mortal na Lindy | controle | ✅ |  | 2026-10-26: (20:25 UTC) regressão: Mortal exibido 355 com a receita, ao lado da Lindy (1707,1728): CombineComplete 0; inventário e banco iguais depois do relog, Level355 0 |
+| LD-02 | Arch fora do nível | controle | ✅ |  | 2026-10-26: (20:27 UTC) regressão: Arch exibido 354 (armazenado 353) com a receita: CombineComplete 0; inventário e banco iguais, Level355 0 |
+| LD-03 | Receita errada | controle | ✅ |  | 2026-10-26: (20:29 UTC) regressão: Arch exibido 355 sem a 4127 (posição 2 vazia): CombineComplete 0; as 413 ficam, banco igual, Level355 0 |
+| LD-04 | Destrava 355 | feliz | ✅ |  | 2026-10-26: (20:32 UTC) regressão: Poeira antes recusada ("Conclua a liberacao de nivel na Lindy"); combinação: CombineComplete 1, receita some, banco Level355 1, MaxHp 25000→25200, capa 3192; Poeira depois sobe para exibido 356 (banco nível 355) |
+| LD-05 | 355 de novo | controle | ✅ |  | 2026-10-26: (20:34 UTC) regressão: Arch exibido 355 com Level355 1 e a receita: CombineComplete 0; nada some, banco igual (Level370 0) |
+| LD-06 | 355 acima do nível | borda | ✅ |  | 2026-10-26: (20:36 UTC) regressão, informativo: Arch exibido 360 sem Level355 — o Go aceita, CombineComplete 1, banco Level355 1, capa 3192 (coerente com archExpLocked ≥ 354) |
+| LD-07 | 370 sem Fame | controle | ✅ |  | 2026-10-26: (20:38 UTC) regressão: Arch exibido 370 com Level355 1 e Fame 0: CombineComplete 0; nada some, Level370 0 no banco |
+| LD-08 | Destrava 370 | feliz | ✅ |  | 2026-10-26: (20:41 UTC) regressão: Arch exibido 370, Level355 1, Fame 3: CombineComplete 1, receita some, banco Level370 1 e Fame 2 |
+| CR-01 | Cristal fora de ordem | controle | ✅ |  | 2026-10-26: (20:41 UTC) regressão: Cristal 0 com o 4107: "Conclua a etapa anterior da quest dos cristais primeiro."; o 4107 volta, banco e score (MaxHp/MaxMp/AC) iguais |
+| CR-02 | Etapa 1 | feliz | ✅ |  | 2026-10-26: (20:41 UTC) regressão: 4106 some; banco MaxMp 3000→3080, exp 2150M→2050M, nível igual, Cristal 1 |
+| CR-03 | Etapa repetida | controle | ✅ |  | 2026-10-26: (20:42 UTC) regressão: Cristal 1 com outro 4106: "Voce ja concluiu esta etapa da quest dos cristais."; o 4106 volta, banco igual |
+| CR-04 | Quatro etapas | feliz | ✅ |  | 2026-10-26: (20:42 UTC) regressão: 4106→4109 em sequência: banco MaxHp 25000→25140, MaxMp 3000→3140, exp −400M, nível igual, Cristal 4; AC do score 613→663; os quatro cristais somem |
+| CR-05 | Mortal com cristal | borda | ✅ |  | 2026-10-26: (20:43 UTC) regressão, informativo: Mortal com o 4106 — o Go recusa (#327), "Quest permitida somente a Archs de nivel 356 ou superior."; o 4106 volta, banco igual |
+| CR-06 | Exp abaixo de 100M | borda | ✅ |  | 2026-10-26: (20:43 UTC) regressão, informativo: Arch com exp 50M — o Go (#348) zera a exp e recalcula: banco nível 355→0, exp 0, Cristal 1, MaxHp 25000→23935, MaxMp 3000→2725 |
 
 <a id="11"></a>
 ## 11 — Alma do Mortal (Kibita)
