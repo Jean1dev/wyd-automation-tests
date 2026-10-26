@@ -113,19 +113,19 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| CR-01 | Teleporte abaixo do nível | controle | ✅ | | Mortal exibido 199: o Guarda_Real recusa (NoticeReqNotMet 15), sem teleporte |
-| CR-02 | Teleporte | feliz | ✅ | | Mortal exibido 200: teleportado para (1740,1722), dentro da área dos Cav._Mortal |
-| CR-03 | Drop do emblema | feliz | ✅ |  | 2026-10-22: (06:09 UTC) o 4081 caiu ao matar um Cav._Mortal____ (Carry[8], 1/4 por kill), 4 kills em 4,5 min; a 1ª rodada (05:22) teve 31 kills (só 3 do ____) sem drop — azar |
-| CR-04 | Rei abaixo do nível | controle | ✅ |  | 2026-10-22: (05:38 UTC) exibido 219 com 4081 e 7 safiras: "Não possui nível suficiente, retorne mais tarde." (_NN_Need_Level); nada muda, banco igual |
-| CR-05 | Preço (ask) | feliz | ✅ | | confirm 0, exibido 220 com o 4081 e 4 safiras: "Sao necessarias 4 safiras." (preço do sapphire_balance); nada muda, banco igual |
-| CR-06 | Capa pelo emblema | feliz | ✅ | [~~#399~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/399) corrigida no #411 | 2026-10-22: (05:44 UTC) exibido 220, 4081 e sem safiras: Equip[13] vazio, Equip[15] 545, clan 7 (banco igual), "Que a luz de Sephira o ilumine." |
-| CR-07 | Sem emblema e sem safira | controle | ✅ |  | 2026-10-22: (05:47 UTC) exibido 220 sem 4081 e sem safiras: "Sao necessarias 8 safiras." (_DN_Need_D_Sapphire, preço do sapphire_balance); nada muda, banco igual |
-| CR-08 | Rei do outro reino | controle | ✅ |  | 2026-10-22: (05:50 UTC) 545 no Rei_Glantuar (exibido 256, 4081 e safiras): sem resposta, como o break do legado; nada muda, banco igual |
-| CR-09 | Capa já com borda | controle | ✅ |  | 2026-10-22: (05:52 UTC) 543 no Rei_Harabard: "Que a luz de Sephira o ilumine." (_NN_My_King_Bless1, CapeMode 2); nada muda, banco igual |
-| CR-10 | Borda antes do nível | controle | ✅ |  | 2026-10-22: (05:55 UTC) 545, exibido 255, 4081 e safiras: "Não possui nível suficiente, retorne mais tarde." (_NN_Need_Level); nada muda, banco igual |
-| CR-11 | Borda pelo emblema | feliz | ✅ | [~~#399~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/399) corrigida no #411 | 2026-10-22: (05:58 UTC) 545, exibido 256, 4081 e sem safiras: Equip[13] vazio, Equip[15] 543, clan 7 (banco igual), Bless1 |
-| CR-12 | Pagamento em safiras | feliz | ✅ | [~~#400~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/400) corrigida no #411 | 2026-10-22: (06:01 UTC) 1 × 4131 para o preço 9: o pacote some inteiro, Equip[15] 545, clan 7 (banco igual), Bless1 — o Clan pela guilda do líder (pendência do #411) não é coberto |
-| CR-13 | Mortal acima de 254 no Guarda | controle | ✅ | | Mortal exibido 255: o Guarda_Real recusa (NoticeReqNotMet 15), sem teleporte |
+| CR-01 | Teleporte abaixo do nível | controle | ✅ | | 2026-10-26 18:43 UTC: Mortal exibido 199: o Guarda_Real recusa (NoticeReqNotMet 15), sem teleporte, ficou em (1756,1585) |
+| CR-02 | Teleporte | feliz | ✅ | | 2026-10-26 18:45 UTC: Mortal exibido 200: teleportado para (1741,1725), dentro da área dos Cav._Mortal |
+| CR-03 | Drop do emblema | feliz | ✅ |  | 2026-10-26 18:49 UTC: o 4081 caiu no inventário (slot 0) na 1ª kill de Cav._Mortal____, 0 mortes, 3,1 min com a viagem |
+| CR-04 | Rei abaixo do nível | controle | ✅ |  | 2026-10-26 18:52 UTC: exibido 219 com 4081 e 10 safiras: "Não possui nível suficiente, retorne mais tarde." (_NN_Need_Level); nada muda, banco igual |
+| CR-05 | Preço (ask) | feliz | ✅ | | 2026-10-26 18:55 UTC: confirm 0, exibido 220 com o 4081 e 10 safiras: "Sao necessarias 10 safiras." (preço do sapphire_balance); nada muda, banco igual |
+| CR-06 | Capa pelo emblema | feliz | ✅ | [~~#399~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/399) corrigida no #411 | 2026-10-26 18:58 UTC: exibido 220, 4081 e sem safiras: Equip[13] vazio, Equip[15] 545, clan 7 (banco igual), "Que a luz de Sephira o ilumine." |
+| CR-07 | Sem emblema e sem safira | controle | ✅ |  | 2026-10-26 19:01 UTC: exibido 220 sem 4081 e sem safiras: "Sao necessarias 11 safiras." (preço do sapphire_balance); nada muda, banco igual |
+| CR-08 | Rei do outro reino | controle | ✅ |  | 2026-10-26 19:03 UTC: 545 no Rei_Glantuar (exibido 256, 4081 e safiras): sem resposta, como o break do legado; nada muda, banco igual |
+| CR-09 | Capa já com borda | controle | ✅ |  | 2026-10-26 19:06 UTC: 543 no Rei_Harabard: "Que a luz de Sephira o ilumine." (_NN_My_King_Bless1, CapeMode 2); nada muda, banco igual |
+| CR-10 | Borda antes do nível | controle | ✅ |  | 2026-10-26 19:09 UTC: 545, exibido 255, 4081 e safiras: "Não possui nível suficiente, retorne mais tarde." (_NN_Need_Level); nada muda, banco igual |
+| CR-11 | Borda pelo emblema | feliz | ✅ | [~~#399~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/399) corrigida no #411 | 2026-10-26 19:11 UTC: 545, exibido 256, 4081 e sem safiras: Equip[13] vazio, Equip[15] 543, clan 7 (banco igual), Bless1 |
+| CR-12 | Pagamento em safiras | feliz | ✅ | [~~#400~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/400) corrigida no #411 | 2026-10-26 19:14 UTC: 2 × 4131 (20 safiras) para o preço 12: as safiras somem (0), Equip[15] 545, clan 7 (banco igual), Bless1 — o Clan pela guilda do líder (pendência do #411) não é coberto |
+| CR-13 | Mortal acima de 254 no Guarda | controle | ✅ | | 2026-10-26 19:17 UTC: Mortal exibido 255: o Guarda_Real recusa (NoticeReqNotMet 15), sem teleporte |
 
 <a id="06"></a>
 ## 06 — Terra Mística (Defendendo a Terra Mística)
