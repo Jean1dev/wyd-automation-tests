@@ -666,7 +666,7 @@ O MP e a corrida bateram em todas.
   - o legado aplica o EF_HPADD antes do laço dos affects (`Basedef.cpp:3886-3895`) e depois multiplica o HP já com os 5% pela transformação (`Basedef.cpp:4194-4200`);
   - o Go multiplica a transformação sobre o HP sem os 5% (`handler/transform.go:137`) e só aplica o EF_HPADD na leitura (`handler/item.go:2397`). São dois truncamentos em outra ordem;
   - com os 5% depois, a conta do Go dá exatamente o recebido nos 7 casos de hoje e nos de 2026-10-17, inclusive o Astaroth com Asas do Inferno (429 → 485, legado 484) que tinha ficado inconclusivo. Com multiplicador baixo, os dois truncamentos coincidem, e por isso Lobisomem e Homem-Urso passam.
-  - Veja [docs/findings/006-transformacao-bm-arredondamento.md](docs/findings/006-transformacao-bm-arredondamento.md). Ainda sem issue.
+  - Veja [docs/findings/006-transformacao-bm-arredondamento.md](docs/findings/006-transformacao-bm-arredondamento.md). Issue: [Jean1dev/w2pp-OpenWYD#430](https://github.com/Jean1dev/w2pp-OpenWYD/issues/430).
 - **Compra da skill como item:** ✅ o Mestre_Archi recusa o 5049 (14:50:53 UTC), o 5057 (15:08:48) e o 5066 (15:24:24) com "Pode comprar itens apenas do mercador." (MessagePanel), sem item e com o gold igual (995.000). [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
 - **Controles:**
   - skill não aprendida: descartada nas três árvores ✅;
@@ -914,7 +914,7 @@ Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#415](https
   - o Go faz o 9/10 sobre o HP sem os 5% (`handler/affect_score.go:144`) e só aplica o EF_HPADD na leitura (`handler/item.go:2397`): ⌊⌊M×9/10⌋×105/100⌋;
   - com M = 433, os dois dão 408 (✅ 16:59:07); com M = 1103, o legado dá 1042 e o Go 1041 (❌ 17:21:05). Entre M = 100 e 2000, 688 dos 1901 valores saem ±1;
   - o caso de 2026-10-17 com M = 1103 (Go 1042) estava, na verdade, igual ao legado: o bot esperava 1041 porque calculava o legado na ordem do Go. O M = 435 (Go 411, legado 410) era mesmo o #394.
-  - [~~#394~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394) corrigida no #415 também no TK; o desvio que sobra é o da ordem do EF_HPADD. Veja [docs/findings/006-transformacao-bm-arredondamento.md](docs/findings/006-transformacao-bm-arredondamento.md). Ainda sem issue.
+  - [~~#394~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394) corrigida no #415 também no TK; o desvio que sobra é o da ordem do EF_HPADD. Veja [docs/findings/006-transformacao-bm-arredondamento.md](docs/findings/006-transformacao-bm-arredondamento.md). Issue: [Jean1dev/w2pp-OpenWYD#430](https://github.com/Jean1dev/w2pp-OpenWYD/issues/430).
 - **Compra da skill como item:** ✅ o Cap.Cavaleiros recusa o 5001 (16:41:08 UTC), o 5010 (16:54:44) e o 5017 (17:08:55) com "Pode comprar itens apenas do mercador." (MessagePanel), sem item e com o gold igual. [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
 - **Aprender:** em todas, liga só o bit da skill, desconta os pontos exatos e não cobra gold ✅.
 - **Controles:**

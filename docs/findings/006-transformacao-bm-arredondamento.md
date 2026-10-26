@@ -1,6 +1,6 @@
 # 006 — Transformação do BM (Lobisomem) e Assalto do TK arredondam o desconto diferente do legado
 
-**Status:** corrigido pelo [#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) no BM (Lobisomem) e no TK (Assalto), os dois retestados em 2026-10-26 (ver abaixo). Sobra um desvio de ±1 no HP máximo pela ordem do EF_HPADD, no Astaroth e no Titã do BM e no Assalto do TK, ainda sem issue. Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T19-39-11-741Z-bm-transform`).
+**Status:** corrigido pelo [#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) no BM (Lobisomem) e no TK (Assalto), os dois retestados em 2026-10-26 (ver abaixo). Sobra um desvio de ±1 no HP máximo pela ordem do EF_HPADD, no Astaroth e no Titã do BM e no Assalto do TK: issue [Jean1dev/w2pp-OpenWYD#430](https://github.com/Jean1dev/w2pp-OpenWYD/issues/430). Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T19-39-11-741Z-bm-transform`).
 **Issue:** [Jean1dev/w2pp-OpenWYD#394](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394)
 **Cenário:** `npm run scenario:bm-transformacao -- --skill 64,65`
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `d896ae2f`)
