@@ -223,13 +223,13 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| KB-01 | Abaixo do nível | controle | ✅ |  | Mortal exibido 369 com a 5334: notice 15 (ReqNotMet), sem SendArchEffect; banco depois do relog: pedra fica, bit 30 0, capa 545 |
-| KB-02 | Pedra de outra classe | controle | ✅ |  | TK exibido 370 com a 5336 (Sol): notice 15, sem SendArchEffect; banco depois do relog: a 5336 fica, bit 30 0, capa 545 |
-| KB-03 | Alma do Mortal | feliz | ✅ |  | TK exibido 370, clan 7, 5334 e capa 545: CNFCharacterLogout + SendArchEffect slot 0; banco: a 5334 some, LearnedSkill 1<<30, capa 3194 (também no cliente) |
-| KB-04 | Depois do relogin | feliz | ✅ |  | Alma concedida e dois relogins: bit 30 continua no banco (LearnedSkill 1<<30), capa 3194 no banco e no cliente |
-| KB-05 | Repetir | controle | ✅ |  | bit 30 já ligado, com outra 5334 e capa 3194: notice 15, sem SendArchEffect; banco: a pedra fica, capa 3194 |
-| KB-06 | Arch | controle | ✅ |  | Arch (class_master 1) exibido 370 com a 5334: notice 15, sem SendArchEffect; banco: pedra, bit 30 0 e capa 545 iguais |
-| KB-07 | Sem reino | borda | ✅ |  | Mortal clan 0 com a 5334 e capa 545: SendArchEffect slot 0; banco: a 5334 some, bit 30 ligado, capa 3196 (também no cliente) |
+| KB-01 | Abaixo do nível | controle | ✅ |  | 2026-10-26: (20:45 UTC) regressão: Mortal exibido 369 com a 5334: notice 15, sem SendArchEffect; banco depois do relog: pedra fica, bit 30 0, capa 545 |
+| KB-02 | Pedra de outra classe | controle | ✅ |  | 2026-10-26: (20:45 UTC) regressão: TK exibido 370 com a 5336 (Sol): notice 15, sem SendArchEffect; banco depois do relog: a pedra fica, bit 30 0, capa 545 |
+| KB-03 | Alma do Mortal | feliz | ✅ |  | 2026-10-26: (20:46 UTC) regressão: TK exibido 370 com a 5334 e capa 545: CNFCharacterLogout + SendArchEffect slot 0; banco: a 5334 some, LearnedSkill 1<<30, capa 3194 (também no cliente) |
+| KB-04 | Depois do relogin | feliz | ✅ |  | 2026-10-26: (20:46 UTC) regressão: Alma concedida e dois relogins: bit 30 continua no banco (LearnedSkill 1<<30), pedra 0, capa 3194 no banco e no cliente |
+| KB-05 | Repetir | controle | ✅ |  | 2026-10-26: (20:47 UTC) regressão: bit 30 já ligado, com outra 5334 e capa 3194: notice 15, sem SendArchEffect; banco: a pedra fica, capa 3194 |
+| KB-06 | Arch | controle | ✅ |  | 2026-10-26: (20:48 UTC) regressão: Arch exibido 370 com a 5334: notice 15, sem SendArchEffect; banco: pedra, bit 30 0 e capa 545 iguais |
+| KB-07 | Sem reino | borda | ✅ |  | 2026-10-26: (20:48 UTC) regressão: Mortal clan 0 com a 5334 e capa 545: CNFCharacterLogout + SendArchEffect slot 0; banco: a 5334 some, bit 30 ligado, capa 3196 (também no cliente) |
 
 <a id="12"></a>
 ## 12 — Pedra Ideal e Arch → Celestial
