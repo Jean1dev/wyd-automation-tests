@@ -733,6 +733,8 @@ As variantes:
 
 Também reproduzido com o cliente real (`testeup`, 13:58:33Z). O Go limita a fila de saída a 64 frames; o legado aceitava 128 KB. [finding 026](docs/findings/026-coliseu-fila-de-saida.md), [w2pp-OpenWYD#419](https://github.com/Jean1dev/w2pp-OpenWYD/issues/419).
 
+Reteste de 2026-10-26 com o cliente real (`testeup`): **ainda cai**, às 11:06:59Z, com `frames=396` (229 CreateMob, 140 RemoveMob). A fila continua em 64 frames no main `8320279c`.
+
 ## Mapa das quests principais
 
 [docs/quests/README.md](docs/quests/README.md) mapeia as quests principais do jogo para os próximos cenários. São 14 grupos, do novato ao Sub-Celestial. Para cada quest, o mapa traz:
