@@ -21,9 +21,14 @@ const NOTICE_DB_ERROR = 8;
 
 /** Conecta e loga na conta até a tela de seleção (com PIN verificado). */
 export async function login(creds: Credentials, log: Logger): Promise<GameClient> {
-  const c = new GameClient(log.child('net'));
+  let c = new GameClient(log.child('net'));
   await c.connect(creds.target);
   for (let attempt = 1; ; attempt++) {
+    if (c.isClosed) {
+      // O servidor fecha o socket depois do notice 8 / AlreadyPlaying: a nova tentativa precisa de outra conexão.
+      c = new GameClient(log.child('net'));
+      await c.connect(creds.target);
+    }
     const since = c.mark;
     c.send(Op.AccountLogin, P.accountLogin(creds.account, creds.password, creds.clientVersion), { id: 0 });
     const r = await c.waitType([Op.CNFAccountLogin, Op.MessageBoxOk, Op.AlreadyPlaying, Op.StillPlaying], { timeoutMs: 15_000, since });
