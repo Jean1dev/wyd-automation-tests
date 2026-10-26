@@ -724,7 +724,7 @@ As variantes:
 - CL-04: `MSG_NoViewMob` como o cliente legado;
 - CL-05: passos de 7 tiles, como o cliente com velocidade 6.
 
-### Situação (2026-10-23): queda confirmada
+### Situação (2026-10-23): queda confirmada (corrigida em 2026-10-26, ver abaixo)
 
 | Caso | Resultado |
 |---|---|
@@ -734,6 +734,10 @@ As variantes:
 Também reproduzido com o cliente real (`testeup`, 13:58:33Z). O Go limita a fila de saída a 64 frames; o legado aceitava 128 KB. [finding 026](docs/findings/026-coliseu-fila-de-saida.md), [w2pp-OpenWYD#419](https://github.com/Jean1dev/w2pp-OpenWYD/issues/419).
 
 Reteste de 2026-10-26 com o cliente real (`testeup`): **ainda cai**, às 11:06:59Z, com `frames=396` (229 CreateMob, 140 RemoveMob). A fila continua em 64 frames no main `8320279c`.
+
+### Situação (2026-10-26): corrigido
+
+O [w2pp-OpenWYD#428](https://github.com/Jean1dev/w2pp-OpenWYD/pull/428) limita a fila de saída por bytes (128 KB, como o legado), com deploy às 11:41:45Z. O `testeup` foi até o Coliseu e voltou sem cair: o pico foi de 83 frames e 19 KB na fila, e nenhum `session out queue full`.
 
 ## Mapa das quests principais
 

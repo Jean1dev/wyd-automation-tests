@@ -1,8 +1,8 @@
 # 026 — Coliseu: entrar na visão derruba a conexão (fila de saída de 64 frames)
 
-**Situação (2026-10-26): ainda cai no reteste com o cliente real. Confirmado no Railway em 2026-10-23, com o cliente real e com o bot.**
+**Situação (2026-10-26): corrigido.** O [w2pp-OpenWYD#428](https://github.com/Jean1dev/w2pp-OpenWYD/pull/428) foi mergeado (`33ecc76b`), com deploy no Railway às 11:41:45 UTC. O `testeup` foi até o Coliseu e voltou sem cair.
 
-**Status:** aberto.
+**Status:** corrigido.
 **Issue:** [Jean1dev/w2pp-OpenWYD#419](https://github.com/Jean1dev/w2pp-OpenWYD/issues/419)
 **Cenário:** `npm run scenario:coliseu -- --case CL-05` (ou `--no-db --case CL-05` com o banco saturado)
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `5340a445`)
@@ -23,6 +23,16 @@ O usuário conseguiu andar um pouco mais antes de cair, mas isso foi só variaç
 
 Achado secundário: depois do primeiro drop, o mesmo tick continua enfileirando na sessão morta. Saíram mais 12 linhas `dropping connection` para conn=1 às 11:06:59.968. Detalhes no [comentário da #419](https://github.com/Jean1dev/w2pp-OpenWYD/issues/419#issuecomment-6414744050).
 
+### Reteste de 2026-10-26 após o #428: passa
+
+O Go passou a limitar a fila por bytes não enviados (`DefaultOutBufferBytes` = 128 KB), como o legado. Um enqueue numa sessão já fechada virou no-op.
+
+| Quem | Horário (UTC) | Log do tm-server |
+|---|---|---|
+| `testeup` (HT, cliente real) | 11:51:01 → 11:51:57 | sem `session out queue full`. `frames=1161 bytes=133392 out_high_water=83 out_high_water_bytes=19256 … 0x0364:426 0x0165:283`. A sessão terminou com `connection drop reason err=EOF` (o cliente fechou). |
+
+O pico de 83 frames teria derrubado a sessão com o limite antigo de 64. Em bytes, ficou em 19 KB, bem abaixo dos 128 KB.
+
 Com passos de 4 tiles (CL-01 a CL-04, `reports/2026-10-23T13-4*-quest-90`), o bot faz ida e volta sem cair. O pico foi de 61 CreateMob em um segundo, logo abaixo do limite. Pausar a leitura do socket por 2 s (CL-03) não derruba: o buffer TCP absorve. O gatilho é o tamanho do delta de visão num único tick, não um cliente lento.
 
 ## Comportamento esperado (legado)
@@ -31,7 +41,7 @@ Com passos de 4 tiles (CL-01 a CL-04, `reports/2026-10-23T13-4*-quest-90`), o bo
 - `CPSock.cpp:513-520` (`AddMessage`): só falha ao passar de 128 KB. 200 CreateMob ≈ 44 KB cabem.
 - Os geradores do Coliseu (`MinuteGenerate<=0`) só nascem por evento, então a área fica vazia fora dele.
 
-## Comportamento atual (Go)
+## Comportamento antes da correção (Go)
 
 - `tmserver/internal/world/world.go:202`: `OutBuffer` padrão de 64 frames. `cmd/tmserver/main.go` não configura esse valor.
 - `world.go:640-658` (`enqueue`): com o canal cheio, chama `dropSession`.
