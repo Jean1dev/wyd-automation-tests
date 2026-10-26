@@ -819,7 +819,7 @@ npm run scenario:tk-3            # 16–23, Special[3]
 | | 7 Destino (8ª) | a recusa; os pontos somam 689, então ela vem no nível exibido 223 |
 | 2 | 8 Carga, 10 Golpe Mortal, 12 Espada da Fênix | dano (alcance 1) |
 | | 9 Mestre das Armas, 14 Noção de Combate | passivas |
-| | 11 Assalto | affect 13: HP máximo ⌊M×9/10⌋ do legado, com o EF_HPADD; o dano fica informativo |
+| | 11 Assalto | affect 13: HP máximo ⌊H×9/10⌋ do legado, com H o HP mostrado (o EF_HPADD entra antes); o dano fica informativo |
 | | 13 Samaritano | affect 24 (o Go diverge do legado de propósito, issue #267) |
 | | 15 Armadura Crítica (8ª) | a recusa |
 | 3 | 16 Perseguição | debuff sem dano |
@@ -859,6 +859,72 @@ Execuções de 2026-10-17 entre 22:10 e 23:30 UTC:
   - a Fúria Divina mirava Gremlins já colados (puxar não mudava nada);
   - o controle de MP da Carga procurava mob a −1 tile;
   - o HP do Possuído não levava em conta o EF_HPADD +5% do equipamento inicial do TK.
+
+### Situação (2026-10-26): passa nas três árvores, compra da skill como item corrigida; Assalto fora por 1 conforme o HP (ordem do EF_HPADD)
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) e o [#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). Foram três execuções `--fresh --until-done`, uma árvore por vez, numa conta TK nova, e depois uma repetição do Assalto com `npm run scenario:tk-2 -- --skill 11` no TK da árvore 2 já no nível exibido 220:
+
+| Árvore | TK | UTC | Jogo | Resultado | Relatório |
+|---|---|---|---|---|---|
+| 1 | `bot01a7tq3h3` | 16:40–16:53 | 13,2 min | ✅ tudo | `reports/2026-10-26T16-40-00-146Z-tk-tree1` |
+| 2 | `bot0mczb043r` | 16:53–17:07 | 13,2 min | ✅ tudo (Assalto com HP mostrado 454) | `reports/2026-10-26T16-53-37-788Z-tk-tree2` |
+| 2, `--skill 11` | `bot0mczb043r` | 17:20–17:21 | — | ❌ HP máximo do Assalto 1 abaixo do legado (HP mostrado 1158) | `reports/2026-10-26T17-20-30-792Z-tk-tree2` |
+| 3 | `bot01n2j8puy` | 17:07–17:20 | 13,0 min | ✅ tudo | `reports/2026-10-26T17-07-12-403Z-tk-tree3` |
+
+**Árvore 1:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 0 Giro da Fúria | ✅ recusada no 8 | 9 | ✅ 16:40:51, 40 e 45 em dois alvos / MP 15 (15) |
+| 1 Toque Sagrado | ✅ no 24 | 25 | ✅ 16:42:44, sem dano em dois alvos, nenhum `SendAffect` no mob / MP 20 (20) |
+| 2 Golpe Duplo | ✅ no 46 | 47 | ✅ 16:43:58, 124 de dano / MP 10 (10) |
+| 3 Possuído | ✅ no 87 | 88 | ✅ 16:46:19, affect 14 Level 87, Con 88 → 163 (+75 = 87×3/4 + 10), HP máx. 538 → 696 (+150 × 105%) / MP 150 (150) |
+| 4 Fanatismo | ✅ no 98 | 99 | ✅ 16:47:20, 477 de dano / MP 44 (44) |
+| 5 Aura da Vida | ✅ no 125 | 126 | ✅ 16:48:54, affect 17 Level 126 / MP 86 (86) |
+| 6 Fúria Divina | ✅ no 155 | 156 | ✅ 16:50:39, o mob foi puxado de (2196,2107) para (2198,2107) no 3º cast / MP 131 (131) |
+
+**Árvore 2:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 8 Carga | ✅ recusada no 7 | 8 | ✅ 16:54:28, 178 de dano / MP 12 (12) |
+| 9 Mestre das Armas (passiva) | ✅ no 22 | 23 | ✅ 16:56:23, cast recusado |
+| 10 Golpe Mortal | ✅ no 45 | 46 | ✅ 16:57:43, 942 de dano / MP 20 (20) |
+| 11 Assalto | ✅ no 71 | 72 | ✅ 16:59:07, affect 13, HP máx. 454 → 408 (408); dano 215 → 229, informativo / MP 47 (47) |
+| 11 Assalto, `--skill 11` | — | — | ❌ 17:21:05, affect 13 Level 200, HP máx. 1158 → 1041 (1042); dano 654 → 830, informativo / MP 94 (94) |
+| 12 Espada da Fênix | ✅ no 95 | 96 | ✅ 17:00:50, 2040 de dano / MP 32 (32) |
+| 13 Samaritano | ✅ no 119 | 120 | ✅ 17:02:12, affect 24 Level 62 / MP 32 (32) |
+| 14 Noção de Combate (passiva) | ✅ no 149 | 150 | ✅ 17:04:03, cast recusado |
+
+**Árvore 3:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 16 Perseguição | ✅ recusada no 26 | 27 | ✅ 17:08:38, sem dano, nenhum `SendAffect` no mob / MP 25 (25) |
+| 17 Espada Flamejante | — (os pontos já davam no 23; o bot aprende em ordem, depois da 16) | 27 | ✅ 17:09:52, 96 e 93 em dois alvos / MP 25 (25); no cast anterior, o 2º alvo deu parry (−3, `_MSG_Attack.cpp:1427`) |
+| 18 Contra Ataque | ✅ no 43 | 44 | ✅ 17:10:58, 147 de dano / MP 17 (17) |
+| 19 Lâmina Congelante | ✅ no 69 | 70 | ✅ 17:12:23, 204 de dano / MP 22 (22) |
+| 20 Ataque da Alma | ✅ no 91 | 92 | ✅ 17:14:13, 475 de dano / MP 44 (44) |
+| 21 Punhalada Venenosa | ✅ no 120 | 121 | ✅ 17:15:51, 651 de dano / MP 61 (61) |
+| 22 Exterminar | ✅ no 150 | 151 | ✅ 17:17:49, MP 262 → 0, 1046 de dano (≥ 262 + 6) |
+
+- **Assalto:** o arredondamento do #394 está corrigido: com o HP mostrado 454 (M = 433), o Go de antes do #415 daria 409, e veio 408. Mas o HP máximo ainda sai ±1 do legado conforme o HP, pela ordem do EF_HPADD, a mesma do Astaroth e do Titã no cenário 9:
+  - o TK novo tem +5% de EF_HPADD no equipamento inicial (Armadura de Couro 1115 com 4 e Calça de Couro 1127 com 1, BaseMob/TK);
+  - o legado aplica o EF_HPADD antes do laço dos affects (`Basedef.cpp:3886-3895`) e o Assalto faz `MaxHp×9/10` sobre o HP que já tem os 5% (`Basedef.cpp:4047-4050`): ⌊H×9/10⌋;
+  - o Go faz o 9/10 sobre o HP sem os 5% (`handler/affect_score.go:144`) e só aplica o EF_HPADD na leitura (`handler/item.go:2397`): ⌊⌊M×9/10⌋×105/100⌋;
+  - com M = 433, os dois dão 408 (✅ 16:59:07); com M = 1103, o legado dá 1042 e o Go 1041 (❌ 17:21:05). Entre M = 100 e 2000, 688 dos 1901 valores saem ±1;
+  - o caso de 2026-10-17 com M = 1103 (Go 1042) estava, na verdade, igual ao legado: o bot esperava 1041 porque calculava o legado na ordem do Go. O M = 435 (Go 411, legado 410) era mesmo o #394.
+  - [~~#394~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394) corrigida no #415 também no TK; o desvio que sobra é o da ordem do EF_HPADD. Veja [docs/findings/006-transformacao-bm-arredondamento.md](docs/findings/006-transformacao-bm-arredondamento.md). Ainda sem issue.
+- **Compra da skill como item:** ✅ o Cap.Cavaleiros recusa o 5001 (16:41:08 UTC), o 5010 (16:54:44) e o 5017 (17:08:55) com "Pode comprar itens apenas do mercador." (MessagePanel), sem item e com o gold igual. [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+- **Aprender:** em todas, liga só o bit da skill, desconta os pontos exatos e não cobra gold ✅.
+- **Controles:**
+  - skill não aprendida: descartada nas três árvores ✅ (o tm-server registra `crack error` group 8 code 10 às 16:55:03 e 17:09:13, sem derrubar a conexão);
+  - alvo fora do alcance: dano 0 ✅ (9 tiles com alcance 5, 6 com alcance 1);
+  - sem MP: descartado com `SetHpMp` ✅ (MP 8 com custo 15, 4 com 12).
+- **Reaprender e a 8ª:** `AlreadyLearned` nas três árvores, e Destino (no nível exibido 223), Armadura Crítica e Tempestade de Gelo (no 220) sem os 50M dão `NotEnoughCoin`, sem mudar nada. ✅
+- **Relogin:** `Learn` 0x7F, 0x7F00 e 0x7F0000; `SkillBonus` 224, 230 e 227, iguais ao esperado. ✅
+- **Correção no bot:** a verificação `maxHpExact` do Assalto calculava o legado como ⌊⌊M×9/10⌋×105/100⌋, que é a ordem do Go, e por isso não pegava o desvio do EF_HPADD. Agora ela usa ⌊H×9/10⌋ sobre o HP mostrado, como o `Basedef.cpp` (`src/scenarios/skillTree.ts`).
+- Nenhuma queda: as conexões fechadas no log são os relogins do próprio cenário.
 
 ## Cenário 12 — Guilda
 

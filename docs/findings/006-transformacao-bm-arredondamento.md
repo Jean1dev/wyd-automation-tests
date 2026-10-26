@@ -1,6 +1,6 @@
 # 006 — Transformação do BM (Lobisomem) e Assalto do TK arredondam o desconto diferente do legado
 
-**Status:** corrigido no BM pelo [#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) (Lobisomem retestado em 2026-10-26, ver abaixo). O Assalto do TK ainda não foi retestado (cenário 11). Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T19-39-11-741Z-bm-transform`).
+**Status:** corrigido pelo [#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) no BM (Lobisomem) e no TK (Assalto), os dois retestados em 2026-10-26 (ver abaixo). Sobra um desvio de ±1 no HP máximo pela ordem do EF_HPADD, no Astaroth e no Titã do BM e no Assalto do TK, ainda sem issue. Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T19-39-11-741Z-bm-transform`).
 **Issue:** [Jean1dev/w2pp-OpenWYD#394](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394)
 **Cenário:** `npm run scenario:bm-transformacao -- --skill 64,65`
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `d896ae2f`)
@@ -61,7 +61,7 @@ A causa não é o truncamento do delta, e sim em que ordem entram o EF_HPADD e a
 
 Com M = 362, 407 e 539, a conta do Go dá exatamente 409, 481 e 639. Ela também explica os 4 casos de hoje que passam (Lobisomem e Homem-Urso, com e sem a passiva, em que os dois truncamentos coincidem) e o Astaroth com Asas do Inferno de 2026-10-17 que tinha ficado inconclusivo (429 → 485, legado 484). Ainda sem issue. Uma correção possível é aplicar o multiplicador da transformação sobre `MaxHP×(100+HpAddPct)/100`, ou levar o EF_HPADD para antes dos affects, como o legado.
 
-O Assalto do TK (`affect_score.go:144`) também multiplica o HP sem o EF_HPADD. Isso fica para o reteste do cenário 11.
+O Assalto do TK (`affect_score.go:144`) também multiplica o HP sem o EF_HPADD. O reteste do cenário 11 confirmou que ele cai no mesmo desvio (ver abaixo).
 
 ## O mesmo no Assalto do TransKnight (cenário 11)
 
@@ -73,6 +73,23 @@ O Assalto (skill 11, affect 13) faz `MaxHp×9/10` no legado (`Basedef.cpp:4036`)
 | 23:27:53 | 1103 | 1041 | 1042 |
 
 Registrado no mesmo [#394](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394) ([comentário](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394#issuecomment-6242824400)). A verificação é `npm run scenario:tk-2 -- --skill 11`.
+
+## Reteste do TK (Assalto, 2026-10-26)
+
+Com o mesmo deploy de main de 12:49Z, o cenário 11 rodou com `npm run scenario:tk-2 -- --fresh --until-done` às 16:53–17:07 UTC (`reports/2026-10-26T16-53-37-788Z-tk-tree2`), e o Assalto foi repetido com `--skill 11` no mesmo TK `bot0mczb043r`, já no nível exibido 220, às 17:20–17:21 (`reports/2026-10-26T17-20-30-792Z-tk-tree2`).
+
+O TK novo também tem +5% de EF_HPADD no equipamento inicial: Armadura de Couro 1115 com 4 e Calça de Couro 1127 com 1 (BaseMob/TK). O legado aplica o EF_HPADD antes dos affects (`Basedef.cpp:3886-3895`), e o Assalto faz `MaxHp×9/10` sobre o HP mostrado (`Basedef.cpp:4047-4050`). O Go faz o 9/10 sobre o HP sem os 5% (`handler/affect_score.go:144`, `e.MaxHP*9/10 - e.MaxHP` desde o #415) e aplica o EF_HPADD só na leitura (`handler/item.go:2397`).
+
+| UTC | Caso | HP mostrado (M) | Legado ⌊H×9/10⌋ | Go antes do #415 | Recebido |
+|---|---|---|---|---|---|
+| 16:59:07 | Assalto, Level 0 | 454 (433) | 408 | 409 | ✅ 408 |
+| 17:21:05 | Assalto, Level 200 | 1158 (1103) | 1042 | 1042 | ❌ 1041 |
+
+- O arredondamento do #394 está corrigido também no TK: com M = 433, o `M − M/10` de antes daria 409.
+- **O EF_HPADD afeta o TK, sim.** O ⌊⌊M×9/10⌋×105/100⌋ do Go dá exatamente os dois valores recebidos, e o ⌊⌊M×105/100⌋×9/10⌋ do legado diverge dele em ±1 para 688 dos 1901 valores de M entre 100 e 2000. Com M = 433 os dois coincidem; com M = 1103, não.
+- **Correção da leitura de 2026-10-17:** a tabela acima ("O mesmo no Assalto do TransKnight") calculou o legado na ordem do Go, ⌊⌊M×9/10⌋×105/100⌋. Na ordem do `Basedef.cpp`, o legado dá 410 para M = 435 (o Go de então deu 411, que era mesmo o #394) e 1042 para M = 1103 (o Go de então deu 1042, igual). Hoje, com o #415, o M = 1103 dá 1041 e fica 1 abaixo.
+- A verificação `maxHpExact` do bot (`src/scenarios/skillTree.ts`) passou a usar ⌊H×9/10⌋ sobre o HP mostrado.
+- A correção possível é a mesma da transformação: fazer o 9/10 sobre `MaxHP×(100+HpAddPct)/100`, ou aplicar o EF_HPADD antes dos affects, como o legado.
 
 ## Como verificar
 

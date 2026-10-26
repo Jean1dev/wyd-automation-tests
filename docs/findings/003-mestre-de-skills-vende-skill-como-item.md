@@ -55,7 +55,7 @@ No BeastMaster (cenário 9), o Mestre_Archi recusou as três árvores com "Pode 
 
 Na Huntress (cenário 10), o ForeLearner recusou as três árvores com "Pode comprar itens apenas do mercador.", sem item e com o gold igual: o 5073 às 15:56:10 UTC (`reports/2026-10-26T15-55-00-744Z-ht-tree1`), o 5081 às 16:10:11 (`reports/2026-10-26T16-09-04-556Z-ht-tree2`) e o 5089 às 16:24:38 (`reports/2026-10-26T16-23-27-748Z-ht-tree3`).
 
-O TransKnight não foi retestado aqui.
+No TransKnight (cenário 11), o Cap.Cavaleiros recusou as três árvores com "Pode comprar itens apenas do mercador.", sem item e com o gold igual: o 5001 às 16:41:08 UTC (`reports/2026-10-26T16-40-00-146Z-tk-tree1`), o 5010 às 16:54:44 (`reports/2026-10-26T16-53-37-788Z-tk-tree2`) e o 5017 às 17:08:55 (`reports/2026-10-26T17-07-12-403Z-tk-tree3`).
 
 ## Como verificar
 
