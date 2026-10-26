@@ -509,6 +509,33 @@ O MP de todos os casts bateu com a fórmula.
 
 Na primeira execução, a Velocidade falhou por erro do bot: ele lia a corrida no nibble alto do `AttackRun`, que é o ataque. O `AttackRun` é `ataque × 16 + corrida` (`Basedef.cpp:4711`). Corrigido, o `--skill 41` passou.
 
+### Situação (2026-10-26): passa, Teleporte e compra da skill como item corrigidos
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) e o [#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). A execução `--fresh --until-done` das 14:30–14:46 UTC (`reports/2026-10-26T14-30-11-048Z-foema-special-magic`), com a Foema `bot0r8omh1r4`, **passou** de primeira: 16 min de jogo e 219 Poeiras de Fada.
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast |
+|---|---|---|---|
+| 40 Névoa Venenosa | ✅ recusada no 8 | 9 | ✅ 70 de dano / MP 9 (9) |
+| 41 Velocidade | ✅ no 21 | 22 | ✅ affect 2, corrida 4 → 5 / MP 52 (52) |
+| 42 Teleporte | ✅ no 39 | 40 | ✅ ficou em (2196,2109) nos dois casts, 14:35:23 e 14:35:25 UTC (abaixo) / MP 0 (0) |
+| 43 Escudo Mágico | ✅ no 60 | 61 | ✅ affect 11, AC 88 → 103 (+15) / MP 52 (52) |
+| 44 Arma Mágica | ✅ no 85 | 86 | ✅ affect 9, dano 110 → 581 (+471) / MP 101 (101) |
+| 45 Toque de Athena | ✅ no 109 | 110 | ✅ affect 15, as 4 maestrias +14 / MP 135 (135) |
+| 46 Controle de Mana | ✅ `ReqNotMet` no 140 | 141 | ✅ affect 18 / MP 188 (188) |
+
+- **Teleporte:** ✅ em si mesma, parada em (2196,2109):
+  - com a própria posição no pacote, o `Action` de teleporte voltou para (2196,2109), a mesma célula (em 2026-10-17 ela pulava para a célula ao lado);
+  - com (2211,2119) no pacote, 15 tiles adiante, o `Action` também voltou para (2196,2109). O servidor usa a posição da Foema, como o legado (`_MSG_Attack.cpp:781`), e manda o "Convocado por [...]." (`MessagePanel`) depois.
+  - [~~#393~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/393) corrigida no #415.
+- **Controles:**
+  - Velocidade não aprendida: descartada. ✅
+  - Sem MP (24 casts de dreno, cast final com MP 6 e custo 9): descartado com `SetHpMp`. ✅
+  - Alvo a 9 tiles, com alcance 6: dano 0. ✅
+- **Compra da skill como item:** ✅ o Foema_Ancian recusa o 5041 com "Pode comprar itens apenas do mercador." (MessagePanel), nenhum item e gold igual (995.280). [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+- **Reaprender e Cancelamento:** `AlreadyLearned` com 269 pontos livres, e o Cancelamento sem os 50M dá `NotEnoughCoin`, sem mudar nada. ✅
+- **Relogin:** `Learn` 0x7F0000 e `SkillBonus` 269. ✅
+- As diferenças vistas só na leitura do código (o `DAMAGEMULTI` da Arma Mágica e o teto do Toque de Athena) continuam fora do que o cenário observa.
+
 ## Cenário 9 — Skills do BeastMaster (três árvores)
 
 ```

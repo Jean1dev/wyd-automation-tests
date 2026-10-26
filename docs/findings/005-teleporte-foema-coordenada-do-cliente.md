@@ -1,6 +1,8 @@
 # 005 — O Teleporte da Foema leva o alvo para a coordenada que o cliente manda
 
-**Status:** aberto. Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T18-32-29-064Z-foema-special-magic`).
+**Status:** corrigido no [#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) (issue [~~#393~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/393)). O reteste no Railway passou em 2026-10-26 (`reports/2026-10-26T14-30-11-048Z-foema-special-magic`), ver abaixo.
+
+Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T18-32-29-064Z-foema-special-magic`).
 **Issue:** [Jean1dev/w2pp-OpenWYD#393](https://github.com/Jean1dev/w2pp-OpenWYD/issues/393)
 **Cenário:** `npm run scenario:foema-special -- --skill 42`
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `d896ae2f`)
@@ -37,6 +39,14 @@ O Go usa o `TargetX/TargetY` do pacote (`handler/combat.go:915-932`, `applyFoema
 Duas diferenças do legado, vistas só na leitura do código, que o cenário não observa:
 - a Arma Mágica (affect 9) do Go não soma o `DAMAGEMULTI` (+5, e +10 numa Foema com o bit 19), que o legado soma em `Basedef.cpp:4004-4012`;
 - o Toque de Athena (affect 15) limita a maestria a 400 na leitura; o legado limita o Special[0] a 200 e os demais a 255.
+
+## Reteste (2026-10-26)
+
+Com o deploy de main de 12:49Z, que traz o #415, a Foema `bot0r8omh1r4`, parada em (2196,2109), usou o Teleporte em si mesma duas vezes:
+- 14:35:23 UTC, com a própria posição no pacote: o `Action` de teleporte voltou para (2196,2109), a mesma célula (antes ela pulava para a célula ao lado);
+- 14:35:25 UTC, com (2211,2119) no pacote: o `Action` também voltou para (2196,2109), e não para a coordenada do cliente.
+
+Nos dois casts vieram o eco com a skill 42, MP 0 e um `MessagePanel` ("Convocado por [...].", `_SN_Summoned_By_S`). O Go agora usa a posição da Foema no servidor e faz as checagens do legado (`applyFoemaSummon` em `handler/combat.go`). O resto do cenário 8 também passou: as 7 skills, os controles, a compra da skill como item (recusada), o Cancelamento sem os 50M e o relogin.
 
 ## Como verificar
 

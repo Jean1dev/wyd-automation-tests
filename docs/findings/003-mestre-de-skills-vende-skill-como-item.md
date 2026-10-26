@@ -49,7 +49,9 @@ Com o deploy de main de 12:49Z, que traz o #416, o mesmo `MSG_Buy` para o slot 2
 
 Na Magia Branca (cenário 7), às 14:05–14:27 UTC (`reports/2026-10-26T14-05-54-749Z-foema-white-magic`), o `MSG_Buy` do Desintoxicar (5025, slot 2 do Foema_Ancian) também foi recusado com "Pode comprar itens apenas do mercador.", sem item e com o gold igual (995.000).
 
-As outras árvores (Magia Especial, BeastMaster, Huntress e TransKnight) não foram retestadas aqui.
+Na Magia Especial (cenário 8), às 14:31:30 UTC (`reports/2026-10-26T14-30-11-048Z-foema-special-magic`), o `MSG_Buy` da Velocidade (5041, slot 55 do Foema_Ancian) também foi recusado com "Pode comprar itens apenas do mercador.", sem item e com o gold igual (995.280).
+
+As outras árvores (BeastMaster, Huntress e TransKnight) não foram retestadas aqui.
 
 ## Como verificar
 
