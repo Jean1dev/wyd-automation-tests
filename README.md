@@ -610,6 +610,72 @@ Execuções de 2026-10-17 entre 19:07 e 20:30 UTC:
   - Na primeira execução das magias, o bot usou o mestre da Foema, e o BM aprendeu as skills dele no Foema_Ancian. Nem o legado nem o Go conferem qual mestre ensina, só o `TargetID` (`_MSG_ApplyBonus.cpp:139`). A execução final usou o Mestre_Archi.
   - Um HP máximo +1 no Astaroth com Asas do Inferno não se repetiu com `--skill 69` e ficou como inconclusivo.
 
+### Situação (2026-10-26): Lobisomem e compra da skill como item corrigidos; HP máximo de Astaroth e Titã fora por 1
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) e o [#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). Foram três execuções `--fresh --until-done`, uma árvore por vez, numa conta BM nova:
+
+| Árvore | BM | UTC | Jogo | Resultado | Relatório |
+|---|---|---|---|---|---|
+| Magias | `bot0dgmjx72v` | 14:49–15:06 | 17,2 min | ✅ tudo | `reports/2026-10-26T14-49-25-363Z-bm-magic` |
+| Evocações | `bot06ndtxn3y` | 15:07–15:22 | 14,8 min | ✅ tudo | `reports/2026-10-26T15-07-02-294Z-bm-summon` |
+| Transformações | `bot0pt23obso` | 15:22–15:50 | 27,8 min | ✅ Lobisomem; ❌ HP máximo de Astaroth e Titã (abaixo) | `reports/2026-10-26T15-22-45-135Z-bm-transform` |
+
+**Magias:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast |
+|---|---|---|---|
+| 48 Fera Flamejante | ✅ recusada no 8 | 9 | ✅ 69 de dano / MP 8 (8) |
+| 49 Chamas Etéreas | ✅ no 20 | 21 | ✅ eco sem efeito no mob / MP 35 (35) |
+| 50 Som das Fadas | ✅ no 43 | 44 | ✅ 384 de dano / MP 20 (20) |
+| 51 Enfraquecer | ✅ no 58 | 59 | ✅ sem dano, nenhum `SendAffect` no mob / MP 35 (35) |
+| 52 Fúria de Gaia | ✅ no 83 | 84 | ✅ 1036 e 945, dois alvos / MP 32 (32) |
+| 53 Proteção Elemental | ✅ no 109 | 110 | ✅ affect 25 Level 81, resistências 0/0/0/0 → 3/3/0/3 / MP 147 (147) |
+| 54 Aura Bestial | ✅ no 139 | 140 | ✅ a Fúria de Gaia disparou sozinha 2 s depois (15:03:23), 1665 e 1603 em dois alvos / MP 213 (213) |
+
+**Evocações:** a quantidade bateu com a fórmula em todas, e cada uma foi seguida de relogin.
+
+| Skill | Antes da hora | Aprendida no nível exibido | Special[2] | Bichos | MP (esperado) |
+|---|---|---|---|---|---|
+| 56 Condor | ✅ no 11 | 12 | 30 | 1 | 34 (34) |
+| 57 Javali | ✅ no 28 | 29 | 30 | 1 | 63 (63) |
+| 58 Lobo | ✅ no 52 | 53 | 40 | 1 | 90 (90) |
+| 59 Urso | ✅ no 76 | 77 | 40 | 1 | 108 (108) |
+| 60 Tigre | ✅ no 104 | 105 | 86 | 2 | 171 (171) |
+| 61 Gorila | ✅ no 135 | 136 | 112 | 1 | 202 (202) |
+| 62 Dragão Negro | ✅ no 169 | 170 | 166 | 2 | 283 (283) |
+
+No relatório, o MP esperado do Condor e do Lobo sai como 30 e 86: o bot calculava o campo `expectedMp` com a maestria de antes de subi-la para a evocação. A verificação `mpCharged` já usava a maestria do cast e passou. O bot agora grava no relatório o valor do cast.
+
+**Transformações:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) | AC antes → depois (legado) | HP máx. antes → depois (legado) |
+|---|---|---|---|---|---|
+| 64 Lobisomem, Level 0 | ✅ no 11 | 12 | 15:23:49 | ✅ 46 → 48 (48) | ✅ 116 → 110 (110) |
+| 65 Coração de Lobo (passiva) | ✅ no 26 | 27 | recusado; Lobisomem refeito 15:28:01 | ✅ 61 → 64 (64) | ✅ 161 → 161 (161) |
+| 66 Homem-Urso, Level 0 | ✅ no 48 | 49 | 15:30:58 | ✅ 83 → 83 (83) | ✅ 228 → 250 (250) |
+| 67 Escudo do Tormento (passiva) | ✅ no 63 | 64 | recusado; Homem-Urso refeito 15:33:50 | ✅ 98 → 98 (98) | ✅ 278 → 347 (347) |
+| 68 Astaroth, Level 88 | ✅ no 96 | 97 | 15:36:49 | ✅ 131 → 142 (142) | ❌ 380 → 409 (410) |
+| 69 Asas do Inferno (passiva) | ✅ no 111 | 112 | recusado; Astaroth refeito 15:42:22 | ✅ 146 → 166 (166) | ❌ 427 → 481 (482) |
+| 70 Titã, Level 140 | ✅ no 155 | 156 | 15:47:57 | ✅ 190 → 247 (247) | ❌ 565 → 639 (638) |
+
+O MP e a corrida bateram em todas.
+
+- **Lobisomem:** ✅ com o multiplicador 95, a AC e o HP máximo agora batem com o `X×multi/100` do legado, sem e com o Coração de Lobo (em 2026-10-17 davam 49/111 e 65). [~~#394~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394) corrigida no #415 para o BM; o Assalto do TK fica para o cenário 11.
+- **HP máximo de Astaroth e Titã:** ❌ 1 ponto abaixo (Astaroth) ou acima (Titã) do legado. A causa não é a do #394, e sim a ordem do EF_HPADD:
+  - o BM novo tem +5% de EF_HPADD no equipamento inicial (Robe 1406 com 4, Calça 1409 com 1);
+  - o legado aplica o EF_HPADD antes do laço dos affects (`Basedef.cpp:3886-3895`) e depois multiplica o HP já com os 5% pela transformação (`Basedef.cpp:4194-4200`);
+  - o Go multiplica a transformação sobre o HP sem os 5% (`handler/transform.go:137`) e só aplica o EF_HPADD na leitura (`handler/item.go:2397`). São dois truncamentos em outra ordem;
+  - com os 5% depois, a conta do Go dá exatamente o recebido nos 7 casos de hoje e nos de 2026-10-17, inclusive o Astaroth com Asas do Inferno (429 → 485, legado 484) que tinha ficado inconclusivo. Com multiplicador baixo, os dois truncamentos coincidem, e por isso Lobisomem e Homem-Urso passam.
+  - Veja [docs/findings/006-transformacao-bm-arredondamento.md](docs/findings/006-transformacao-bm-arredondamento.md). Ainda sem issue.
+- **Compra da skill como item:** ✅ o Mestre_Archi recusa o 5049 (14:50:53 UTC), o 5057 (15:08:48) e o 5066 (15:24:24) com "Pode comprar itens apenas do mercador." (MessagePanel), sem item e com o gold igual (995.000). [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+- **Controles:**
+  - skill não aprendida: descartada nas três árvores ✅;
+  - nas magias, alvo a 9 tiles com alcance 6 deu dano 0 ✅, e sem MP (27 casts de dreno, cast final com MP 5 e custo 8) veio descartado com `SetHpMp` ✅;
+  - nas transformações, sem MP (cast final com MP 53 e custo 72) ✅.
+- **Reaprender e a 8ª:** `AlreadyLearned` nas três árvores, e Espírito Vingador, Succubus (no nível exibido 233) e Éden sem os 50M dão `NotEnoughCoin`, sem mudar nada. ✅
+- **Relogin:** `Learn` 0x7F, 0x7F00 e 0x7F0000; `SkillBonus` 260, 222 e 212, iguais ao esperado. ✅
+- Nenhuma queda: as conexões fechadas no log são os relogins do próprio cenário.
+
 ## Cenário 10 — Skills da Huntress (três árvores)
 
 ```

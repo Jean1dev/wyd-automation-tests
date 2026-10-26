@@ -51,7 +51,9 @@ Na Magia Branca (cenário 7), às 14:05–14:27 UTC (`reports/2026-10-26T14-05-5
 
 Na Magia Especial (cenário 8), às 14:31:30 UTC (`reports/2026-10-26T14-30-11-048Z-foema-special-magic`), o `MSG_Buy` da Velocidade (5041, slot 55 do Foema_Ancian) também foi recusado com "Pode comprar itens apenas do mercador.", sem item e com o gold igual (995.280).
 
-As outras árvores (BeastMaster, Huntress e TransKnight) não foram retestadas aqui.
+No BeastMaster (cenário 9), o Mestre_Archi recusou as três árvores com "Pode comprar itens apenas do mercador.", sem item e com o gold igual (995.000): o 5049 às 14:50:53 UTC (`reports/2026-10-26T14-49-25-363Z-bm-magic`), o 5057 às 15:08:48 (`reports/2026-10-26T15-07-02-294Z-bm-summon`) e o 5066 às 15:24:24 (`reports/2026-10-26T15-22-45-135Z-bm-transform`).
+
+A Huntress e o TransKnight não foram retestados aqui.
 
 ## Como verificar
 
