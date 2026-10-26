@@ -181,18 +181,18 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| AR-01 | Oráculo sem almas | controle | ✅ |  | 10 safiras, sem almas: RedOracle responde notice 15 (ReqNotMet; o legado manda _NN_Set_Soul); inventário e gold iguais no cliente e no banco depois do relog |
-| AR-02 | Almas fora de ordem | controle | ✅ |  | 1741 no slot 0, 1740 no 1, 10 safiras: notice 15 (o legado manda _NN_Set_Soul); nada some no cliente nem no banco depois do relog |
-| AR-03 | Sem safiras | controle | ✅ |  | almas em ordem, 9 safiras: notice 15 (o legado manda _DN_Need_D_Sapphire); nada some no cliente nem no banco depois do relog |
-| AR-04 | Pedra da Imortalidade | feliz | ✅ |  | almas nos slots 0/1 e 10 × 697: as 12 somem e a 1742 entra no slot 0, no cliente e no banco depois do relog |
-| AR-05 | Pacote de safiras | borda | ✅ |  | almas nos slots 0/1 e 1 × 4131: o pacote e as almas somem e a 1742 entra no slot 0, no cliente e no banco depois do relog |
-| AR-06 | Refino da pedra de boss | feliz | ✅ |  | 2026-10-22: (08:17 UTC) 412 sobre a 1752 no inventário e no Equip[11]: "não pode ser mais refinado", poeira e pedra ficam (cliente e banco); o legado também recusa (EF_NOSANC, _MSG_UseItem.cpp:188/365) |
-| AR-07 | Sephirot (ask) | controle | ✅ |  | 8 Pedras Arch, 30.001.000 de gold, confirm 0 no Cap.Cavaleiros: sem resposta (o legado só fala _NN_Soul_n_8_Sephera); nada muda no cliente nem no banco |
-| AR-08 | Sephirot sem gold | controle | ✅ |  | 8 Pedras Arch, gold 29.999.999, confirm 1: notice 15 (o legado fala _NN_Need_8_Sephera); pedras e gold iguais no cliente e no banco |
-| AR-09 | Sephirot faltando pedra | controle | ✅ |  | 1744–1750 + outra 1750 (falta a 1751), 30.001.000 de gold, confirm 1: notice 15; nada some no cliente nem no banco |
-| AR-10 | Sephirot | feliz | ✅ | [~~#390~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) corrigida no #411 | 2026-10-22: (08:21 UTC) 8 Pedras Arch e 30.001.000 de gold, confirm 1 no Cap.Cavaleiros: pedras e 30M somem, entra a 1760 (cliente e banco). O Go põe a Sephirot na 1ª vaga livre antes de apagar as pedras (Carry[12]; o legado, depois, cairia no Carry[0]) e não fala _NN_Sepherot_created |
-| AR-11 | Sephirot de cada mestre | feliz | ✅ | [~~#390~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) corrigida no #411 | 2026-10-22: (08:25 UTC) Foema_Ancian deu 1761, Mestre_Archi 1762, ForeLearner 1763; pedras e 30M somem (cliente e banco) |
-| AR-12 | Rei | coberto | ✅ |  | 1742 no Equip[10], 1760 no Equip[11], armazenado 299: Rei_Glantuar volta à seleção com o Arch no slot 1 (SendArchEffect 1); banco: Arch class 0, master 1, nível 0, Equip[0] 6; mortal sem Equip[10]/[11] |
+| AR-01 | Oráculo sem almas | controle | ✅ |  | 2026-10-26: (20:02 UTC) regressão: 10 safiras, sem almas: RedOracle responde notice 15; inventário e gold iguais no cliente e no banco depois do relog |
+| AR-02 | Almas fora de ordem | controle | ✅ |  | 2026-10-26: (20:04 UTC) regressão: 1741 no slot 0, 1740 no 1, 10 safiras: notice 15; nada some no cliente nem no banco depois do relog |
+| AR-03 | Sem safiras | controle | ✅ |  | 2026-10-26: (20:06 UTC) regressão: almas em ordem, 9 safiras: notice 15; nada some no cliente nem no banco depois do relog |
+| AR-04 | Pedra da Imortalidade | feliz | ✅ |  | 2026-10-26: (20:08 UTC) regressão: almas nos slots 0/1 e 10 × 697: as 12 somem e a 1742 entra no slot 0, no cliente e no banco depois do relog |
+| AR-05 | Pacote de safiras | borda | ✅ |  | 2026-10-26: (20:10 UTC) regressão: almas nos slots 0/1 e 1 × 4131: o pacote e as almas somem e a 1742 entra no slot 0, no cliente e no banco depois do relog |
+| AR-06 | Refino da pedra de boss | feliz | ✅ |  | 2026-10-26: (20:11 UTC) regressão: 412 sobre a 1752 no inventário e no Equip[11]: "Este item não pode ser mais refinado.", poeira e pedra ficam (cliente e banco) |
+| AR-07 | Sephirot (ask) | controle | ✅ |  | 2026-10-26: (20:12 UTC) regressão: 8 Pedras Arch, 30.001.000 de gold, confirm 0 no Cap.Cavaleiros: sem resposta; nada muda no cliente nem no banco |
+| AR-08 | Sephirot sem gold | controle | ✅ |  | 2026-10-26: (20:12 UTC) regressão: 8 Pedras Arch, gold 29.999.999, confirm 1: notice 15; pedras e gold iguais no cliente e no banco |
+| AR-09 | Sephirot faltando pedra | controle | ✅ |  | 2026-10-26: (20:13 UTC) regressão: 1744–1750 + outra 1750, 30.001.000 de gold, confirm 1: notice 15; nada some no cliente nem no banco |
+| AR-10 | Sephirot | feliz | ✅ | [~~#390~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) corrigida no #411 | 2026-10-26: (20:13 UTC) regressão: 8 Pedras Arch e 30.001.000 de gold, confirm 1 no Cap.Cavaleiros: pedras e 30M somem, entra a 1760 no Carry[12], gold 1.000 (cliente e banco) |
+| AR-11 | Sephirot de cada mestre | feliz | ✅ | [~~#390~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390) corrigida no #411 | 2026-10-26: (20:15 UTC) regressão: Foema_Ancian deu 1761, Mestre_Archi 1762, ForeLearner 1763 |
+| AR-12 | Rei | coberto | ✅ |  | 2026-10-26: (20:17 UTC) regressão: Rei_Glantuar desloga, lista nova com o Arch no slot 1 (SendArchEffect 1); banco: Arch class 0, master 1, nível 0, Equip[0] 6; mortal master 2, nível 299, Equip[0] 1, sem Equip[10]/[11] |
 
 <a id="10"></a>
 ## 10 — Destravas do Arch: Lindy 355/370 e Cristais
