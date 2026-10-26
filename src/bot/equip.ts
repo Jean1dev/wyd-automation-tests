@@ -38,9 +38,15 @@ export async function equipFromCarry(c: GameClient, log: Logger, fromSlot: numbe
   const since = c.mark;
   c.send(Op.TradingItem, P.tradingItem({ place: P.PLACE_CARRY, slot: fromSlot }, { place: P.PLACE_EQUIP, slot: equipSlot }));
   try {
-    await c.waitFor((f) => f.header.type === Op.MessageBoxOk || (f.header.type === Op.UpdateScore && f.header.id === me.clientId), {
+    // O servidor pode mandar o UpdateScore antes do eco do TradingItem: espera o eco (ou o aviso de recusa).
+    const first = await c.waitFor((f) => f.header.type === Op.MessageBoxOk || f.header.type === Op.TradingItem, {
       timeoutMs: 5000, since, what: `equipar o item ${item}`,
     });
+    if (first.header.type === Op.TradingItem) {
+      await c.waitFor((f) => f.header.type === Op.UpdateScore && f.header.id === me.clientId, {
+        timeoutMs: 2000, since, what: `score depois de equipar o item ${item}`,
+      });
+    }
   } catch {
     // sem resposta: registrado abaixo
   }

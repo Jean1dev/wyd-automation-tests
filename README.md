@@ -263,6 +263,23 @@ Execução de 2026-10-17 14:23–15:01 UTC (`--adopt botq5cm1l --until-done`, Tr
   - As Botas e a Armadura Melpômene levaram a AC a 4399.
   - A Calça ficou de fora por gold (sobraram 156k de 1M). As peças antigas foram vendidas.
 
+### Situação (2026-10-26): passa nos quatro passos
+
+Regressão com o deploy de main de 12:49Z. A primeira execução (21:43–22:18 UTC) cumpriu todos os critérios das arenas, mas reprovou no passo 4 por um **bug do bot**: o servidor manda o `UpdateScore` antes do eco do `MSG_TradingItem`, e o `equipFromCarry` (`src/bot/equip.ts`) dava o equipamento como recusado sem esperar o eco. As Luvas Melpômene tinham sido vestidas (estavam no slot 4 no passo 5). Agora o bot espera o eco ou o aviso e só depois o score.
+
+Execução de 23:17–23:58 UTC (`--fresh --until-done`, TransKnight do 7 ao 321): **passou**, com 41 min de jogo, 320 Poeiras e uma tentativa por passo.
+
+| Passo | Item errado | Intruso | Abaixo do nível | A: entrega | B: reset |
+|---|---|---|---|---|---|
+| 2 Jardineiro | ✅ aviso 15 (23:21:35) | ✅ volta para (2097,2097) | ✅ recusado no 115 | ✅ no 116 → (2235,1714) | ✅ 23:28:58 |
+| 3 Kaizen | ✅ (23:33:20) | ✅ | ✅ no 190 | ✅ no 191 → (465,3902) | ✅ 23:38:58 |
+| 4 Hidra | ✅ (23:44:04) | ✅ | ✅ no 265 | ✅ no 266 → (667,3753) | ✅ 23:48:58 |
+| 5 Elfos | ✅ (23:53:55) | ✅ | ✅ no 320 | ✅ no 321 → (1322,4038) | ✅ 23:58:58 |
+
+- Os quatro itens saíram de graça na Aki, e os resets continuam no ciclo de 10 min (xx:x8:58).
+- Equipamento: Espada em Cruz no 190, Luvas no 265 (AC 296 → 1520), Hrotti, Botas e Armadura no 320 (dano 6177, AC 4399). A Calça ficou de fora por gold.
+- Reports: `reports/2026-10-26T21-43-21-300Z-quest256-chain` (falso negativo do bot) e `reports/2026-10-26T23-17-55-388Z-quest256-chain`.
+
 ## Cenário 5 — Criação do Arch
 
 `npm run scenario:arch` (exige a conta do Arch no `.env`: `npm run account:create -- --arch`)
