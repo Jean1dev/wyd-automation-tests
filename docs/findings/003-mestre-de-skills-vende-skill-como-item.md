@@ -1,6 +1,8 @@
 # 003 — O mestre de skills vende a skill como item pelo MSG_Buy
 
-**Status:** aberto. Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T17-02-07-259Z-foema-black-magic`).
+**Status:** corrigido no [#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416) (issue [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391)). Na Magia Negra, o reteste no Railway passou em 2026-10-26 (`reports/2026-10-26T13-43-41-340Z-foema-black-magic`), ver abaixo.
+
+Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T17-02-07-259Z-foema-black-magic`).
 Reproduzido de novo em todas as árvores seguintes:
 - Magia Branca (5025);
 - Magia Especial (5041);
@@ -37,6 +39,15 @@ O item 5033 não tem `EF_VOLATILE`, então não ensina a skill pelo `MSG_UseItem
 | Inferno sem os 50M de gold | ✅ `NotEnoughCoin`, nada muda. Aprender e conjurar fica bloqueado. |
 | Relogin | ✅ Learn 0x7F00, SkillBonus 224 = 3×219 + 20 − 453 |
 | **Comprar a skill como item no mestre** | ❌ entregou o item 5033 |
+
+## Reteste (2026-10-26)
+
+Com o deploy de main de 12:49Z, que traz o #416, o mesmo `MSG_Buy` para o slot 28 do Foema_Ancian (Relâmpago, 5033) foi recusado:
+- 13:24:02 UTC: veio um `MessagePanel` e nenhum `SendItem`, e o slot de destino continuou vazio;
+- 13:41:24 UTC: o texto do painel é "Pode comprar itens apenas do mercador.", como no legado (`_MSG_Buy.cpp:55`);
+- o gold não mudou (995.000).
+
+As outras árvores (Magia Branca, Magia Especial, BeastMaster, Huntress e TransKnight) não foram retestadas aqui.
 
 ## Como verificar
 

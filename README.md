@@ -353,6 +353,25 @@ Execuções de 2026-10-17 entre 17:02 e 17:28 UTC (`--fresh --until-done`, retom
 
 Na primeira tentativa do Trovão, a conexão caiu 4 s depois do cast. Um processo órfão de uma execução anterior, que tinha sido interrompida, entrou na mesma conta ("Conta desconectada por conexão simultânea."). O `--skill 37` repetiu o cast numa sessão estável, e ele passou.
 
+### Situação (2026-10-26): passa, compra da skill como item corrigida
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). A execução `--fresh --until-done` das 13:43–14:00 UTC (`reports/2026-10-26T13-43-41-340Z-foema-black-magic`) **passou**: 16 min de jogo.
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast: dano / MP (esperado) |
+|---|---|---|---|
+| 32 Ataque de Fogo | ✅ recusada no 6 | 7 | ✅ 75 / 7 (7) |
+| 33 Relâmpago | ✅ no 23 | 24 | ✅ 199 / 10 (10) |
+| 34 Lança de Gelo | ✅ no 46 | 47 | ✅ 397 / 15 (15) |
+| 35 Tempestade de Meteoros | ✅ no 70 | 71 | ✅ 381 e 399, dois alvos / 25 (25) |
+| 36 Nevasca | ✅ no 94 | 95 | ✅ 1206 / 54 (54) |
+| 37 Trovão | ✅ no 124 | 125 | ✅ affect 22 no personagem / 130 (130) |
+| 38 Fênix de Fogo | ✅ no 151 | 152 | ✅ 1852 / 165 (165) |
+
+- **Controles:** não aprendido, alvo fora do alcance e sem MP (27 casts de dreno, último com MP 1) ✅. `AlreadyLearned`, Inferno com `NotEnoughCoin` e relogin (`Learn` 0x7F00, `SkillBonus` 224) ✅.
+- **Compra da skill como item:** ✅ o Foema_Ancian recusa com "Pode comprar itens apenas do mercador." (MessagePanel, como o legado), nenhum item e gold igual. [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+
+Duas execuções antes (13:22 e 13:40 UTC) reprovaram por erro do bot, não do jogo. O controle de compra só contava `MessageBoxOk` e não lia o texto do `MessagePanel` da recusa. E o controle "sem MP" perdia a corrida com a regeneração (`SetHpMp` a cada ~10 s), que devolvia MP entre o último dreno e o cast final. O bot agora lê o texto da recusa, mede o MP no envio do cast e volta a drenar se o MP regenerou.
+
 ## Cenário 7 — Skills de Magia Branca da Foema
 
 `npm run scenario:foema-white` (a mesma conta do cenário 6, com outra Foema: `npm run account:create -- --foema`)
