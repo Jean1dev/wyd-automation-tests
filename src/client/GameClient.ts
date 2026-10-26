@@ -23,6 +23,8 @@ export class TimeoutError extends Error {}
 
 export interface Mob extends P.MobView {
   seenAt: number;
+  /** Último PKInfo (0x0166) do jogador: 1 = atacável (K ligado ou Guilty). */
+  pkInfo?: number;
 }
 
 export interface SelfState {
@@ -67,6 +69,10 @@ export interface SelfState {
   carry: P.Item[];
   /** Equipamento (Equip[16]) do CNFCharacterLogin, atualizado a cada SendItem. */
   equip: P.Item[];
+  /** Ponto caos visível do próprio CreateMob (75 neutro, 0 = Guilty); undefined até o servidor mandar um. */
+  pkPoint?: number;
+  /** Último PKInfo (0x0166) do próprio personagem: 1 = atacável (K ligado ou Guilty). */
+  pkInfo?: number;
 }
 
 const HISTORY = 4000;
@@ -302,6 +308,7 @@ export class GameClient extends EventEmitter {
           if (me && m.id === me.clientId) {
             me.x = m.x; me.y = m.y;
             me.guild = m.guild; me.guildLevel = m.guildLevel;
+            if (m.pkPoint !== undefined) me.pkPoint = m.pkPoint;
           } else {
             this.mobs.set(m.id, { ...m, seenAt: f.at });
           }
@@ -372,10 +379,27 @@ export class GameClient extends EventEmitter {
         if (me && (f.header.id === me.clientId || f.header.id === this.connId) && b.length >= 8) {
           const hm = P.parseHpMp(b);
           me.hp = hm.hp; me.mp = hm.mp;
+        } else if (b.length >= 8) {
+          const m = this.mobs.get(f.header.id);
+          if (m) m.hp = P.parseHp(b);
         }
         break;
       case Op.SetHpDam:
         if (me && (f.header.id === me.clientId || f.header.id === this.connId) && b.length >= 4) me.hp = P.parseHp(b);
+        else if (b.length >= 4) {
+          const m = this.mobs.get(f.header.id);
+          if (m) m.hp = P.parseHp(b);
+        }
+        break;
+      case Op.PKInfo:
+        if (b.length >= 4) {
+          const parm = P.parseStandardParm(b);
+          if (me && f.header.id === me.clientId) me.pkInfo = parm;
+          else {
+            const m = this.mobs.get(f.header.id);
+            if (m) m.pkInfo = parm;
+          }
+        }
         break;
       case Op.SendAffect:
         if (me && f.header.id === me.clientId) me.affects = P.parseSendAffect(b);
@@ -400,6 +424,9 @@ export class GameClient extends EventEmitter {
       case Op.MessagePanel:
       case Op.MessageChat:
         this.emit('text', { op: f.header.type, from: f.header.id, text: P.parseText(b), seq: f.seq });
+        break;
+      case Op.MessageBoxOk:
+        this.emit('notice', { code: P.parseNotice(b), seq: f.seq });
         break;
     }
   }

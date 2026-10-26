@@ -30,6 +30,8 @@ export const CHAR_COLUMNS = [
   'celestial_add120', 'celestial_add150', 'celestial_add180', 'celestial_add200', 'celestial_level', 'sub_celestial_level',
   // Guilda (0001_init; o save de logout grava por cima, store_live.go).
   'guild_id', 'guild_level',
+  // Migração 0016: ponto caos (75 neutro, [1,150]) e o contador Guilty do nick vermelho.
+  'pk_point', 'guilty',
 ] as const;
 export type CharColumn = (typeof CHAR_COLUMNS)[number];
 export type CharRow = Record<CharColumn, number> & { id: number; account_id: number; slot: number; name: string };

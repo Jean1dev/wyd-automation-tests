@@ -37,6 +37,8 @@ export const Op = {
   MessageChat: 0x0333,
   MessageWhisper: 0x0334,
   Ping: 0x03a0,
+  PKMode: 0x0399, // tecla K: consentimento de PvP (MSG_STANDARDPARM, Parm ≠ 0 liga)
+  ReqRanking: 0x039f, // duelo (MSG_STANDARDPARM2: Parm1 alvo/desafiante, Parm2 0 = pedido 1x1, 4 = aceite; o servidor repassa o pedido)
 
   // Servidor → cliente
   MessagePanel: 0x0101,
@@ -68,7 +70,10 @@ export const Op = {
   DecayItem: 0x016f, // item do chão sumiu (u32 ItemID)
   CNFGetItem: 0x0171, // pegou o item do chão: u32 slot do inventário
   CNFDropItem: 0x0175, // largou o item: u32 slot do inventário esvaziado
-  StartTime: 0x03a1, // contador das arenas de quest (legado)
+  StartTime: 0x03a1, // contador das arenas de quest e do duelo (legado)
+  EnvEffect: 0x03a2, // efeito de área (muro do duelo): X1 Y1 X2 Y2 Effect EffectParm (u16)
+  PKInfo: 0x0166, // estado PK/atacável de um jogador (MSG_STANDARDPARM, HEADER.ID = o jogador)
+  CNFMobKill: 0x0338, // morte anunciada pelo legado (Hold@0 KilledMob u16@4 Killer u16@6 Exp i64@12)
   SendArchEffect: 0x03b4, // Arch criado: STANDARDPARM com o slot do novo personagem
   CombineComplete: 0x03a7, // resultado de combinação: STANDARDPARM 0 inválida, 1 sucesso, 2 falhou
   SendAffect: 0x03b9, // buffs/debuffs do personagem: STRUCT_AFFECT[32] {Type u8, Value u8, Level u16, Time u32}
