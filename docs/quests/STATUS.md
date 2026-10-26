@@ -21,9 +21,9 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | [11](#11) | Alma do Mortal (Kibita) | 7 | 7 | 0 | 0 | 0 |
 | [12](#12) | Pedra Ideal e Arch → Celestial | 9 | 9 | 0 | 0 | 0 |
 | [13](#13) | Destravas do Celestial: Lv40, Lv90, Arcana, Reset e os adds do Sub-Celestial | 10 | 10 | 0 | 0 | 0 |
-| [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 15 | 11 | 2 | 2 | 0 |
+| [14](#14) | Sub-Celestial e troca de subclasse (Urnammu) | 15 | 13 | 0 | 2 | 0 |
 | [15](#15) | PvP em Armia e duelo 1x1 | 20 | 19 | 1 | 0 | 0 |
-| | **Total** | **172** | **167** | **3** | **2** | **0** |
+| | **Total** | **172** | **169** | **1** | **2** | **0** |
 
 <a id="01"></a>
 ## 01 — Novato: os quatro treinadores do Campo de Treino
@@ -280,14 +280,14 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 | SC-05 | Urnammu sem Fama | controle | ✅ |  | 2026-10-22: (09:55 UTC) CELESTIALCS, Fama 100: pergaminho 699 até (3235,1688), Urnammu → "Você precisa de 2000 pontos de fama." (_DN_NEEDFAME); banco igual — deixou de ser vácuo |
 | SC-06 | Trocar a subclasse | feliz | ✅ | [~~#410~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) corrigida no #411 (criação e Urnammu ok; reaberta após o #415 pela classe da 4148, SC-08/09) | 2026-10-22: (09:56 UTC) Sub criado jogando (5338, ficha 2 BM) e depois Sephirot 1763 + Fama 2500 pelo banco: Urnammu → Bless1, Fama 500, Sephirot some, ficha 2 classe 3 (HT), SID 8/4/7/6, 855 pontos; continua master 4 |
 | SC-07 | Urnammu para Celestial puro | controle | ✅ |  | 2026-10-22: (09:56 UTC) Celestial puro, Sephirot, Fama 2500: Urnammu → "Somente personagem Sub Celestial." (_SN_NEEDCLASS); banco igual — deixou de ser vácuo |
-| SC-08 | Pedra Misteriosa: Celestial → Sub | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta | 2026-10-22: (19:56 UTC) Sub BM criado pela 5338; 4148 em Armia: SendItem da pedra, Equip[0], MSG_SetShortSkill; banco: master 5, nível 0, exp 0, celestial_level 120, ficha 0 = TK nível 120 — mas `class` fica 0 (TK) em vez de 2 (BM): o Go não salva a classe (dbclient characterSaveToProto, store SaveCharacter) |
-| SC-09 | Pedra Misteriosa: Sub → Celestial | feliz | ❌ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta | 2026-10-22: (19:56 UTC) a ida já volta do relog com `class` 0 em vez de 2 (mesma causa do SC-08), então a volta estacionaria a classe errada em SaveCelestial[1] |
+| SC-08 | Pedra Misteriosa: Celestial → Sub | feliz | ✅ | [~~#410~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) corrigida no #426 | 2026-10-26: (12:53 UTC, após w2pp-OpenWYD#426) Sub BM criado pela 5338; 4148 em Armia (2100,2105): SendItem [22:0], Equip[0], MSG_SetShortSkill; depois do relog o banco tem master 5, `class` 2 (BM), nível 0, exp 0, celestial_level 120, ficha 0 = TK nível 120 (SID 900/10/250/600), ficha 1 = BM nível 0 |
+| SC-09 | Pedra Misteriosa: Sub → Celestial | feliz | ✅ | [~~#410~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) corrigida no #426 | 2026-10-26: (12:54 UTC, após w2pp-OpenWYD#426) a ida volta do relog com master 5 e `class` 2; a volta (4148 em (2088,2105)): SendItem [22:0], Equip[0], MSG_SetShortSkill; banco master 4, `class` 0 (TK), nível 120, exp 846000000; a ficha 1 guarda o BM nível 0 (SID 8/4/7/6, 855 pontos) |
 | SC-10 | Pedra Misteriosa fora da cidade | controle | ✅ |  | 2026-10-22: (19:59 UTC) CELESTIALCS no Continente desconhecido (3235,1688): notice 42 (_NN_OnlyVillage) + SendItem [22:4148]; banco igual |
 | SC-11 | Pedra Misteriosa no Celestial puro | controle | ✅ |  | 2026-10-22: (19:59 UTC) Celestial em Armia: só o SendItem [22:4148], calado; banco igual |
 | SC-12 | /kefra com o Kefra vivo | controle | ✅ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-22: (19:57 UTC) kefra_state defeated false: /kefra → (2366,3884) + "O kefra ainda esta vivo, precisa ser derrotado" |
 | SC-13 | Portal do Deserto com o Kefra vivo | controle | ✅ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-22: (19:58 UTC) /kefra → (2365,3885), a pé até o tile (2365,3925) e ReqTeleport: sem teleporte, como o legado com KefraLive 0 |
-| SC-14 | /kefra com o Kefra derrotado | feliz | ⏸️ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-22: Kefra vivo no mundo (kefra_state); o estado é global, só lido no boot do tmServer e divide o EXP de todos — não se semeia. O caso roda sozinho (precheck) quando o Kefra estiver derrotado |
-| SC-15 | Portal do Deserto com o Kefra derrotado | feliz | ⏸️ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-22: Kefra vivo no mundo (mesmo motivo do SC-14) |
+| SC-14 | /kefra com o Kefra derrotado | feliz | ⏸️ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-26: (12:54 UTC) precheck: Kefra continua vivo no mundo (kefra_state); o estado é global, só lido no boot do tmServer e divide o EXP de todos — não se semeia. O caso roda sozinho (precheck) quando o Kefra estiver derrotado |
+| SC-15 | Portal do Deserto com o Kefra derrotado | feliz | ⏸️ | [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | 2026-10-26: (12:54 UTC) precheck: Kefra continua vivo no mundo (mesmo motivo do SC-14) |
 
 <a id="15"></a>
 ## 15 — PvP em Armia e duelo 1x1
@@ -325,7 +325,7 @@ Os casos rodaram pela primeira vez em 2026-10-18 (w2pp-OpenWYD b392705): 95 ✅ 
 
 | Issue | Tipo | O que falta ou está errado no Go | Casos | Finding |
 |---|---|---|---|---|
-| [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) | enhancement (reaberta depois do #415) | A Pedra Misteriosa 4148 troca a ficha, mas o Go não salva a coluna `class`: falta em `characterSaveToProto` (dbclient/client.go:776) e no `UPDATE character SET` (store_live.go:396). Depois do relog o Sub BM volta como TK | ❌ SC-08, SC-09 | [023](../findings/023-sub-celestial-ausente.md) |
+| [~~#410~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) corrigida no #426 | enhancement (reaberta depois do #415) | A Pedra Misteriosa 4148 já salva a coluna `class` (reteste de 2026-10-26, 12:53–12:54 UTC: SC-08/09 ✅). Falta só verificar o caminho com o Kefra derrotado | ⏸️ SC-14, SC-15 | [023](../findings/023-sub-celestial-ausente.md) |
 | [#427](https://github.com/Jean1dev/w2pp-OpenWYD/issues/427) | enhancement | Duelo: a morte no mapa (1,31) não manda o texto 143 "Na arena não há perda de EXP" (`ZoneUnk` do `MobKilled.cpp:3133-3139`); `pvpkilled.go:57` só olha o `PvPZone` | DU-04 | [029](../findings/029-duelo-paridade.md) |
 
 **⏸️ bloqueados pelo estado do mundo:** SC-14 e SC-15 (`/kefra` e o portal do Deserto com o Kefra derrotado). O Kefra está vivo; o estado fica em `kefra_state`, é global, o tmServer só lê no boot e ele mexe no EXP de todos, então não se semeia pelo banco. O `precheck` do caso marca ⏸️ enquanto o Kefra estiver vivo.

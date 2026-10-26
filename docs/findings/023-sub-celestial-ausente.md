@@ -1,10 +1,12 @@
+**Situação (2026-10-26): corrigido em w2pp-OpenWYD#426 ("fix(celestial): salva a classe da ficha ativa"), verificado com `npm run quest -- 14 --case SC-08`/`SC-09` às 12:53–12:54 UTC: depois da 4148 e do relog o banco tem `class` 2 (BM) no Sub e `class` 0 (TK) na volta ao Celestial, SC-08/09 ✅. Só SC-14/15 (Kefra derrotado) seguem ⏸️ pelo estado do mundo.**
+
 **Situação (2026-10-22): reaberto após w2pp-OpenWYD#415 (55cbf4a3), verificado com `npm run quest -- 14`: a Pedra Misteriosa 4148 troca a ficha, mas a classe ativa não é salva (coluna `class` fora do save), SC-08/09 ❌; o `/kefra` e o portal do Deserto com o Kefra vivo batem com o legado (SC-12/13); os casos com o Kefra derrotado (SC-14/15) ficam ⏸️ porque o mundo está com o Kefra vivo. [#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) reaberta.**
 
 **Situação (2026-10-22): parcialmente corrigido em w2pp-OpenWYD#411 (2866b8c), verificado com `npm run quest -- 14`: criação do Sub, Urnammu e ficha 2 persistida; a Pedra Misteriosa 4148 e o caminho Deserto → Kefra seguem pendentes (#410).**
 
 # 023 — Sub-Celestial ausente: criação pela 5338 e Urnammu
 
-**Status:** aberto.
+**Status:** corrigido (w2pp-OpenWYD#411, #415 e #426); SC-14/15 com o Kefra derrotado não verificados.
 **Issue:** [Jean1dev/w2pp-OpenWYD#410](https://github.com/Jean1dev/w2pp-OpenWYD/issues/410) (relacionada a #407)
 **Cenário:** `npm run quest -- 14` (casos em [docs/quests/14-sub-celestial.md](../quests/14-sub-celestial.md))
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `b392705`)
