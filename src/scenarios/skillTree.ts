@@ -556,13 +556,14 @@ async function castBuff(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void
     case 15: cc.checks.specialUp = after.special.every((v, k) => v - before.special[k] === expectedGain); break;
     case 13: {
       const exp = assaultScore({ damage: before.damage, maxHp: before.maxHp });
-      // O HP máximo mostrado leva o EF_HPADD do equipamento: base M = mostrado/(1 + pct); o legado dá ⌊M×9/10⌋.
-      const m = Math.round(before.maxHp / 1.05);
-      const legacyHp = Math.trunc((Math.trunc((m * 9) / 10) * 105) / 100);
+      // O legado aplica o EF_HPADD antes do laço dos affects (Basedef.cpp:3886-3895) e o Assalto faz
+      // MaxHp×9/10 sobre o HP que já tem o HPADD (Basedef.cpp:4047-4050): ⌊mostrado×9/10⌋. Não é
+      // ⌊⌊M×9/10⌋×(100+pct)/100⌋, que é a ordem do Go (affect_score.go:144 e item.go effectiveMaxHP).
+      const legacyHp = exp.maxHp;
       cc.checks.maxHpExact = after.maxHp === legacyHp;
       // O dano não é comparável direto: o Go separa o dano da arma (weaponDamage) e aplica os +15% e o
       // DAMAGEMULTI só na parte base (handler/item.go effectiveDamage); fica informativo.
-      cc.note = `dano ${before.damage} → ${after.damage} (legado, com a arma dentro do Damage: ${exp.damage} antes do DAMAGEMULTI); HP máx. ${before.maxHp} → ${after.maxHp} (legado ⌊M×9/10⌋ com o HPADD: ${legacyHp})`;
+      cc.note = `dano ${before.damage} → ${after.damage} (legado, com a arma dentro do Damage: ${exp.damage} antes do DAMAGEMULTI); HP máx. ${before.maxHp} → ${after.maxHp} (legado ⌊mostrado×9/10⌋, com o HPADD antes: ${legacyHp})`;
       break;
     }
     case 14: {
