@@ -1,6 +1,6 @@
 # 029 — Duelo 1x1: duração, textos, HP do perdedor e recusa na cidade
 
-**Situação (2026-10-25): corrigido em w2pp-OpenWYD#425 (deploy 66102a6b), verificado com `npm run quest -- 15`. Resta só o texto 143 na morte do duelo (DU-04): [#427](https://github.com/Jean1dev/w2pp-OpenWYD/issues/427).**
+**Situação (2026-10-26): corrigido em w2pp-OpenWYD#425 (deploy 66102a6b) e, o texto 143 na morte do duelo (DU-04), em [~~#427~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/427) corrigida no #429 (deploy de 2026-10-26 12:49 UTC). Verificado com `npm run quest -- 15 --case DU-04` (12:57 UTC: B recebe "Na arena não há perda de EXP." antes do texto do vencedor, HP 1, EXP 590000 no banco) e com a quest 15 inteira (12:58–13:16 UTC, 20 ✅ de 20).**
 **Issue:** [Jean1dev/w2pp-OpenWYD#424](https://github.com/Jean1dev/w2pp-OpenWYD/issues/424) (relacionada à #118)
 **Cenário:** `npm run quest -- 15 --case DU-02 --case DU-04 --case DU-05 --case DU-06 --case DU-07 --case DU-08 --case DU-10 --case DU-11` (casos em [docs/quests/15-pvp-duelo.md](../quests/15-pvp-duelo.md))
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `4b661398`)
