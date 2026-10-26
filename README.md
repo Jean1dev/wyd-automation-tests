@@ -143,6 +143,21 @@ Antes da correção, a execução de 2026-10-16 22:58 a 2026-10-17 00:02 UTC (`-
 
 O servidor Go não tinha o reset das áreas de quest. Issue: [Jean1dev/w2pp-OpenWYD#386](https://github.com/Jean1dev/w2pp-OpenWYD/issues/386). Veja [docs/findings/002-quest-coveiro-sem-reset.md](docs/findings/002-quest-coveiro-sem-reset.md).
 
+### Situação (2026-10-26): regressão passa
+
+Execução de 2026-10-26 21:27–21:39 UTC (`--fresh --until-done`), servidor com o deploy de main das 12:49 UTC (até o #429). Report: `reports/2026-10-26T21-27-41-925Z-coveiro-quest/`. Veredito: **passou**, sem quedas.
+
+| Verificação | Resultado |
+|---|---|
+| Nível exibido 40 com Poeira de Fada (+1 por uso) | ✅ 21:28:43, em 0,9 min de jogo |
+| Coveiro sem vela não teleporta | ✅ 21:30:04, MessageBoxOk 15 |
+| Intruso na arena volta para a cidade | ✅ 21:30:09, teleportado para (2087,2103) |
+| Vela do Coveiro de graça na Aki | ✅ 21:30:24 |
+| A: a entrega teleporta para a arena | ✅ 21:31:30, (2399,2104), vela consumida |
+| B: o reset manda de volta | ✅ 21:38:58, para Armia (2091,2098), 448 s depois da entrada (ciclo de 10 min do boot) |
+
+Como no cenário 1, a `WYD_ACCOUNT` do `.env` estava sem slot livre, e a execução usou outra conta do portal, passada só no ambiente do comando.
+
 ## Cenário 3 — Troca entre jogadores
 
 `npm run scenario:trade` (exige a segunda conta no `.env`)
