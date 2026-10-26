@@ -53,7 +53,9 @@ Na Magia Especial (cenário 8), às 14:31:30 UTC (`reports/2026-10-26T14-30-11-0
 
 No BeastMaster (cenário 9), o Mestre_Archi recusou as três árvores com "Pode comprar itens apenas do mercador.", sem item e com o gold igual (995.000): o 5049 às 14:50:53 UTC (`reports/2026-10-26T14-49-25-363Z-bm-magic`), o 5057 às 15:08:48 (`reports/2026-10-26T15-07-02-294Z-bm-summon`) e o 5066 às 15:24:24 (`reports/2026-10-26T15-22-45-135Z-bm-transform`).
 
-A Huntress e o TransKnight não foram retestados aqui.
+Na Huntress (cenário 10), o ForeLearner recusou as três árvores com "Pode comprar itens apenas do mercador.", sem item e com o gold igual: o 5073 às 15:56:10 UTC (`reports/2026-10-26T15-55-00-744Z-ht-tree1`), o 5081 às 16:10:11 (`reports/2026-10-26T16-09-04-556Z-ht-tree2`) e o 5089 às 16:24:38 (`reports/2026-10-26T16-23-27-748Z-ht-tree3`).
+
+O TransKnight não foi retestado aqui.
 
 ## Como verificar
 

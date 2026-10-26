@@ -738,6 +738,62 @@ Execuções de 2026-10-17 entre 21:04 e 21:46 UTC, cerca de 13 min de jogo por �
   - não é uma divergência do Go, e por isso não há issue; o comentário "// 22" do legado sugere que o bit certo seria o 22.
   - Na primeira execução, o bot esperava +65; a verificação agora segue o legado.
 
+### Situação (2026-10-26): passa, compra da skill como item corrigida
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) e o [#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). Foram três execuções `--fresh --until-done`, uma árvore por vez, numa conta HT nova. As três **passaram** de primeira, sem mudança no bot:
+
+| Árvore | HT | UTC | Jogo | Resultado | Relatório |
+|---|---|---|---|---|---|
+| 1 | `bot0bk751ier` | 15:55–16:08 | 13,7 min | ✅ tudo | `reports/2026-10-26T15-55-00-744Z-ht-tree1` |
+| 2 | `bot0uyvqd5o1` | 16:09–16:23 | 13,9 min | ✅ tudo | `reports/2026-10-26T16-09-04-556Z-ht-tree2` |
+| 3 | `bot0blc0r6yp` | 16:23–16:37 | 14,0 min | ✅ tudo | `reports/2026-10-26T16-23-27-748Z-ht-tree3` |
+
+**Árvore 1:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 72 Ataque Fatal | ✅ recusada no 7 | 8 | ✅ 15:55:49, 294 de dano / MP 15 (15) |
+| 73 Ilusão | ✅ no 20 | 21 | ✅ 15:57:53, a HT foi de (2196,2109) a (2191,2109) e o MP caiu 60 com o Ataque Fatal seguinte (45 + 15) |
+| 74 Encantar Gelo (passiva) | ✅ no 42 | 43 | ✅ 15:59:13, cast recusado |
+| 75 Agressividade | ✅ no 59 | 60 | ✅ 16:00:28, affect 27 / MP 30 (30) |
+| 76 Imunidade | ✅ no 87 | 88 | ✅ 16:02:27, affect 19 Level 90 / MP 60 (60) |
+| 77 Meditação | ✅ no 116 | 117 | ✅ 16:04:12, affect 21 Level 123, AC 148 → 97 (−51 = 123/3 + 10) / MP 144 (144) |
+| 78 Lança de Ferro (passiva) | ✅ no 148 | 149 | ✅ 16:06:04, cast recusado |
+
+**Árvore 2:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 80 Golpe Felino | ✅ recusada no 6 | 7 | ✅ 16:09:50, 244 de dano / MP 10 (10) |
+| 81 Ligação Espectral | ✅ no 19 | 20 | ✅ 16:11:55, affect 37 / MP 108 (108) |
+| 82 Perícia do Caçador (passiva) | ✅ no 42 | 43 | ✅ 16:13:19, cast recusado |
+| 83 Alquimia | ✅ no 60 | 61 | só o aprendizado ✅ |
+| 84 Extração | ✅ no 88 | 89 | só o aprendizado ✅ |
+| 85 Explosão Etérea | ✅ no 118 | 119 | ✅ 16:18:11, affect 31 Level 82, AC 150 → 341 (+191 = 82/2 + 150), gold −8200 (100 × 82) / MP 169 (169) |
+| 86 Escudo Dourado | ✅ no 145 | 146 | ✅ 16:19:59, 3211 e 3675 em dois alvos / MP 41 (41) |
+
+**Árvore 3:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 88 Lâmina das Sombras | ✅ recusada no 8 | 9 | ✅ 16:24:17, 261 de dano / MP 9 (9) |
+| 89 Evasão Aprimorada | ✅ no 22 | 23 | ✅ 16:26:23, affect 26 / MP 24 (24) |
+| 90 Toxina (passiva) | ✅ no 39 | 40 | ✅ 16:27:36, cast recusado |
+| 91 Visão Caçadora (passiva) | ✅ no 62 | 63 | ✅ 16:28:59, cast recusado |
+| 92 Olhos de Águia | ✅ no 87 | 88 | ✅ 16:30:59, affect 36 Level 92 / MP 43 (43) |
+| 93 Lâmina Aérea (passiva) | ✅ no 117 | 118 | ✅ 16:32:48, cast recusado |
+| 94 Proteção das Sombras (passiva) | ✅ no 149 | 150 | ✅ 16:34:41, cast recusado; AC ao aprender 181 → 181, como no legado (bit 23, ver 2026-10-17) |
+
+- **Compra da skill como item:** ✅ o ForeLearner recusa o 5073 (15:56:10 UTC), o 5081 (16:10:11) e o 5089 (16:24:38) com "Pode comprar itens apenas do mercador." (MessagePanel), sem item e com o gold igual. [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+- **Aprender:** em todas, liga só o bit da skill, desconta os pontos exatos e não cobra gold ✅.
+- **Controles:**
+  - skill não aprendida: descartada nas três árvores ✅ (o tm-server registra `crack error` group 8 code 10 às 16:10:31 e 16:24:57, sem derrubar a conexão);
+  - alvo fora do alcance: dano 0 ✅ (6 tiles com alcance 2, 5 com alcance 2, 9 com alcance 6);
+  - sem MP: descartado com `SetHpMp` ✅ (MP 14 com custo 15, 7 com 10, 7 com 9).
+- **Reaprender e a 8ª:** `AlreadyLearned` nas três árvores, e Tempestade de Raios, Troca de Espíritos e Invisibilidade (no nível exibido 221) sem os 50M dão `NotEnoughCoin`, sem mudar nada. ✅
+- **Relogin:** `Learn` 0x7F, 0x7F00 e 0x7F0000; `SkillBonus` 233, 242 e 234, iguais ao esperado. ✅
+- Nenhuma queda: as conexões fechadas no log são os relogins do próprio cenário.
+
 ## Cenário 11 — Skills do TransKnight (três árvores)
 
 ```
