@@ -663,6 +663,7 @@ async function castSummon(c: GameClient, state: State, s: SkillDef, cc: CastChec
   const expected = summonCount(s.summon!, special(c));
   const r = await castSkill(c, log, s.id, 'self');
   cc.attempts.push(r);
+  cc.expectedMp = manaCost(s.mana, r.special); // a maestria subiu depois do expectedMp inicial
   await sleep(2500); // CreateMob dos bichos
   const mobName = SUMMON_MOB[s.summon!];
   const fresh = [...c.mobs.values()].filter((m) => !before.has(m.id) && !m.isPlayer && tiles(me, m) <= 6);
