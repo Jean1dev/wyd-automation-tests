@@ -430,6 +430,35 @@ Execuções de 2026-10-17 entre 17:50 e 18:22 UTC (`--until-done` e duas vezes `
 
 Na primeira execução, os mobs não tiraram HP e só um Gremlin ficou colado. O bot passou a derrubar o HP com o Julgamento e a procurar dois Gremlins juntos. Na segunda tentativa, o filtro de alvos usava o nome igual ao do primeiro ("Gremlin" e "Gremlin_" são nomes diferentes); agora usa a mesma AC.
 
+### Situação (2026-10-26): passa, Julgamento Divino e compra da skill como item corrigidos
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) e o [#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). A execução `--fresh --until-done` das 14:05–14:27 UTC (`reports/2026-10-26T14-05-54-749Z-foema-white-magic`), com a Foema `bot0e0kcmjg6`, **passou** de primeira: 21 min de jogo e 219 Poeiras de Fada.
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast |
+|---|---|---|---|
+| 24 Flecha Mágica | ✅ recusada no 4 | 5 | ✅ 49 de dano / MP 5 (5) |
+| 25 Desintoxicar | ✅ `ReqNotMet` no 19 | 20 | ✅ sem dano / MP 12 (12) |
+| 26 Flash | ✅ no 40 | 41 | ✅ sem dano em dois alvos / MP 40 (40) |
+| 27 Cura | ✅ no 56 | 57 | ✅ +100 (2×0 + 100) / MP 15 (15) |
+| 28 Choque Divino | ✅ no 82 | 83 | ✅ 906 de dano / MP 42 (42) |
+| 29 Recuperar | ✅ no 98 | 99 | ✅ +303 (3×102/2 + 150) / MP 45 (45) |
+| 30 Julgamento Divino | ✅ no 132 | 133 | ✅ dois Gremlins, 14:24:01 UTC (abaixo) / MP 285 (285) |
+
+- **Julgamento Divino em dois Gremlins:** ✅ a Foema estava com 495 de HP.
+  - O 1º alvo levou 2113 e o 2º, 2197. Com os 495 somados aos dois, como no legado, os danos base são 1618 e 1702, dentro da faixa (mínimo 1323).
+  - Somando o HP já reduzido (83), como antes da correção, o 2º daria 2114, acima do máximo possível (1977).
+  - A Foema ficou com 14 de HP (495 → 83 → 14) e veio um `SetHpMp` só, depois do laço, como no legado.
+  - [~~#392~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/392) corrigida no #415.
+- **Controles:**
+  - Desintoxicar não aprendido: descartado. ✅
+  - Sem MP (42 casts de dreno, cast final com MP 0): descartado com `SetHpMp`. ✅
+  - Alvo a 10 tiles, com alcance 6: dano 0. ✅
+- **Compra da skill como item:** ✅ o Foema_Ancian recusa o 5025 com "Pode comprar itens apenas do mercador." (MessagePanel), nenhum item e gold igual. [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+- **Reaprender e Renascimento:** `AlreadyLearned` com 281 pontos livres, e o Renascimento sem os 50M dá `NotEnoughCoin`, sem mudar nada. ✅
+- **Relogin:** `Learn` 0x7F e `SkillBonus` 281. ✅
+- **Curas:** os mobs não tiraram HP antes do Julgamento ser aprendido, então a Cura e a Recuperar foram conjuradas com o HP quase cheio. O valor do eco bate com a fórmula, mas o HP só subiu até o máximo (248 → 256 e 386 → 388).
+- **Flash:** sem dano e com o MP certo. Os alvos voltaram a atacar logo depois (4 ataques nos 4 s antes, 5 depois), o que fica só no relatório.
+
 ## Cenário 8 — Skills de Magia Especial da Foema
 
 `npm run scenario:foema-special` (a mesma conta dos cenários 6 e 7, com uma terceira Foema)

@@ -47,7 +47,9 @@ Com o deploy de main de 12:49Z, que traz o #416, o mesmo `MSG_Buy` para o slot 2
 - 13:41:24 UTC: o texto do painel é "Pode comprar itens apenas do mercador.", como no legado (`_MSG_Buy.cpp:55`);
 - o gold não mudou (995.000).
 
-As outras árvores (Magia Branca, Magia Especial, BeastMaster, Huntress e TransKnight) não foram retestadas aqui.
+Na Magia Branca (cenário 7), às 14:05–14:27 UTC (`reports/2026-10-26T14-05-54-749Z-foema-white-magic`), o `MSG_Buy` do Desintoxicar (5025, slot 2 do Foema_Ancian) também foi recusado com "Pode comprar itens apenas do mercador.", sem item e com o gold igual (995.000).
+
+As outras árvores (Magia Especial, BeastMaster, Huntress e TransKnight) não foram retestadas aqui.
 
 ## Como verificar
 

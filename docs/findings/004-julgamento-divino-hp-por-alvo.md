@@ -1,6 +1,8 @@
 # 004 — Julgamento Divino com vários alvos soma o HP já reduzido da Foema
 
-**Status:** aberto. Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T18-20-46-757Z-foema-white-magic`).
+**Status:** corrigido no [#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) (issue [~~#392~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/392)). O reteste no Railway passou em 2026-10-26 (`reports/2026-10-26T14-05-54-749Z-foema-white-magic`), ver abaixo.
+
+Confirmado no Railway em 2026-10-17 (execução `reports/2026-10-17T18-20-46-757Z-foema-white-magic`).
 **Issue:** [Jean1dev/w2pp-OpenWYD#392](https://github.com/Jean1dev/w2pp-OpenWYD/issues/392)
 **Cenário:** `npm run scenario:foema-white -- --skill 30`
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `d896ae2f`)
@@ -41,6 +43,21 @@ Só a hipótese do Go cabe na faixa. O HP final (22) é igual nas duas versões.
 - **Compra da skill como item:** o Foema_Ancian deu a skill 5025 (Desintoxicar) pelo `MSG_Buy`. É o mesmo problema do finding 003 ([#391](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391)).
 - **Renascimento sem os 50M:** `NotEnoughCoin`. ✅
 - **Relogin:** Learn 0x7F e SkillBonus 281. ✅
+
+## Reteste (2026-10-26)
+
+Com o deploy de main de 12:49Z, que traz o #415, o Go guarda o HP da Foema antes do laço (`cast.casterHP`, `handler/combat.go:170`) e soma esse valor em todos os alvos (`:740`). Às 14:24:01 UTC, a Foema `bot0e0kcmjg6` (nível exibido 133, Special[1] 180, 495 de HP) acertou dois Gremlins com a mesma AC:
+
+| | Dano | − 495 (legado) | − 83 (HP já reduzido) |
+|---|---|---|---|
+| 1º | 2113 | 1618 | — |
+| 2º | 2197 | 1702 ✅ | 2114 ❌ |
+
+- Com o 1º alvo, a faixa do dano base do 2º vai de 1323 (90/110) a 1977 (110/90). Só a soma do HP de antes cabe nela.
+- O HP final foi 14 (495 → 83 → 14), e veio um `SetHpMp` só, depois do laço, como no legado (`_MSG_Attack.cpp:1749`).
+- O MP debitado foi 285 (150 × (180/2 + 100)/100).
+
+O resto do cenário 7 também passou, inclusive a compra da skill como item (finding 003).
 
 ## Como verificar
 
