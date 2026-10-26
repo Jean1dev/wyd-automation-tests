@@ -52,20 +52,20 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| QST-01 | Entrega do ticket | feliz (cenários 2/4) | ✅ | | exibido 40 com a Vela: Vela consumida, teleportado para (2399,2103) e ficou 6 s na arena (QuestFlag 1) |
-| QST-02 | Sem ticket / ticket de outro passo | controle (cenários 2/4) | ✅ | | exibido 40 com 4039 e 4041, sem a Vela: o Coveiro recusa (NoticeReqNotMet 15), nada some, sem teleporte |
-| QST-03 | Um nível abaixo do mínimo | controle (cenário 4) | ✅ | | exibido 39 com a Vela: o Coveiro recusa (NoticeReqNotMet 15), a Vela fica, sem teleporte |
-| QST-04 | Intruso | controle (cenários 2/4) | ✅ | | sem QuestFlag, entrou a pé em (2381,2112) e o guarda mandou para Armia (2096,2107) |
-| QST-05 | Reset | feliz (cenários 2/4) | ✅ | | entrou 14:27:54 UTC; o reset mandou para Armia (2097,2099) 573 s depois (14:37:28 UTC), dentro do ciclo de 10 min |
-| QST-06 | Relogin dentro da arena | borda | ✅ | | relog dentro da arena: voltou em Armia (2096,2102), fora da arena (o Go entra pela cidade, character.go:236; o guarda nem precisou agir) |
-| QST-07 | Acima do máximo | controle | ✅ | | exibido 116 (armazenado 115 = máximo exclusivo) com a Vela: recusa (NoticeReqNotMet 15), a Vela fica, sem teleporte |
-| QST-08 | Drop do troféu | feliz | ✅ | | exibido 115 com equipamento semeado: a primeira Aparição morta (14:43:02 UTC) pôs a Caixa_da_Sabedoria 4117 direto no inventário (Carry[56] do template, taxa 1) |
-| QST-09 | Usar o troféu | feliz | ✅ | [~~#396~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/396) corrigida no #411 | 2026-10-19: exibido 115, 2 Caixas 4117 sem grupo (12:01 UTC): +33000 exp (30000 + 10 % de líder, como o legado), +10000 gold, sobrou 1; banco coin 11000 / exp 33000 |
-| QST-10 | Troféu fora da faixa | controle | ✅ | | exibido 116 com a 4117: recusa (NoticeReqNotMet 15), a Caixa fica no slot, exp e gold iguais |
-| QST-11 | Troféu em grupo | borda | ✅ | | grupo pela segunda conta (SendReqParty/AcceptParty); o membro usou a 4117: membro +30000, líder +3000 (10 %) |
-| QST-12 | Ticket com o botão direito | borda | ✅ | | informativo (só no Go, sem caminho no legado): clique direito na Vela ×2 em Armia teleportou para (2397,2102), sobrou 1, ficou na arena (QuestFlag 1) |
-| QST-13 | Mestre_Grifo dá a `QuestFlag` | borda | ✅ | | informativo (só no Go): MSG_Quest no Mestre_Grifo no exibido 40, sem ticket, levou para (2399,2106) na arena do Coveiro e ficou (QuestFlag 1) |
-| QST-14 | Arch na arena | borda | ✅ | | Arch (class_master 1) no exibido 40: Vela consumida, teleportado para (2395,2105) e ficou na arena |
+| QST-01 | Entrega do ticket | feliz (cenários 2/4) | ✅ | 2026-10-26 17:41 UTC: exibido 40 com a Vela: Vela consumida, teleportado para (2395,2103) e ficou 6 s na arena (QuestFlag 1) |
+| QST-02 | Sem ticket / ticket de outro passo | controle (cenários 2/4) | ✅ | 2026-10-26 17:43 UTC: exibido 40 com 4039 e 4041, sem a Vela: o Coveiro recusa (NoticeReqNotMet 15), nada some, sem teleporte |
+| QST-03 | Um nível abaixo do mínimo | controle (cenário 4) | ✅ | 2026-10-26 17:44 UTC: exibido 39 com a Vela: o Coveiro recusa (NoticeReqNotMet 15), a Vela fica, sem teleporte |
+| QST-04 | Intruso | controle (cenários 2/4) | ✅ | 2026-10-26 17:46 UTC: sem QuestFlag, entrou a pé em (2381,2112) e o guarda mandou para Armia (2092,2093) |
+| QST-05 | Reset | feliz (cenários 2/4) | ✅ | 2026-10-26 17:48 UTC: o reset mandou para Armia (2098,2101) 80 s depois da entrada (17:48:58 UTC), dentro do ciclo de 10 min; 79 MSG_StartTime na espera |
+| QST-06 | Relogin dentro da arena | borda | ✅ | 2026-10-26 17:50 UTC: relog dentro da arena: voltou em Armia (2088,2099), fora da arena |
+| QST-07 | Acima do máximo | controle | ✅ | 2026-10-26 17:52 UTC: exibido 116 (armazenado 115 = máximo exclusivo) com a Vela: recusa (NoticeReqNotMet 15), a Vela fica, sem teleporte |
+| QST-08 | Drop do troféu | feliz | ✅ | 2026-10-26 17:53 UTC: exibido 115 com equipamento semeado: a primeira Aparição morta pôs a Caixa_da_Sabedoria 4117 direto no inventário (slot 0) em 1,4 min |
+| QST-09 | Usar o troféu | feliz | ✅ | [~~#396~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/396) corrigida no #411 | 2026-10-26 17:54 UTC: exibido 115, 2 Caixas 4117 sem grupo: +33000 exp (30000 + 10 % de líder, como o legado), +10000 gold, sobrou 1; banco coin 11000 / exp 33000 |
+| QST-10 | Troféu fora da faixa | controle | ✅ | 2026-10-26 17:54 UTC: exibido 116 com a 4117: recusa (NoticeReqNotMet 15), a Caixa fica no slot, exp e gold iguais |
+| QST-11 | Troféu em grupo | borda | ✅ | 2026-10-26 17:54 UTC: grupo pela segunda conta; o membro usou a 4117: membro +30000, líder +3000 (10 %) |
+| QST-12 | Ticket com o botão direito | borda | ✅ | 2026-10-26 17:54 UTC: informativo (só no Go): clique direito na Vela ×2 em Armia teleportou para (2397,2102), sobrou 1, ficou na arena (QuestFlag 1) |
+| QST-13 | Mestre_Grifo dá a `QuestFlag` | borda | ✅ | 2026-10-26 17:55 UTC: informativo (só no Go): MSG_Quest no Mestre_Grifo no exibido 40, sem ticket, levou para (2399,2103) na arena do Coveiro e ficou (QuestFlag 1) |
+| QST-14 | Arch na arena | borda | ✅ | 2026-10-26 17:57 UTC: Arch (class_master 1) no exibido 40: Vela consumida, teleportado para (2398,2103) e ficou na arena |
 
 <a id="03"></a>
 ## 03 — Capa Verde (Formatura Aprendiz)
