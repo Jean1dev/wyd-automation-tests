@@ -22,7 +22,7 @@ export const NOTICE = {
 export const noticeName = (n: number) => Object.entries(NOTICE).find(([, v]) => v === n)?.[0] ?? `aviso ${n}`;
 
 /** O servidor recusa ataques com menos de 800 ms entre si (crack 107). */
-const CAST_GAP_MS = 850;
+export const CAST_GAP_MS = 850;
 
 export interface SkillShop {
   npcId: number;
@@ -140,6 +140,8 @@ export async function castSkill(c: GameClient, log: Logger, skill: number, targe
     tick = c.tick();
   }
   lastCastTick = tick;
+  // O MP pode ter mudado durante a espera (regeneração por SetHpMp): o que vale é o MP no envio.
+  r.mpBefore = me.mp;
   const since = c.mark;
   r.t = new Date().toISOString();
   c.send(op, P.attack({

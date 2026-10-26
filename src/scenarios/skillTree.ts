@@ -41,7 +41,7 @@ import { buyItem, type Purchase } from '../bot/npc.ts';
 import { Progress } from '../bot/progress.ts';
 import { FAIRY_DUST, useDustUntil } from '../bot/quest.ts';
 import { enterWorld, login } from '../bot/session.ts';
-import { castSkill, learnSkill, NOTICE, noticeName, openSkillShop, syntheticAttacks, tiles, type CastResult, type LearnAttempt } from '../bot/skills.ts';
+import { CAST_GAP_MS, castSkill, learnSkill, NOTICE, noticeName, openSkillShop, syntheticAttacks, tiles, type CastResult, type LearnAttempt } from '../bot/skills.ts';
 import { reviveAfterDeath } from '../bot/survival.ts';
 import { isInArmia } from '../bot/travel.ts';
 import { shownLevel, sleep } from '../bot/util.ts';
@@ -126,7 +126,7 @@ interface State extends CharacterState {
     unlearned?: CastResult & { ok: boolean };
     outOfRange?: CastResult & { ok: boolean; note?: string };
     noMana?: { drained: number; final?: CastResult; ok: boolean; note?: string };
-    buyAsItem?: { npcSlot: number; index: number; slot: number; gotItem?: number; notices: number[]; coinBefore: number; coinAfter: number; ok: boolean };
+    buyAsItem?: { npcSlot: number; index: number; slot: number; gotItem?: number; notices: number[]; texts?: string[]; coinBefore: number; coinAfter: number; ok: boolean };
   };
   /** Relogins pedidos porque o SkillBonus não acompanhou o nível (o login recalcula). */
   pointRelogins: number[];
@@ -915,6 +915,8 @@ async function controls(c: GameClient, state: State): Promise<void> {
       const r = {
         npcSlot: offer.npcSlot, index: offer.index, slot, gotItem: got?.item.index,
         notices: frames.filter((f) => f.header.type === Op.MessageBoxOk).map((f) => P.parseNotice(f.body)),
+        // A recusa do legado ("Pode comprar itens apenas do mercador.") vem como texto (MessagePanel), não como MessageBoxOk.
+        texts: frames.filter((f) => f.header.type === Op.MessagePanel || f.header.type === Op.MessageChat).map((f) => P.parseText(f.body)),
         coinBefore, coinAfter: me.coin, ok: !got?.item.index && me.carry[slot]?.index !== offer.index,
       };
       state.controls.buyAsItem = r;
@@ -959,11 +961,16 @@ async function controls(c: GameClient, state: State): Promise<void> {
     let drained = 0;
     const cost = () => manaCost(first.mana, special(c));
     const target = async (): Promise<Mob[] | 'self'> => (selfCast ? 'self' : [farMob() ?? (await mobsInReach(c, Math.max(1, first.range - 2)))[0]]);
-    for (let i = 0; i < 120 && me.mp >= cost(); i++) {
-      if (me.hp < me.maxHp * 0.35) await walkTo(c, CAST_SPOT.x - 10, CAST_SPOT.y); // sai de perto sem descansar o MP
-      const r = await castSkill(c, log, first.id, await target());
-      if (r.echo) drained++;
-      else break;
+    // A regeneração (SetHpMp a cada ~10 s) pode chegar entre o último dreno e o cast final: depois
+    // do intervalo entre casts, confere o MP de novo e drena mais, se ele voltou a cobrir o custo.
+    for (let round = 0; round < 5 && me.mp >= cost(); round++) {
+      for (let i = 0; i < 120 && me.mp >= cost(); i++) {
+        if (me.hp < me.maxHp * 0.35) await walkTo(c, CAST_SPOT.x - 10, CAST_SPOT.y); // sai de perto sem descansar o MP
+        const r = await castSkill(c, log, first.id, await target());
+        if (r.echo) drained++;
+        else break;
+      }
+      await sleep(CAST_GAP_MS);
     }
     if (me.mp < cost()) {
       const r = await castSkill(c, log, first.id, selfCast ? 'self' : [(await mobsInReach(c, Math.max(1, first.range - 2)))[0]]); // só a falta de MP impede
