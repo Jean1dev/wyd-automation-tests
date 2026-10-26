@@ -255,16 +255,16 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| CL-01 | Lv40 fora do nível | controle | ✅ |  | Celestial exibido 39 com a receita: CombineComplete 0; receita nos slots 20–26 e Lv40 0 no banco depois do relog |
-| CL-02 | Lv40 | feliz | ✅ |  | Celestial exibido 40 (exp no limiar do 41): 1ª combinação CombineComplete 1, receita some, Lv40 1; 1º Dracorich depois → nível exibido 41 no cliente e no banco |
-| CL-03 | Lv40 de novo | controle | ✅ |  | Celestial exibido 40 com Lv40 1 e a receita: CombineComplete 0; receita fica nos slots 20–26 |
-| CL-04 | Lv90 sem Fama | controle | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-22: (09:48 UTC) Celestial exibido 90, Fama 100: a 3020 é recusada como o legado, só o SendItem do slot 27 (3020) calado; pedra, Fama e Lv90 iguais (banco) — deixou de ser vácuo |
-| CL-05 | Lv90 | feliz | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-22: (09:43 UTC) Celestial exibido 90, Fama 600: 3020 → "Você concluiu a Quest Lv90.", Fama 100, Lv90 1, 3502 no inventário, a pedra some (banco) |
-| CL-06 | Arcana | feliz | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-22: (09:44 UTC) Celestial exibido 200, Fama 600, 5334–5337, Equip[1] vazio: 3020 → "Você concluiu a Quest Cythera Arcana.", 3507 no Equip[1], Circle 1, Fama 100, pedras e 3020 somem (banco) |
-| CL-07 | Arcana herdando o `Circle` | borda | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-22: (09:48 UTC) Celestial exibido 200 com Circle 1 e as 5334–5337: cai no Reset ("Reset Celestial"): exp 2219000000 → 2199000000, Reset 0 → 1, Fama 100; pedras ficam, sem 3507 (banco) |
-| CL-08 | Reset | feliz | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-22: (09:49 UTC) Circle 1, 3507 no Equip[1], Fama 600: 3020 → "Reset Celestial": exp 2219000000 → 2199000000, nível 199, Reset 0 → 1, Fama 100, a pedra some (banco) |
-| CL-09 | Comandos que pulam quest | borda | ✅ |  | Celestial exibido 40 sem receita: /destravar40 → CombineComplete 1 e celestial_lv40 1 no banco (o Go grava como o legado; não usar nos cenários) |
-| CL-10 | Adds do Sub | feliz | ✅ | [~~#409~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/409) corrigida no #411 | 2026-10-22: (09:51 UTC) Sub-Celestial armazenado 119 com Cythera 3500: kill do Basilisco sobe para 120 e o Equip[1] ganha EF_AC 30 / EF_HP 40 (cliente e banco), Add120 0 → 1 |
+| CL-01 | Lv40 fora do nível | controle | ✅ |  | 2026-10-26: (21:01 UTC) Celestial exibido 39 com a receita: CombineComplete 0, sem SendItem; receita nos slots 20–26 e Lv40 0 no banco depois do relog |
+| CL-02 | Lv40 | feliz | ✅ |  | 2026-10-26: (21:02 UTC) Celestial exibido 40 (exp no limiar do 41): 1ª combinação CombineComplete 1, receita some, Lv40 1; 1º Basilisco depois → nível exibido 41 no cliente e no banco |
+| CL-03 | Lv40 de novo | controle | ✅ |  | 2026-10-26: (21:03 UTC) Celestial exibido 40 com Lv40 1 e a receita: CombineComplete 0, sem SendItem; receita fica nos slots 20–26 |
+| CL-04 | Lv90 sem Fama | controle | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-26: (21:04 UTC) Celestial exibido 90, Fama 100: a 3020 é recusada como o legado, só o SendItem do slot 27 (3020) calado; pedra, Fama e Lv90 iguais (banco) |
+| CL-05 | Lv90 | feliz | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-26: (21:04 UTC) Celestial exibido 90, Fama 600: 3020 → "Você concluiu a Quest Lv90.", Fama 100, Lv90 1, 3502 no inventário, a pedra some (banco) |
+| CL-06 | Arcana | feliz | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-26: (21:05 UTC) Celestial exibido 200, Fama 600, 5334–5337, Equip[1] vazio: 3020 → "Você concluiu a Quest Cythera Arcana.", 3507 no Equip[1], Circle 1, Fama 100, pedras e 3020 somem (banco) |
+| CL-07 | Arcana herdando o `Circle` | borda | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-26: (21:05 UTC) Celestial exibido 200 com Circle 1 e as 5334–5337: cai no Reset ("Você concluiu a Quest Reset Celestial."): exp 2219000000 → 2199000000, Reset 0 → 1, Fama 100; pedras ficam, sem 3507 (banco) |
+| CL-08 | Reset | feliz | ✅ | [~~#408~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/408) corrigida no #411 | 2026-10-26: (21:06 UTC) Circle 1, 3507 no Equip[1], Fama 600: 3020 → "Reset Celestial": exp 2219000000 → 2199000000, nível 199, Reset 0 → 1, Fama 100, a pedra some (banco) |
+| CL-09 | Comandos que pulam quest | borda | ✅ |  | 2026-10-26: (21:06 UTC) Celestial exibido 40 sem receita: /destravar40 → CombineComplete 1 e celestial_lv40 1 no banco (o Go grava como o legado; não usar nos cenários) |
+| CL-10 | Adds do Sub | feliz | ✅ | [~~#409~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/409) corrigida no #411 | 2026-10-26: (21:08 UTC) Sub-Celestial armazenado 119 com Cythera 3500: kill do Basilisco sobe para 120 e o Equip[1] ganha EF_AC 30 / EF_HP 40 (cliente e banco), Add120 0 → 1 |
 
 <a id="14"></a>
 ## 14 — Sub-Celestial e troca de subclasse (Urnammu)
