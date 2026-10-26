@@ -74,19 +74,19 @@ Legenda: ✅ passa · ❌ reprova (com issue) · ⏸️ bloqueado (motivo na not
 
 | ID | Caso | Tipo | Resultado | Issue | Nota |
 |---|---|---|---|---|---|
-| CV-01 | Teleporte abaixo do nível | controle | ✅ | | exibido 99: o Diretor recusa (NoticeReqNotMet 15), sem teleporte, ficou em (2244,1597) |
-| CV-02 | Teleporte | feliz | ✅ | | exibido 100: teleportado para (2242,1576), dentro da arena |
-| CV-03 | Entrega sem emblema | controle | ✅ | | na arena (teleporte do Diretor) sem o 4080: o Chefe_Treina. recusa (NoticeReqNotMet 15), nada muda, Equip[15] vazio |
-| CV-04 | Emblema no inventário, não equipado | controle | ✅ | | 4080 no inventário (slot 0): o Chefe_Treina. recusa (NoticeReqNotMet 15), o emblema fica, Equip[15] vazio |
-| CV-05 | Drop do emblema | feliz | ✅ | | exibido 140: o 4080 caiu no inventário no 1º kill do Chefe_Taurus (1,2 min, 15:20 UTC); a 1ª rodada fez 5 Chefe + 63 Taurus_Maligno em 15 min sem drop (chance ≈ 1/4 e 1/225 por kill) |
-| CV-06 | Entrega | feliz | ✅ | | exibido 101 (o 4080 pede ReqLvl 100 contra o armazenado, como no legado): equipou no Equip[13], entregou; Equip[13] vazio, Equip[15] = 4006, AC 1307→1337; banco igual depois do relog |
-| CV-07 | Entrega com capa | controle | ✅ | | com o 4006 no Equip[15] e o 4080 no Equip[13]: o Chefe_Treina. recusa (NoticeAlreadyDone 47), o emblema fica |
-| CV-08 | Acima do nível | controle | ✅ | | exibido 151 com o 4080 no Equip[13]: o Diretor recusa (15); entrou a pé; o Chefe_Treina. recusa (NoticeReqNotMet 15), nada muda |
-| CV-09 | Reset da arena | feliz | ✅ | | entrou pelo Diretor; o reset mandou para Armia (2100,2096) 523 s depois (15:37:29 UTC), dentro do ciclo de 10 min |
-| CV-10 | Arch pelo Lider_Aprendiz | feliz | ✅ | [~~#397~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) corrigida no #411 | 2026-10-22: Arch armazenado 99 sem capa (04:28 UTC): Equip[15] = 4006, AC 1532→1562; banco igual depois do relog |
-| CV-11 | Arch fora da faixa | controle | ✅ | [#397](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) | 2026-10-22: Arch armazenado 98 (04:30 UTC): o Lider_Aprendiz recusa com _NN_Level_Limit2 ("Seu nível não permite o uso disto."), Equip[15] vazio, nada muda |
-| CV-12 | Mortal no Lider_Aprendiz | controle | ✅ | [#397](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) | 2026-10-22: Mortal exibido 100 (04:32 UTC): o Lider_Aprendiz recusa com _SN_NEEDCLASS ("Somente personagem Arch."), Equip[15] vazio, nada muda |
-| CV-13 | Arch no Diretor | controle | ✅ | | Arch exibido 100: o Diretor recusa (NoticeReqNotMet 15), sem teleporte |
+| CV-01 | Teleporte abaixo do nível | controle | ✅ | | 2026-10-26 17:59 UTC: exibido 99: o Diretor recusa (NoticeReqNotMet 15), sem teleporte, ficou em (2244,1597) |
+| CV-02 | Teleporte | feliz | ✅ | | 2026-10-26 18:00 UTC: exibido 100: teleportado para (2246,1573), dentro da arena |
+| CV-03 | Entrega sem emblema | controle | ✅ | | 2026-10-26 18:01 UTC: na arena (teleporte do Diretor) sem o 4080: o Chefe_Treina. recusa (NoticeReqNotMet 15), nada muda, Equip[15] vazio |
+| CV-04 | Emblema no inventário, não equipado | controle | ✅ | | 2026-10-26 18:02 UTC: 4080 no inventário (slot 0): o Chefe_Treina. recusa (NoticeReqNotMet 15), o emblema fica, Equip[15] vazio |
+| CV-05 | Drop do emblema | feliz | ✅ | | 2026-10-26 18:04 UTC: o 4080 caiu no inventário no 1º kill do Chefe_Taurus (1,1 min) |
+| CV-06 | Entrega | feliz | ✅ | | 2026-10-26 18:05 UTC: exibido 101: equipou no Equip[13], entregou; Equip[13] vazio, Equip[15] = 4006, AC 1307→1337; banco igual depois do relog |
+| CV-07 | Entrega com capa | controle | ✅ | | 2026-10-26 18:06 UTC: com o 4006 no Equip[15] e o 4080 no Equip[13]: o Chefe_Treina. recusa (NoticeAlreadyDone 47), o emblema fica |
+| CV-08 | Acima do nível | controle | ✅ | | 2026-10-26 18:07 UTC: exibido 151 com o 4080 no Equip[13]: o Diretor recusa (15); entrou a pé; o Chefe_Treina. recusa (NoticeReqNotMet 15), nada muda |
+| CV-09 | Reset da arena | feliz | ✅ | | 2026-10-26 18:08 UTC: entrou pelo Diretor; o reset mandou para Armia (2094,2097) 8 s depois (18:08:58 UTC), dentro do ciclo de 10 min |
+| CV-10 | Arch pelo Lider_Aprendiz | feliz | ✅ | [~~#397~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) corrigida no #411 | 2026-10-26 18:11 UTC: Arch armazenado 99 sem capa: Equip[15] = 4006 (banco também), AC 1532→1562 |
+| CV-11 | Arch fora da faixa | controle | ✅ | [#397](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) | 2026-10-26 18:13 UTC: Arch armazenado 98: o Lider_Aprendiz recusa com _NN_Level_Limit2 ("Seu nível não permite o uso disto."), Equip[15] vazio, nada muda |
+| CV-12 | Mortal no Lider_Aprendiz | controle | ✅ | [#397](https://github.com/Jean1dev/w2pp-OpenWYD/issues/397) | 2026-10-26 18:15 UTC: Mortal exibido 100: o Lider_Aprendiz recusa com _SN_NEEDCLASS ("Somente personagem Arch."), Equip[15] vazio, nada muda |
+| CV-13 | Arch no Diretor | controle | ✅ | | 2026-10-26 18:16 UTC: Arch exibido 100: o Diretor recusa (NoticeReqNotMet 15), sem teleporte |
 
 <a id="04"></a>
 ## 04 — Molar do Gárgula
