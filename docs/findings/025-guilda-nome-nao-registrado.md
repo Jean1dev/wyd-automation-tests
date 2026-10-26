@@ -1,8 +1,8 @@
 # 025 — Guilda: o /create não registra o nome; o /nick mostra "nao registrada"
 
-**Situação (2026-10-23): corrigido em w2pp-OpenWYD#418 (deploy 4b661398); reteste no Railway pendente (banco saturado).**
+**Situação (2026-10-26): corrigido em w2pp-OpenWYD#418 (reteste 2026-10-26).**
 
-**Status:** corrigido, sem reteste.
+**Status:** corrigido no #418 (reteste 2026-10-26).
 **Issue:** [Jean1dev/w2pp-OpenWYD#417](https://github.com/Jean1dev/w2pp-OpenWYD/issues/417), fechada por [#418](https://github.com/Jean1dev/w2pp-OpenWYD/pull/418)
 **Cenário:** `npm run scenario:guild` (caso GD-08 em [docs/guild.md](../guild.md))
 **Servidor:** `Jean1dev/w2pp-OpenWYD`, tmServer Go (main `55cbf4a3`)
@@ -38,3 +38,8 @@ aqui; não reprova caso.
 - 12:44–13:10 UTC (`reports/2026-10-23T12-44-56-589Z-guild`): nenhum caso rodou. O seed esperou ~25 min por uma conexão ("too many connections", 53300) e desistiu antes de criar o primeiro personagem. Ao mesmo tempo rodava a `quest -- 15` de outra sessão.
 - O cenário cria uma guilda depois do boot, então o reteste cobre a correção, e não o `SetGuildName` do boot.
 - Pendente: rodar `npm run scenario:guild` com o banco livre. Desde então, o bot desiste do banco em 5 min (README, "Banco saturado").
+
+## Reteste (2026-10-26)
+
+- 13:19–13:21 UTC (`reports/2026-10-26T13-19-03-107Z-guild`), main de 12:49 UTC com o #418: 8 ✅ 0 ❌.
+- GD-08 (13:20:58): `bot0noxv6jqj [gdcotwuudg (Fama guilda: 0)] Cidadania: 1 / Fama: 0`. A guilda 4, criada no GD-02 às 13:19:52, já tem o nome sem reiniciar.

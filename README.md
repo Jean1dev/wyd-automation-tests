@@ -685,17 +685,22 @@ Cada passo confere o CreateMob do alvo (guilda e cargo), o gold de quem pagou (U
 
 Códigos de saída: `0` passou · `1` algum caso reprovou · `3` erro de execução. Cada execução grava `reports/<data>-guild/` com `report.json` (casos, frames de cada passo, gold e linhas do banco) e `events.jsonl`.
 
-### Situação (2026-10-23): GD-08 corrigido, reteste pendente
+### Situação (2026-10-26): 8 ✅, GD-08 corrigido
 
-Execução no Railway em 2026-10-23, de 12:13 a 12:20 UTC (`reports/2026-10-23T12-00-30-412Z-guild`): 7 ✅ 1 ❌.
+Reteste no Railway em 2026-10-26, de 13:19 a 13:21 UTC, com o main de 12:49 UTC, que inclui o [w2pp-OpenWYD#418](https://github.com/Jean1dev/w2pp-OpenWYD/pull/418) (`reports/2026-10-26T13-19-03-107Z-guild`): 8 ✅ 0 ❌.
 
-| Caso | Resultado |
-|---|---|
-| GD-01 a GD-06 | ✅ criar, recrutar, promover a sub-líder, sub-líder recruta, e os dois controles |
-| GD-07 persistência | ✅ banco e CreateMob conferem depois do relogin |
-| GD-08 `/nick` | ❌ "Guild #3 (nao registrada)": o `/create` do Go não chamava `SetGuildName`. [finding 025](docs/findings/025-guilda-nome-nao-registrado.md), [w2pp-OpenWYD#417](https://github.com/Jean1dev/w2pp-OpenWYD/issues/417) |
+| Caso | Horário (UTC) | Resultado |
+|---|---|---|
+| GD-01 sem 100M | 13:19:48 | ✅ `/create` recusado, sem guilda nem débito |
+| GD-02 `/create` | 13:19:52 | ✅ guilda 4 criada (banco, CreateMob cargo 9, −100M) |
+| GD-03 líder recruta | 13:19:56 | ✅ |
+| GD-04 membro não recruta | 13:20:08 | ✅ |
+| GD-05 `/subcreate` | 13:20:12 | ✅ |
+| GD-06 sub-líder recruta | 13:20:16 | ✅ |
+| GD-07 persistência | 13:20:58 | ✅ banco e CreateMob conferem depois do relogin |
+| GD-08 `/nick` | 13:20:58 | ✅ `bot0noxv6jqj [gdcotwuudg (Fama guilda: 0)] Cidadania: 1 / Fama: 0`: o nome vale sem reiniciar. [finding 025](docs/findings/025-guilda-nome-nao-registrado.md) corrigido |
 
-Reteste depois de [w2pp-OpenWYD#418](https://github.com/Jean1dev/w2pp-OpenWYD/pull/418) (deploy `4b661398`, 12:44 UTC): nenhum caso rodou. Entre 12:44 e 13:10 UTC (`reports/2026-10-23T12-44-56-589Z-guild`), o seed não conseguiu conexão com o banco ("too many connections") e desistiu antes do primeiro personagem. O GD-08 segue sem reteste.
+A primeira tentativa (13:17 UTC, `reports/2026-10-26T13-17-46-438Z-guild`) parou com código 3 antes do GD-01. O login do S levou notice 8 (banco saturado), e o servidor fecha o socket depois do aviso. O bot tentava de novo na mesma conexão ("envio de AccountLogin com a conexão fechada"). Era um bug do bot: agora o `login` (`src/bot/session.ts`) abre uma conexão nova antes de tentar de novo. Na segunda execução, o L também levou notice 8 às 13:19:10 e entrou na nova tentativa.
 
 O MessagePanel vazio onde o legado manda `_SN_CREATEGUILD`/`_SN_JOINGUILD` só fica registrado; não reprova caso.
 
