@@ -193,6 +193,13 @@ Foram três execuções no Railway entre 01:28 e 01:30 UTC. As duas últimas **p
 
 A primeira acusou falha na troca de gold, mas o erro era do bot. O gold tinha passado certo, e o QuitTrade que fecha a troca chegou ao A antes do UpdateCarry do B. O bot leu esse QuitTrade como recusa e foi corrigido. Nenhuma issue foi necessária.
 
+### Situação (2026-10-26): regressão passa
+
+Uma execução no Railway das 21:40:33 às 21:41:04 UTC, com personagens novos nas duas contas. **Passou** em todas as verificações, sem nenhuma correção no bot:
+- **Item por item (21:40:51):** cada lado recebeu a oferta exata do outro, os dois receberam UpdateCarry, a vela (4038) e a colheita (4039) trocaram de dono com índice e efeitos iguais, e o gold não mudou.
+- **Só gold (21:40:55):** o A passou 12345 ao B (1.000.000 → 987.655 e 1.000.000 → 1.012.345), e os inventários não mudaram.
+- **Relogin (21:41:04):** o inventário e o gold dos dois voltaram iguais ao fim das trocas.
+
 ## Cenário 4 — Quest 256, passos 2 a 5 (Colheita, Cura do Batedor, Mana e Emblema)
 
 `npm run scenario:quest256`
