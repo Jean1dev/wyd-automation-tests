@@ -71,6 +71,19 @@ A trava foi corrigida em [Jean1dev/w2pp-OpenWYD#388](https://github.com/Jean1dev
 
 Como no legado, o personagem que vira 36 dentro do campo é mandado para Armia no primeiro passo. Na execução anterior, das 13:01, o bot tentava voltar pela rota de saída e era expulso de novo a cada ~13 s, até reconectar 7 min depois. Agora a saída trata esse teleporte como chegada a Armia.
 
+### Situação (2026-10-26): regressão passa
+
+Execução de 2026-10-26 21:18–21:26 UTC (`--fresh --until-done`), servidor com o deploy de main das 12:49 UTC (até o #429). Report: `reports/2026-10-26T21-18-52-844Z-training-field-lv35/`. Veredito: **passou**, sem quedas nem desistências (68 kills).
+
+| Verificação | Resultado |
+|---|---|
+| Começa no nível exibido 1 | ✅ 21:18:57 |
+| Nível exibido 35 em até 15 min | ✅ **6,1 min** |
+| Controle positivo (o 35 entra no campo) | ✅ 21:25:46, entra em (2100,2032) |
+| Controle negativo (o 36 é barrado) | ✅ 21:26:41, recebe "Somente nível 35 ou inferior pode entrar no campo de treinamento." e é teleportado para Armia (2091,2103) |
+
+A conta `WYD_ACCOUNT` do `.env` estava com os 4 slots ocupados por personagens de outros cenários, e a primeira tentativa (21:17) parou em "conta sem slot livre". Para não apagar esses personagens, a execução usou uma conta nova do portal, passada só no ambiente do comando (`WYD_ACCOUNT`/`WYD_PASSWORD`/`WYD_PIN`).
+
 ### Antes da correção (2026-10-16): meta de tempo cumprida, trava ausente
 
 Execução de 2026-10-16 22:06–22:15 UTC (`--fresh --until-done`), com o multiplicador de exp do campo no servidor ([Jean1dev/w2pp-OpenWYD#384](https://github.com/Jean1dev/w2pp-OpenWYD/pull/384)). Veredito: **falhou**, só pela trava.
@@ -130,6 +143,21 @@ Antes da correção, a execução de 2026-10-16 22:58 a 2026-10-17 00:02 UTC (`-
 
 O servidor Go não tinha o reset das áreas de quest. Issue: [Jean1dev/w2pp-OpenWYD#386](https://github.com/Jean1dev/w2pp-OpenWYD/issues/386). Veja [docs/findings/002-quest-coveiro-sem-reset.md](docs/findings/002-quest-coveiro-sem-reset.md).
 
+### Situação (2026-10-26): regressão passa
+
+Execução de 2026-10-26 21:27–21:39 UTC (`--fresh --until-done`), servidor com o deploy de main das 12:49 UTC (até o #429). Report: `reports/2026-10-26T21-27-41-925Z-coveiro-quest/`. Veredito: **passou**, sem quedas.
+
+| Verificação | Resultado |
+|---|---|
+| Nível exibido 40 com Poeira de Fada (+1 por uso) | ✅ 21:28:43, em 0,9 min de jogo |
+| Coveiro sem vela não teleporta | ✅ 21:30:04, MessageBoxOk 15 |
+| Intruso na arena volta para a cidade | ✅ 21:30:09, teleportado para (2087,2103) |
+| Vela do Coveiro de graça na Aki | ✅ 21:30:24 |
+| A: a entrega teleporta para a arena | ✅ 21:31:30, (2399,2104), vela consumida |
+| B: o reset manda de volta | ✅ 21:38:58, para Armia (2091,2098), 448 s depois da entrada (ciclo de 10 min do boot) |
+
+Como no cenário 1, a `WYD_ACCOUNT` do `.env` estava sem slot livre, e a execução usou outra conta do portal, passada só no ambiente do comando.
+
 ## Cenário 3 — Troca entre jogadores
 
 `npm run scenario:trade` (exige a segunda conta no `.env`)
@@ -164,6 +192,13 @@ Códigos de saída: `0` passou · `1` falhou · `3` erro de execução. Cada exe
 Foram três execuções no Railway entre 01:28 e 01:30 UTC. As duas últimas **passaram** em todas as verificações: item por item, gold (12345 do A para o B) e relogin.
 
 A primeira acusou falha na troca de gold, mas o erro era do bot. O gold tinha passado certo, e o QuitTrade que fecha a troca chegou ao A antes do UpdateCarry do B. O bot leu esse QuitTrade como recusa e foi corrigido. Nenhuma issue foi necessária.
+
+### Situação (2026-10-26): regressão passa
+
+Uma execução no Railway das 21:40:33 às 21:41:04 UTC, com personagens novos nas duas contas. **Passou** em todas as verificações, sem nenhuma correção no bot:
+- **Item por item (21:40:51):** cada lado recebeu a oferta exata do outro, os dois receberam UpdateCarry, a vela (4038) e a colheita (4039) trocaram de dono com índice e efeitos iguais, e o gold não mudou.
+- **Só gold (21:40:55):** o A passou 12345 ao B (1.000.000 → 987.655 e 1.000.000 → 1.012.345), e os inventários não mudaram.
+- **Relogin (21:41:04):** o inventário e o gold dos dois voltaram iguais ao fim das trocas.
 
 ## Cenário 4 — Quest 256, passos 2 a 5 (Colheita, Cura do Batedor, Mana e Emblema)
 
@@ -228,6 +263,23 @@ Execução de 2026-10-17 14:23–15:01 UTC (`--adopt botq5cm1l --until-done`, Tr
   - As Botas e a Armadura Melpômene levaram a AC a 4399.
   - A Calça ficou de fora por gold (sobraram 156k de 1M). As peças antigas foram vendidas.
 
+### Situação (2026-10-26): passa nos quatro passos
+
+Regressão com o deploy de main de 12:49Z. A primeira execução (21:43–22:18 UTC) cumpriu todos os critérios das arenas, mas reprovou no passo 4 por um **bug do bot**: o servidor manda o `UpdateScore` antes do eco do `MSG_TradingItem`, e o `equipFromCarry` (`src/bot/equip.ts`) dava o equipamento como recusado sem esperar o eco. As Luvas Melpômene tinham sido vestidas (estavam no slot 4 no passo 5). Agora o bot espera o eco ou o aviso e só depois o score.
+
+Execução de 23:17–23:58 UTC (`--fresh --until-done`, TransKnight do 7 ao 321): **passou**, com 41 min de jogo, 320 Poeiras e uma tentativa por passo.
+
+| Passo | Item errado | Intruso | Abaixo do nível | A: entrega | B: reset |
+|---|---|---|---|---|---|
+| 2 Jardineiro | ✅ aviso 15 (23:21:35) | ✅ volta para (2097,2097) | ✅ recusado no 115 | ✅ no 116 → (2235,1714) | ✅ 23:28:58 |
+| 3 Kaizen | ✅ (23:33:20) | ✅ | ✅ no 190 | ✅ no 191 → (465,3902) | ✅ 23:38:58 |
+| 4 Hidra | ✅ (23:44:04) | ✅ | ✅ no 265 | ✅ no 266 → (667,3753) | ✅ 23:48:58 |
+| 5 Elfos | ✅ (23:53:55) | ✅ | ✅ no 320 | ✅ no 321 → (1322,4038) | ✅ 23:58:58 |
+
+- Os quatro itens saíram de graça na Aki, e os resets continuam no ciclo de 10 min (xx:x8:58).
+- Equipamento: Espada em Cruz no 190, Luvas no 265 (AC 296 → 1520), Hrotti, Botas e Armadura no 320 (dano 6177, AC 4399). A Calça ficou de fora por gold.
+- Reports: `reports/2026-10-26T21-43-21-300Z-quest256-chain` (falso negativo do bot) e `reports/2026-10-26T23-17-55-388Z-quest256-chain`.
+
 ## Cenário 5 — Criação do Arch
 
 `npm run scenario:arch` (exige a conta do Arch no `.env`: `npm run account:create -- --arch`)
@@ -276,6 +328,20 @@ Execução de 2026-10-17 15:54–16:10 UTC (`--until-done`): um TransKnight viro
 Duas diferenças do legado, que o cenário não reprova:
 - **Gold do Arch:** ele nasce com 1.000.000 de gold. No legado o BaseSet dá 5.000.000; o Go usa 1.000.000 para todo personagem novo (valor provisório em `dbserver` `server.go`).
 - **Sephirot do Mestre de Skills:** pela leitura do código, o `compSephi` do Go dá `1760 + Class`, enquanto o legado (`_MSG_Quest.cpp:2149`) dá `1759 + Class`. Isso daria a Sephirot de outra classe. Não dá para testar sem as 8 Pedras Arch. Issue: [Jean1dev/w2pp-OpenWYD#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390).
+
+### Situação (2026-10-26): regressão passa
+
+Execução de 2026-10-27 00:00–00:18 UTC (`--fresh --until-done`, conta do Arch nova), com o servidor de main de 2026-10-26 12:49Z (até o PR #429). Um TransKnight virou Arch BeastMaster. O veredito foi **passou**, sem mudança no bot. Relatório: `reports/2026-10-27T00-00-17-572Z-arch-creation/`.
+
+| Verificação | Resultado |
+|---|---|
+| Mortal no nível exibido 400 | ✅ 00:14:59. 399 Poeiras em 15 min. Build TK: Str 2361, Dex 400, Con 600 |
+| Pedra e Sephirot só no inventário | ✅ 00:16:44, sem Arch. O Rei agora pede "Sao necessarias 5 safiras." (antes eram 14) |
+| Conta cheia | ✅ 00:16:53, sem Arch, aviso 31, Pedra e Sephirot continuam equipadas |
+| Pergunta (confirmação 0) | ✅ 00:18:40, sem Arch: "Sao necessarias 5 safiras." |
+| A: criação | ✅ 00:18:42, logout + nova lista, Arch no slot 1, `SendArchEffect(1)`, Equip[10]/[11] do mortal vazios |
+| B: Arch | ✅ 00:18:46, mesmo nome, classe 2 (BM), nível exibido 1, rosto 8, só o corpo, inventário vazio, 1.000.000 de gold |
+| C: mortal | ✅ 00:18:50, slot 0, nível exibido 400, rosto 1, sem a Pedra e a Sephirot |
 
 ## Cenário 6 — Skills de Magia Negra da Foema
 
@@ -353,6 +419,25 @@ Execuções de 2026-10-17 entre 17:02 e 17:28 UTC (`--fresh --until-done`, retom
 
 Na primeira tentativa do Trovão, a conexão caiu 4 s depois do cast. Um processo órfão de uma execução anterior, que tinha sido interrompida, entrou na mesma conta ("Conta desconectada por conexão simultânea."). O `--skill 37` repetiu o cast numa sessão estável, e ele passou.
 
+### Situação (2026-10-26): passa, compra da skill como item corrigida
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). A execução `--fresh --until-done` das 13:43–14:00 UTC (`reports/2026-10-26T13-43-41-340Z-foema-black-magic`) **passou**: 16 min de jogo.
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast: dano / MP (esperado) |
+|---|---|---|---|
+| 32 Ataque de Fogo | ✅ recusada no 6 | 7 | ✅ 75 / 7 (7) |
+| 33 Relâmpago | ✅ no 23 | 24 | ✅ 199 / 10 (10) |
+| 34 Lança de Gelo | ✅ no 46 | 47 | ✅ 397 / 15 (15) |
+| 35 Tempestade de Meteoros | ✅ no 70 | 71 | ✅ 381 e 399, dois alvos / 25 (25) |
+| 36 Nevasca | ✅ no 94 | 95 | ✅ 1206 / 54 (54) |
+| 37 Trovão | ✅ no 124 | 125 | ✅ affect 22 no personagem / 130 (130) |
+| 38 Fênix de Fogo | ✅ no 151 | 152 | ✅ 1852 / 165 (165) |
+
+- **Controles:** não aprendido, alvo fora do alcance e sem MP (27 casts de dreno, último com MP 1) ✅. `AlreadyLearned`, Inferno com `NotEnoughCoin` e relogin (`Learn` 0x7F00, `SkillBonus` 224) ✅.
+- **Compra da skill como item:** ✅ o Foema_Ancian recusa com "Pode comprar itens apenas do mercador." (MessagePanel, como o legado), nenhum item e gold igual. [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+
+Duas execuções antes (13:22 e 13:40 UTC) reprovaram por erro do bot, não do jogo. O controle de compra só contava `MessageBoxOk` e não lia o texto do `MessagePanel` da recusa. E o controle "sem MP" perdia a corrida com a regeneração (`SetHpMp` a cada ~10 s), que devolvia MP entre o último dreno e o cast final. O bot agora lê o texto da recusa, mede o MP no envio do cast e volta a drenar se o MP regenerou.
+
 ## Cenário 7 — Skills de Magia Branca da Foema
 
 `npm run scenario:foema-white` (a mesma conta do cenário 6, com outra Foema: `npm run account:create -- --foema`)
@@ -411,6 +496,35 @@ Execuções de 2026-10-17 entre 17:50 e 18:22 UTC (`--until-done` e duas vezes `
 
 Na primeira execução, os mobs não tiraram HP e só um Gremlin ficou colado. O bot passou a derrubar o HP com o Julgamento e a procurar dois Gremlins juntos. Na segunda tentativa, o filtro de alvos usava o nome igual ao do primeiro ("Gremlin" e "Gremlin_" são nomes diferentes); agora usa a mesma AC.
 
+### Situação (2026-10-26): passa, Julgamento Divino e compra da skill como item corrigidos
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) e o [#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). A execução `--fresh --until-done` das 14:05–14:27 UTC (`reports/2026-10-26T14-05-54-749Z-foema-white-magic`), com a Foema `bot0e0kcmjg6`, **passou** de primeira: 21 min de jogo e 219 Poeiras de Fada.
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast |
+|---|---|---|---|
+| 24 Flecha Mágica | ✅ recusada no 4 | 5 | ✅ 49 de dano / MP 5 (5) |
+| 25 Desintoxicar | ✅ `ReqNotMet` no 19 | 20 | ✅ sem dano / MP 12 (12) |
+| 26 Flash | ✅ no 40 | 41 | ✅ sem dano em dois alvos / MP 40 (40) |
+| 27 Cura | ✅ no 56 | 57 | ✅ +100 (2×0 + 100) / MP 15 (15) |
+| 28 Choque Divino | ✅ no 82 | 83 | ✅ 906 de dano / MP 42 (42) |
+| 29 Recuperar | ✅ no 98 | 99 | ✅ +303 (3×102/2 + 150) / MP 45 (45) |
+| 30 Julgamento Divino | ✅ no 132 | 133 | ✅ dois Gremlins, 14:24:01 UTC (abaixo) / MP 285 (285) |
+
+- **Julgamento Divino em dois Gremlins:** ✅ a Foema estava com 495 de HP.
+  - O 1º alvo levou 2113 e o 2º, 2197. Com os 495 somados aos dois, como no legado, os danos base são 1618 e 1702, dentro da faixa (mínimo 1323).
+  - Somando o HP já reduzido (83), como antes da correção, o 2º daria 2114, acima do máximo possível (1977).
+  - A Foema ficou com 14 de HP (495 → 83 → 14) e veio um `SetHpMp` só, depois do laço, como no legado.
+  - [~~#392~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/392) corrigida no #415.
+- **Controles:**
+  - Desintoxicar não aprendido: descartado. ✅
+  - Sem MP (42 casts de dreno, cast final com MP 0): descartado com `SetHpMp`. ✅
+  - Alvo a 10 tiles, com alcance 6: dano 0. ✅
+- **Compra da skill como item:** ✅ o Foema_Ancian recusa o 5025 com "Pode comprar itens apenas do mercador." (MessagePanel), nenhum item e gold igual. [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+- **Reaprender e Renascimento:** `AlreadyLearned` com 281 pontos livres, e o Renascimento sem os 50M dá `NotEnoughCoin`, sem mudar nada. ✅
+- **Relogin:** `Learn` 0x7F e `SkillBonus` 281. ✅
+- **Curas:** os mobs não tiraram HP antes do Julgamento ser aprendido, então a Cura e a Recuperar foram conjuradas com o HP quase cheio. O valor do eco bate com a fórmula, mas o HP só subiu até o máximo (248 → 256 e 386 → 388).
+- **Flash:** sem dano e com o MP certo. Os alvos voltaram a atacar logo depois (4 ataques nos 4 s antes, 5 depois), o que fica só no relatório.
+
 ## Cenário 8 — Skills de Magia Especial da Foema
 
 `npm run scenario:foema-special` (a mesma conta dos cenários 6 e 7, com uma terceira Foema)
@@ -460,6 +574,33 @@ O MP de todos os casts bateu com a fórmula.
   - o teto do Toque de Athena é 400 no Go e 200/255 no legado.
 
 Na primeira execução, a Velocidade falhou por erro do bot: ele lia a corrida no nibble alto do `AttackRun`, que é o ataque. O `AttackRun` é `ataque × 16 + corrida` (`Basedef.cpp:4711`). Corrigido, o `--skill 41` passou.
+
+### Situação (2026-10-26): passa, Teleporte e compra da skill como item corrigidos
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) e o [#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). A execução `--fresh --until-done` das 14:30–14:46 UTC (`reports/2026-10-26T14-30-11-048Z-foema-special-magic`), com a Foema `bot0r8omh1r4`, **passou** de primeira: 16 min de jogo e 219 Poeiras de Fada.
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast |
+|---|---|---|---|
+| 40 Névoa Venenosa | ✅ recusada no 8 | 9 | ✅ 70 de dano / MP 9 (9) |
+| 41 Velocidade | ✅ no 21 | 22 | ✅ affect 2, corrida 4 → 5 / MP 52 (52) |
+| 42 Teleporte | ✅ no 39 | 40 | ✅ ficou em (2196,2109) nos dois casts, 14:35:23 e 14:35:25 UTC (abaixo) / MP 0 (0) |
+| 43 Escudo Mágico | ✅ no 60 | 61 | ✅ affect 11, AC 88 → 103 (+15) / MP 52 (52) |
+| 44 Arma Mágica | ✅ no 85 | 86 | ✅ affect 9, dano 110 → 581 (+471) / MP 101 (101) |
+| 45 Toque de Athena | ✅ no 109 | 110 | ✅ affect 15, as 4 maestrias +14 / MP 135 (135) |
+| 46 Controle de Mana | ✅ `ReqNotMet` no 140 | 141 | ✅ affect 18 / MP 188 (188) |
+
+- **Teleporte:** ✅ em si mesma, parada em (2196,2109):
+  - com a própria posição no pacote, o `Action` de teleporte voltou para (2196,2109), a mesma célula (em 2026-10-17 ela pulava para a célula ao lado);
+  - com (2211,2119) no pacote, 15 tiles adiante, o `Action` também voltou para (2196,2109). O servidor usa a posição da Foema, como o legado (`_MSG_Attack.cpp:781`), e manda o "Convocado por [...]." (`MessagePanel`) depois.
+  - [~~#393~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/393) corrigida no #415.
+- **Controles:**
+  - Velocidade não aprendida: descartada. ✅
+  - Sem MP (24 casts de dreno, cast final com MP 6 e custo 9): descartado com `SetHpMp`. ✅
+  - Alvo a 9 tiles, com alcance 6: dano 0. ✅
+- **Compra da skill como item:** ✅ o Foema_Ancian recusa o 5041 com "Pode comprar itens apenas do mercador." (MessagePanel), nenhum item e gold igual (995.280). [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+- **Reaprender e Cancelamento:** `AlreadyLearned` com 269 pontos livres, e o Cancelamento sem os 50M dá `NotEnoughCoin`, sem mudar nada. ✅
+- **Relogin:** `Learn` 0x7F0000 e `SkillBonus` 269. ✅
+- As diferenças vistas só na leitura do código (o `DAMAGEMULTI` da Arma Mágica e o teto do Toque de Athena) continuam fora do que o cenário observa.
 
 ## Cenário 9 — Skills do BeastMaster (três árvores)
 
@@ -535,6 +676,72 @@ Execuções de 2026-10-17 entre 19:07 e 20:30 UTC:
   - Na primeira execução das magias, o bot usou o mestre da Foema, e o BM aprendeu as skills dele no Foema_Ancian. Nem o legado nem o Go conferem qual mestre ensina, só o `TargetID` (`_MSG_ApplyBonus.cpp:139`). A execução final usou o Mestre_Archi.
   - Um HP máximo +1 no Astaroth com Asas do Inferno não se repetiu com `--skill 69` e ficou como inconclusivo.
 
+### Situação (2026-10-26): Lobisomem e compra da skill como item corrigidos; HP máximo de Astaroth e Titã fora por 1
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) e o [#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). Foram três execuções `--fresh --until-done`, uma árvore por vez, numa conta BM nova:
+
+| Árvore | BM | UTC | Jogo | Resultado | Relatório |
+|---|---|---|---|---|---|
+| Magias | `bot0dgmjx72v` | 14:49–15:06 | 17,2 min | ✅ tudo | `reports/2026-10-26T14-49-25-363Z-bm-magic` |
+| Evocações | `bot06ndtxn3y` | 15:07–15:22 | 14,8 min | ✅ tudo | `reports/2026-10-26T15-07-02-294Z-bm-summon` |
+| Transformações | `bot0pt23obso` | 15:22–15:50 | 27,8 min | ✅ Lobisomem; ❌ HP máximo de Astaroth e Titã (abaixo) | `reports/2026-10-26T15-22-45-135Z-bm-transform` |
+
+**Magias:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast |
+|---|---|---|---|
+| 48 Fera Flamejante | ✅ recusada no 8 | 9 | ✅ 69 de dano / MP 8 (8) |
+| 49 Chamas Etéreas | ✅ no 20 | 21 | ✅ eco sem efeito no mob / MP 35 (35) |
+| 50 Som das Fadas | ✅ no 43 | 44 | ✅ 384 de dano / MP 20 (20) |
+| 51 Enfraquecer | ✅ no 58 | 59 | ✅ sem dano, nenhum `SendAffect` no mob / MP 35 (35) |
+| 52 Fúria de Gaia | ✅ no 83 | 84 | ✅ 1036 e 945, dois alvos / MP 32 (32) |
+| 53 Proteção Elemental | ✅ no 109 | 110 | ✅ affect 25 Level 81, resistências 0/0/0/0 → 3/3/0/3 / MP 147 (147) |
+| 54 Aura Bestial | ✅ no 139 | 140 | ✅ a Fúria de Gaia disparou sozinha 2 s depois (15:03:23), 1665 e 1603 em dois alvos / MP 213 (213) |
+
+**Evocações:** a quantidade bateu com a fórmula em todas, e cada uma foi seguida de relogin.
+
+| Skill | Antes da hora | Aprendida no nível exibido | Special[2] | Bichos | MP (esperado) |
+|---|---|---|---|---|---|
+| 56 Condor | ✅ no 11 | 12 | 30 | 1 | 34 (34) |
+| 57 Javali | ✅ no 28 | 29 | 30 | 1 | 63 (63) |
+| 58 Lobo | ✅ no 52 | 53 | 40 | 1 | 90 (90) |
+| 59 Urso | ✅ no 76 | 77 | 40 | 1 | 108 (108) |
+| 60 Tigre | ✅ no 104 | 105 | 86 | 2 | 171 (171) |
+| 61 Gorila | ✅ no 135 | 136 | 112 | 1 | 202 (202) |
+| 62 Dragão Negro | ✅ no 169 | 170 | 166 | 2 | 283 (283) |
+
+No relatório, o MP esperado do Condor e do Lobo sai como 30 e 86: o bot calculava o campo `expectedMp` com a maestria de antes de subi-la para a evocação. A verificação `mpCharged` já usava a maestria do cast e passou. O bot agora grava no relatório o valor do cast.
+
+**Transformações:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) | AC antes → depois (legado) | HP máx. antes → depois (legado) |
+|---|---|---|---|---|---|
+| 64 Lobisomem, Level 0 | ✅ no 11 | 12 | 15:23:49 | ✅ 46 → 48 (48) | ✅ 116 → 110 (110) |
+| 65 Coração de Lobo (passiva) | ✅ no 26 | 27 | recusado; Lobisomem refeito 15:28:01 | ✅ 61 → 64 (64) | ✅ 161 → 161 (161) |
+| 66 Homem-Urso, Level 0 | ✅ no 48 | 49 | 15:30:58 | ✅ 83 → 83 (83) | ✅ 228 → 250 (250) |
+| 67 Escudo do Tormento (passiva) | ✅ no 63 | 64 | recusado; Homem-Urso refeito 15:33:50 | ✅ 98 → 98 (98) | ✅ 278 → 347 (347) |
+| 68 Astaroth, Level 88 | ✅ no 96 | 97 | 15:36:49 | ✅ 131 → 142 (142) | ❌ 380 → 409 (410) |
+| 69 Asas do Inferno (passiva) | ✅ no 111 | 112 | recusado; Astaroth refeito 15:42:22 | ✅ 146 → 166 (166) | ❌ 427 → 481 (482) |
+| 70 Titã, Level 140 | ✅ no 155 | 156 | 15:47:57 | ✅ 190 → 247 (247) | ❌ 565 → 639 (638) |
+
+O MP e a corrida bateram em todas.
+
+- **Lobisomem:** ✅ com o multiplicador 95, a AC e o HP máximo agora batem com o `X×multi/100` do legado, sem e com o Coração de Lobo (em 2026-10-17 davam 49/111 e 65). [~~#394~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394) corrigida no #415 para o BM; o Assalto do TK fica para o cenário 11.
+- **HP máximo de Astaroth e Titã:** ❌ 1 ponto abaixo (Astaroth) ou acima (Titã) do legado. A causa não é a do #394, e sim a ordem do EF_HPADD:
+  - o BM novo tem +5% de EF_HPADD no equipamento inicial (Robe 1406 com 4, Calça 1409 com 1);
+  - o legado aplica o EF_HPADD antes do laço dos affects (`Basedef.cpp:3886-3895`) e depois multiplica o HP já com os 5% pela transformação (`Basedef.cpp:4194-4200`);
+  - o Go multiplica a transformação sobre o HP sem os 5% (`handler/transform.go:137`) e só aplica o EF_HPADD na leitura (`handler/item.go:2397`). São dois truncamentos em outra ordem;
+  - com os 5% depois, a conta do Go dá exatamente o recebido nos 7 casos de hoje e nos de 2026-10-17, inclusive o Astaroth com Asas do Inferno (429 → 485, legado 484) que tinha ficado inconclusivo. Com multiplicador baixo, os dois truncamentos coincidem, e por isso Lobisomem e Homem-Urso passam.
+  - Veja [docs/findings/006-transformacao-bm-arredondamento.md](docs/findings/006-transformacao-bm-arredondamento.md). Issue: [Jean1dev/w2pp-OpenWYD#430](https://github.com/Jean1dev/w2pp-OpenWYD/issues/430).
+- **Compra da skill como item:** ✅ o Mestre_Archi recusa o 5049 (14:50:53 UTC), o 5057 (15:08:48) e o 5066 (15:24:24) com "Pode comprar itens apenas do mercador." (MessagePanel), sem item e com o gold igual (995.000). [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+- **Controles:**
+  - skill não aprendida: descartada nas três árvores ✅;
+  - nas magias, alvo a 9 tiles com alcance 6 deu dano 0 ✅, e sem MP (27 casts de dreno, cast final com MP 5 e custo 8) veio descartado com `SetHpMp` ✅;
+  - nas transformações, sem MP (cast final com MP 53 e custo 72) ✅.
+- **Reaprender e a 8ª:** `AlreadyLearned` nas três árvores, e Espírito Vingador, Succubus (no nível exibido 233) e Éden sem os 50M dão `NotEnoughCoin`, sem mudar nada. ✅
+- **Relogin:** `Learn` 0x7F, 0x7F00 e 0x7F0000; `SkillBonus` 260, 222 e 212, iguais ao esperado. ✅
+- Nenhuma queda: as conexões fechadas no log são os relogins do próprio cenário.
+
 ## Cenário 10 — Skills da Huntress (três árvores)
 
 ```
@@ -597,6 +804,62 @@ Execuções de 2026-10-17 entre 21:04 e 21:46 UTC, cerca de 13 min de jogo por �
   - não é uma divergência do Go, e por isso não há issue; o comentário "// 22" do legado sugere que o bit certo seria o 22.
   - Na primeira execução, o bot esperava +65; a verificação agora segue o legado.
 
+### Situação (2026-10-26): passa, compra da skill como item corrigida
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) e o [#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). Foram três execuções `--fresh --until-done`, uma árvore por vez, numa conta HT nova. As três **passaram** de primeira, sem mudança no bot:
+
+| Árvore | HT | UTC | Jogo | Resultado | Relatório |
+|---|---|---|---|---|---|
+| 1 | `bot0bk751ier` | 15:55–16:08 | 13,7 min | ✅ tudo | `reports/2026-10-26T15-55-00-744Z-ht-tree1` |
+| 2 | `bot0uyvqd5o1` | 16:09–16:23 | 13,9 min | ✅ tudo | `reports/2026-10-26T16-09-04-556Z-ht-tree2` |
+| 3 | `bot0blc0r6yp` | 16:23–16:37 | 14,0 min | ✅ tudo | `reports/2026-10-26T16-23-27-748Z-ht-tree3` |
+
+**Árvore 1:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 72 Ataque Fatal | ✅ recusada no 7 | 8 | ✅ 15:55:49, 294 de dano / MP 15 (15) |
+| 73 Ilusão | ✅ no 20 | 21 | ✅ 15:57:53, a HT foi de (2196,2109) a (2191,2109) e o MP caiu 60 com o Ataque Fatal seguinte (45 + 15) |
+| 74 Encantar Gelo (passiva) | ✅ no 42 | 43 | ✅ 15:59:13, cast recusado |
+| 75 Agressividade | ✅ no 59 | 60 | ✅ 16:00:28, affect 27 / MP 30 (30) |
+| 76 Imunidade | ✅ no 87 | 88 | ✅ 16:02:27, affect 19 Level 90 / MP 60 (60) |
+| 77 Meditação | ✅ no 116 | 117 | ✅ 16:04:12, affect 21 Level 123, AC 148 → 97 (−51 = 123/3 + 10) / MP 144 (144) |
+| 78 Lança de Ferro (passiva) | ✅ no 148 | 149 | ✅ 16:06:04, cast recusado |
+
+**Árvore 2:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 80 Golpe Felino | ✅ recusada no 6 | 7 | ✅ 16:09:50, 244 de dano / MP 10 (10) |
+| 81 Ligação Espectral | ✅ no 19 | 20 | ✅ 16:11:55, affect 37 / MP 108 (108) |
+| 82 Perícia do Caçador (passiva) | ✅ no 42 | 43 | ✅ 16:13:19, cast recusado |
+| 83 Alquimia | ✅ no 60 | 61 | só o aprendizado ✅ |
+| 84 Extração | ✅ no 88 | 89 | só o aprendizado ✅ |
+| 85 Explosão Etérea | ✅ no 118 | 119 | ✅ 16:18:11, affect 31 Level 82, AC 150 → 341 (+191 = 82/2 + 150), gold −8200 (100 × 82) / MP 169 (169) |
+| 86 Escudo Dourado | ✅ no 145 | 146 | ✅ 16:19:59, 3211 e 3675 em dois alvos / MP 41 (41) |
+
+**Árvore 3:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 88 Lâmina das Sombras | ✅ recusada no 8 | 9 | ✅ 16:24:17, 261 de dano / MP 9 (9) |
+| 89 Evasão Aprimorada | ✅ no 22 | 23 | ✅ 16:26:23, affect 26 / MP 24 (24) |
+| 90 Toxina (passiva) | ✅ no 39 | 40 | ✅ 16:27:36, cast recusado |
+| 91 Visão Caçadora (passiva) | ✅ no 62 | 63 | ✅ 16:28:59, cast recusado |
+| 92 Olhos de Águia | ✅ no 87 | 88 | ✅ 16:30:59, affect 36 Level 92 / MP 43 (43) |
+| 93 Lâmina Aérea (passiva) | ✅ no 117 | 118 | ✅ 16:32:48, cast recusado |
+| 94 Proteção das Sombras (passiva) | ✅ no 149 | 150 | ✅ 16:34:41, cast recusado; AC ao aprender 181 → 181, como no legado (bit 23, ver 2026-10-17) |
+
+- **Compra da skill como item:** ✅ o ForeLearner recusa o 5073 (15:56:10 UTC), o 5081 (16:10:11) e o 5089 (16:24:38) com "Pode comprar itens apenas do mercador." (MessagePanel), sem item e com o gold igual. [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+- **Aprender:** em todas, liga só o bit da skill, desconta os pontos exatos e não cobra gold ✅.
+- **Controles:**
+  - skill não aprendida: descartada nas três árvores ✅ (o tm-server registra `crack error` group 8 code 10 às 16:10:31 e 16:24:57, sem derrubar a conexão);
+  - alvo fora do alcance: dano 0 ✅ (6 tiles com alcance 2, 5 com alcance 2, 9 com alcance 6);
+  - sem MP: descartado com `SetHpMp` ✅ (MP 14 com custo 15, 7 com 10, 7 com 9).
+- **Reaprender e a 8ª:** `AlreadyLearned` nas três árvores, e Tempestade de Raios, Troca de Espíritos e Invisibilidade (no nível exibido 221) sem os 50M dão `NotEnoughCoin`, sem mudar nada. ✅
+- **Relogin:** `Learn` 0x7F, 0x7F00 e 0x7F0000; `SkillBonus` 233, 242 e 234, iguais ao esperado. ✅
+- Nenhuma queda: as conexões fechadas no log são os relogins do próprio cenário.
+
 ## Cenário 11 — Skills do TransKnight (três árvores)
 
 ```
@@ -622,7 +885,7 @@ npm run scenario:tk-3            # 16–23, Special[3]
 | | 7 Destino (8ª) | a recusa; os pontos somam 689, então ela vem no nível exibido 223 |
 | 2 | 8 Carga, 10 Golpe Mortal, 12 Espada da Fênix | dano (alcance 1) |
 | | 9 Mestre das Armas, 14 Noção de Combate | passivas |
-| | 11 Assalto | affect 13: HP máximo ⌊M×9/10⌋ do legado, com o EF_HPADD; o dano fica informativo |
+| | 11 Assalto | affect 13: HP máximo ⌊H×9/10⌋ do legado, com H o HP mostrado (o EF_HPADD entra antes); o dano fica informativo |
 | | 13 Samaritano | affect 24 (o Go diverge do legado de propósito, issue #267) |
 | | 15 Armadura Crítica (8ª) | a recusa |
 | 3 | 16 Perseguição | debuff sem dano |
@@ -663,6 +926,72 @@ Execuções de 2026-10-17 entre 22:10 e 23:30 UTC:
   - o controle de MP da Carga procurava mob a −1 tile;
   - o HP do Possuído não levava em conta o EF_HPADD +5% do equipamento inicial do TK.
 
+### Situação (2026-10-26): passa nas três árvores, compra da skill como item corrigida; Assalto fora por 1 conforme o HP (ordem do EF_HPADD)
+
+Reteste com o deploy de main de 12:49 UTC, que inclui o [w2pp-OpenWYD#415](https://github.com/Jean1dev/w2pp-OpenWYD/pull/415) e o [#416](https://github.com/Jean1dev/w2pp-OpenWYD/pull/416). Foram três execuções `--fresh --until-done`, uma árvore por vez, numa conta TK nova, e depois uma repetição do Assalto com `npm run scenario:tk-2 -- --skill 11` no TK da árvore 2 já no nível exibido 220:
+
+| Árvore | TK | UTC | Jogo | Resultado | Relatório |
+|---|---|---|---|---|---|
+| 1 | `bot01a7tq3h3` | 16:40–16:53 | 13,2 min | ✅ tudo | `reports/2026-10-26T16-40-00-146Z-tk-tree1` |
+| 2 | `bot0mczb043r` | 16:53–17:07 | 13,2 min | ✅ tudo (Assalto com HP mostrado 454) | `reports/2026-10-26T16-53-37-788Z-tk-tree2` |
+| 2, `--skill 11` | `bot0mczb043r` | 17:20–17:21 | — | ❌ HP máximo do Assalto 1 abaixo do legado (HP mostrado 1158) | `reports/2026-10-26T17-20-30-792Z-tk-tree2` |
+| 3 | `bot01n2j8puy` | 17:07–17:20 | 13,0 min | ✅ tudo | `reports/2026-10-26T17-07-12-403Z-tk-tree3` |
+
+**Árvore 1:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 0 Giro da Fúria | ✅ recusada no 8 | 9 | ✅ 16:40:51, 40 e 45 em dois alvos / MP 15 (15) |
+| 1 Toque Sagrado | ✅ no 24 | 25 | ✅ 16:42:44, sem dano em dois alvos, nenhum `SendAffect` no mob / MP 20 (20) |
+| 2 Golpe Duplo | ✅ no 46 | 47 | ✅ 16:43:58, 124 de dano / MP 10 (10) |
+| 3 Possuído | ✅ no 87 | 88 | ✅ 16:46:19, affect 14 Level 87, Con 88 → 163 (+75 = 87×3/4 + 10), HP máx. 538 → 696 (+150 × 105%) / MP 150 (150) |
+| 4 Fanatismo | ✅ no 98 | 99 | ✅ 16:47:20, 477 de dano / MP 44 (44) |
+| 5 Aura da Vida | ✅ no 125 | 126 | ✅ 16:48:54, affect 17 Level 126 / MP 86 (86) |
+| 6 Fúria Divina | ✅ no 155 | 156 | ✅ 16:50:39, o mob foi puxado de (2196,2107) para (2198,2107) no 3º cast / MP 131 (131) |
+
+**Árvore 2:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 8 Carga | ✅ recusada no 7 | 8 | ✅ 16:54:28, 178 de dano / MP 12 (12) |
+| 9 Mestre das Armas (passiva) | ✅ no 22 | 23 | ✅ 16:56:23, cast recusado |
+| 10 Golpe Mortal | ✅ no 45 | 46 | ✅ 16:57:43, 942 de dano / MP 20 (20) |
+| 11 Assalto | ✅ no 71 | 72 | ✅ 16:59:07, affect 13, HP máx. 454 → 408 (408); dano 215 → 229, informativo / MP 47 (47) |
+| 11 Assalto, `--skill 11` | — | — | ❌ 17:21:05, affect 13 Level 200, HP máx. 1158 → 1041 (1042); dano 654 → 830, informativo / MP 94 (94) |
+| 12 Espada da Fênix | ✅ no 95 | 96 | ✅ 17:00:50, 2040 de dano / MP 32 (32) |
+| 13 Samaritano | ✅ no 119 | 120 | ✅ 17:02:12, affect 24 Level 62 / MP 32 (32) |
+| 14 Noção de Combate (passiva) | ✅ no 149 | 150 | ✅ 17:04:03, cast recusado |
+
+**Árvore 3:**
+
+| Skill | Antes da hora | Aprendida no nível exibido | Cast (UTC) |
+|---|---|---|---|
+| 16 Perseguição | ✅ recusada no 26 | 27 | ✅ 17:08:38, sem dano, nenhum `SendAffect` no mob / MP 25 (25) |
+| 17 Espada Flamejante | — (os pontos já davam no 23; o bot aprende em ordem, depois da 16) | 27 | ✅ 17:09:52, 96 e 93 em dois alvos / MP 25 (25); no cast anterior, o 2º alvo deu parry (−3, `_MSG_Attack.cpp:1427`) |
+| 18 Contra Ataque | ✅ no 43 | 44 | ✅ 17:10:58, 147 de dano / MP 17 (17) |
+| 19 Lâmina Congelante | ✅ no 69 | 70 | ✅ 17:12:23, 204 de dano / MP 22 (22) |
+| 20 Ataque da Alma | ✅ no 91 | 92 | ✅ 17:14:13, 475 de dano / MP 44 (44) |
+| 21 Punhalada Venenosa | ✅ no 120 | 121 | ✅ 17:15:51, 651 de dano / MP 61 (61) |
+| 22 Exterminar | ✅ no 150 | 151 | ✅ 17:17:49, MP 262 → 0, 1046 de dano (≥ 262 + 6) |
+
+- **Assalto:** o arredondamento do #394 está corrigido: com o HP mostrado 454 (M = 433), o Go de antes do #415 daria 409, e veio 408. Mas o HP máximo ainda sai ±1 do legado conforme o HP, pela ordem do EF_HPADD, a mesma do Astaroth e do Titã no cenário 9:
+  - o TK novo tem +5% de EF_HPADD no equipamento inicial (Armadura de Couro 1115 com 4 e Calça de Couro 1127 com 1, BaseMob/TK);
+  - o legado aplica o EF_HPADD antes do laço dos affects (`Basedef.cpp:3886-3895`) e o Assalto faz `MaxHp×9/10` sobre o HP que já tem os 5% (`Basedef.cpp:4047-4050`): ⌊H×9/10⌋;
+  - o Go faz o 9/10 sobre o HP sem os 5% (`handler/affect_score.go:144`) e só aplica o EF_HPADD na leitura (`handler/item.go:2397`): ⌊⌊M×9/10⌋×105/100⌋;
+  - com M = 433, os dois dão 408 (✅ 16:59:07); com M = 1103, o legado dá 1042 e o Go 1041 (❌ 17:21:05). Entre M = 100 e 2000, 688 dos 1901 valores saem ±1;
+  - o caso de 2026-10-17 com M = 1103 (Go 1042) estava, na verdade, igual ao legado: o bot esperava 1041 porque calculava o legado na ordem do Go. O M = 435 (Go 411, legado 410) era mesmo o #394.
+  - [~~#394~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/394) corrigida no #415 também no TK; o desvio que sobra é o da ordem do EF_HPADD. Veja [docs/findings/006-transformacao-bm-arredondamento.md](docs/findings/006-transformacao-bm-arredondamento.md). Issue: [Jean1dev/w2pp-OpenWYD#430](https://github.com/Jean1dev/w2pp-OpenWYD/issues/430).
+- **Compra da skill como item:** ✅ o Cap.Cavaleiros recusa o 5001 (16:41:08 UTC), o 5010 (16:54:44) e o 5017 (17:08:55) com "Pode comprar itens apenas do mercador." (MessagePanel), sem item e com o gold igual. [~~#391~~](https://github.com/Jean1dev/w2pp-OpenWYD/issues/391) corrigida no #416.
+- **Aprender:** em todas, liga só o bit da skill, desconta os pontos exatos e não cobra gold ✅.
+- **Controles:**
+  - skill não aprendida: descartada nas três árvores ✅ (o tm-server registra `crack error` group 8 code 10 às 16:55:03 e 17:09:13, sem derrubar a conexão);
+  - alvo fora do alcance: dano 0 ✅ (9 tiles com alcance 5, 6 com alcance 1);
+  - sem MP: descartado com `SetHpMp` ✅ (MP 8 com custo 15, 4 com 12).
+- **Reaprender e a 8ª:** `AlreadyLearned` nas três árvores, e Destino (no nível exibido 223), Armadura Crítica e Tempestade de Gelo (no 220) sem os 50M dão `NotEnoughCoin`, sem mudar nada. ✅
+- **Relogin:** `Learn` 0x7F, 0x7F00 e 0x7F0000; `SkillBonus` 224, 230 e 227, iguais ao esperado. ✅
+- **Correção no bot:** a verificação `maxHpExact` do Assalto calculava o legado como ⌊⌊M×9/10⌋×105/100⌋, que é a ordem do Go, e por isso não pegava o desvio do EF_HPADD. Agora ela usa ⌊H×9/10⌋ sobre o HP mostrado, como o `Basedef.cpp` (`src/scenarios/skillTree.ts`).
+- Nenhuma queda: as conexões fechadas no log são os relogins do próprio cenário.
+
 ## Cenário 12 — Guilda
 
 `npm run scenario:guild` (exige `WYD_DATABASE_URL` no `.env`; as contas do `.env` não são usadas)
@@ -685,17 +1014,22 @@ Cada passo confere o CreateMob do alvo (guilda e cargo), o gold de quem pagou (U
 
 Códigos de saída: `0` passou · `1` algum caso reprovou · `3` erro de execução. Cada execução grava `reports/<data>-guild/` com `report.json` (casos, frames de cada passo, gold e linhas do banco) e `events.jsonl`.
 
-### Situação (2026-10-23): GD-08 corrigido, reteste pendente
+### Situação (2026-10-26): 8 ✅, GD-08 corrigido
 
-Execução no Railway em 2026-10-23, de 12:13 a 12:20 UTC (`reports/2026-10-23T12-00-30-412Z-guild`): 7 ✅ 1 ❌.
+Reteste no Railway em 2026-10-26, de 13:19 a 13:21 UTC, com o main de 12:49 UTC, que inclui o [w2pp-OpenWYD#418](https://github.com/Jean1dev/w2pp-OpenWYD/pull/418) (`reports/2026-10-26T13-19-03-107Z-guild`): 8 ✅ 0 ❌.
 
-| Caso | Resultado |
-|---|---|
-| GD-01 a GD-06 | ✅ criar, recrutar, promover a sub-líder, sub-líder recruta, e os dois controles |
-| GD-07 persistência | ✅ banco e CreateMob conferem depois do relogin |
-| GD-08 `/nick` | ❌ "Guild #3 (nao registrada)": o `/create` do Go não chamava `SetGuildName`. [finding 025](docs/findings/025-guilda-nome-nao-registrado.md), [w2pp-OpenWYD#417](https://github.com/Jean1dev/w2pp-OpenWYD/issues/417) |
+| Caso | Horário (UTC) | Resultado |
+|---|---|---|
+| GD-01 sem 100M | 13:19:48 | ✅ `/create` recusado, sem guilda nem débito |
+| GD-02 `/create` | 13:19:52 | ✅ guilda 4 criada (banco, CreateMob cargo 9, −100M) |
+| GD-03 líder recruta | 13:19:56 | ✅ |
+| GD-04 membro não recruta | 13:20:08 | ✅ |
+| GD-05 `/subcreate` | 13:20:12 | ✅ |
+| GD-06 sub-líder recruta | 13:20:16 | ✅ |
+| GD-07 persistência | 13:20:58 | ✅ banco e CreateMob conferem depois do relogin |
+| GD-08 `/nick` | 13:20:58 | ✅ `bot0noxv6jqj [gdcotwuudg (Fama guilda: 0)] Cidadania: 1 / Fama: 0`: o nome vale sem reiniciar. [finding 025](docs/findings/025-guilda-nome-nao-registrado.md) corrigido |
 
-Reteste depois de [w2pp-OpenWYD#418](https://github.com/Jean1dev/w2pp-OpenWYD/pull/418) (deploy `4b661398`, 12:44 UTC): nenhum caso rodou. Entre 12:44 e 13:10 UTC (`reports/2026-10-23T12-44-56-589Z-guild`), o seed não conseguiu conexão com o banco ("too many connections") e desistiu antes do primeiro personagem. O GD-08 segue sem reteste.
+A primeira tentativa (13:17 UTC, `reports/2026-10-26T13-17-46-438Z-guild`) parou com código 3 antes do GD-01. O login do S levou notice 8 (banco saturado), e o servidor fecha o socket depois do aviso. O bot tentava de novo na mesma conexão ("envio de AccountLogin com a conexão fechada"). Era um bug do bot: agora o `login` (`src/bot/session.ts`) abre uma conexão nova antes de tentar de novo. Na segunda execução, o L também levou notice 8 às 13:19:10 e entrou na nova tentativa.
 
 O MessagePanel vazio onde o legado manda `_SN_CREATEGUILD`/`_SN_JOINGUILD` só fica registrado; não reprova caso.
 
@@ -738,6 +1072,18 @@ Reteste de 2026-10-26 com o cliente real (`testeup`): **ainda cai**, às 11:06:5
 ### Situação (2026-10-26): corrigido
 
 O [w2pp-OpenWYD#428](https://github.com/Jean1dev/w2pp-OpenWYD/pull/428) limita a fila de saída por bytes (128 KB, como o legado), com deploy às 11:41:45Z. O `testeup` foi até o Coliseu e voltou sem cair: o pico foi de 83 frames e 19 KB na fila, e nenhum `session out queue full`.
+
+### Situação (2026-10-26): regressão passa
+
+Execução de 2026-10-27 00:20–00:35 UTC (`npm run scenario:coliseu`, com banco, contas novas), com o servidor de main de 2026-10-26 12:49Z (até o PR #429). Os 5 casos foram **passa**, sem mudança no bot. Nenhum caso caiu, morreu ou recebeu aviso do servidor. Relatório: `reports/2026-10-27T00-20-38-083Z-quest-90/`.
+
+| Caso | Resultado |
+|---|---|
+| CL-01 passos de 4 tiles | ✅ 00:23:31, pico 61 frames/s, 159 mobs à vista |
+| CL-02 passos de 1 tile | ✅ 00:26:27, pico 70 frames/s, 161 mobs |
+| CL-04 `MSG_NoViewMob` | ✅ 00:29:19, pico 68 frames/s, 160 mobs |
+| CL-05 passos de 7 tiles | ✅ 00:32:13, pico 99 frames/s (98 RemoveMob às 00:31:44), 161 mobs; antes caía com `session out queue full` |
+| CL-03 leitura pausada 2 s | ✅ 00:35:07, pico 67 frames/s, 159 mobs |
 
 ## Mapa das quests principais
 

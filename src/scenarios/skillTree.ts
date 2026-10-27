@@ -41,7 +41,7 @@ import { buyItem, type Purchase } from '../bot/npc.ts';
 import { Progress } from '../bot/progress.ts';
 import { FAIRY_DUST, useDustUntil } from '../bot/quest.ts';
 import { enterWorld, login } from '../bot/session.ts';
-import { castSkill, learnSkill, NOTICE, noticeName, openSkillShop, syntheticAttacks, tiles, type CastResult, type LearnAttempt } from '../bot/skills.ts';
+import { CAST_GAP_MS, castSkill, learnSkill, NOTICE, noticeName, openSkillShop, syntheticAttacks, tiles, type CastResult, type LearnAttempt } from '../bot/skills.ts';
 import { reviveAfterDeath } from '../bot/survival.ts';
 import { isInArmia } from '../bot/travel.ts';
 import { shownLevel, sleep } from '../bot/util.ts';
@@ -126,7 +126,7 @@ interface State extends CharacterState {
     unlearned?: CastResult & { ok: boolean };
     outOfRange?: CastResult & { ok: boolean; note?: string };
     noMana?: { drained: number; final?: CastResult; ok: boolean; note?: string };
-    buyAsItem?: { npcSlot: number; index: number; slot: number; gotItem?: number; notices: number[]; coinBefore: number; coinAfter: number; ok: boolean };
+    buyAsItem?: { npcSlot: number; index: number; slot: number; gotItem?: number; notices: number[]; texts?: string[]; coinBefore: number; coinAfter: number; ok: boolean };
   };
   /** Relogins pedidos porque o SkillBonus não acompanhou o nível (o login recalcula). */
   pointRelogins: number[];
@@ -556,13 +556,14 @@ async function castBuff(c: GameClient, s: SkillDef, cc: CastCheck): Promise<void
     case 15: cc.checks.specialUp = after.special.every((v, k) => v - before.special[k] === expectedGain); break;
     case 13: {
       const exp = assaultScore({ damage: before.damage, maxHp: before.maxHp });
-      // O HP máximo mostrado leva o EF_HPADD do equipamento: base M = mostrado/(1 + pct); o legado dá ⌊M×9/10⌋.
-      const m = Math.round(before.maxHp / 1.05);
-      const legacyHp = Math.trunc((Math.trunc((m * 9) / 10) * 105) / 100);
+      // O legado aplica o EF_HPADD antes do laço dos affects (Basedef.cpp:3886-3895) e o Assalto faz
+      // MaxHp×9/10 sobre o HP que já tem o HPADD (Basedef.cpp:4047-4050): ⌊mostrado×9/10⌋. Não é
+      // ⌊⌊M×9/10⌋×(100+pct)/100⌋, que é a ordem do Go (affect_score.go:144 e item.go effectiveMaxHP).
+      const legacyHp = exp.maxHp;
       cc.checks.maxHpExact = after.maxHp === legacyHp;
       // O dano não é comparável direto: o Go separa o dano da arma (weaponDamage) e aplica os +15% e o
       // DAMAGEMULTI só na parte base (handler/item.go effectiveDamage); fica informativo.
-      cc.note = `dano ${before.damage} → ${after.damage} (legado, com a arma dentro do Damage: ${exp.damage} antes do DAMAGEMULTI); HP máx. ${before.maxHp} → ${after.maxHp} (legado ⌊M×9/10⌋ com o HPADD: ${legacyHp})`;
+      cc.note = `dano ${before.damage} → ${after.damage} (legado, com a arma dentro do Damage: ${exp.damage} antes do DAMAGEMULTI); HP máx. ${before.maxHp} → ${after.maxHp} (legado ⌊mostrado×9/10⌋, com o HPADD antes: ${legacyHp})`;
       break;
     }
     case 14: {
@@ -663,6 +664,7 @@ async function castSummon(c: GameClient, state: State, s: SkillDef, cc: CastChec
   const expected = summonCount(s.summon!, special(c));
   const r = await castSkill(c, log, s.id, 'self');
   cc.attempts.push(r);
+  cc.expectedMp = manaCost(s.mana, r.special); // a maestria subiu depois do expectedMp inicial
   await sleep(2500); // CreateMob dos bichos
   const mobName = SUMMON_MOB[s.summon!];
   const fresh = [...c.mobs.values()].filter((m) => !before.has(m.id) && !m.isPlayer && tiles(me, m) <= 6);
@@ -915,6 +917,8 @@ async function controls(c: GameClient, state: State): Promise<void> {
       const r = {
         npcSlot: offer.npcSlot, index: offer.index, slot, gotItem: got?.item.index,
         notices: frames.filter((f) => f.header.type === Op.MessageBoxOk).map((f) => P.parseNotice(f.body)),
+        // A recusa do legado ("Pode comprar itens apenas do mercador.") vem como texto (MessagePanel), não como MessageBoxOk.
+        texts: frames.filter((f) => f.header.type === Op.MessagePanel || f.header.type === Op.MessageChat).map((f) => P.parseText(f.body)),
         coinBefore, coinAfter: me.coin, ok: !got?.item.index && me.carry[slot]?.index !== offer.index,
       };
       state.controls.buyAsItem = r;
@@ -959,11 +963,16 @@ async function controls(c: GameClient, state: State): Promise<void> {
     let drained = 0;
     const cost = () => manaCost(first.mana, special(c));
     const target = async (): Promise<Mob[] | 'self'> => (selfCast ? 'self' : [farMob() ?? (await mobsInReach(c, Math.max(1, first.range - 2)))[0]]);
-    for (let i = 0; i < 120 && me.mp >= cost(); i++) {
-      if (me.hp < me.maxHp * 0.35) await walkTo(c, CAST_SPOT.x - 10, CAST_SPOT.y); // sai de perto sem descansar o MP
-      const r = await castSkill(c, log, first.id, await target());
-      if (r.echo) drained++;
-      else break;
+    // A regeneração (SetHpMp a cada ~10 s) pode chegar entre o último dreno e o cast final: depois
+    // do intervalo entre casts, confere o MP de novo e drena mais, se ele voltou a cobrir o custo.
+    for (let round = 0; round < 5 && me.mp >= cost(); round++) {
+      for (let i = 0; i < 120 && me.mp >= cost(); i++) {
+        if (me.hp < me.maxHp * 0.35) await walkTo(c, CAST_SPOT.x - 10, CAST_SPOT.y); // sai de perto sem descansar o MP
+        const r = await castSkill(c, log, first.id, await target());
+        if (r.echo) drained++;
+        else break;
+      }
+      await sleep(CAST_GAP_MS);
     }
     if (me.mp < cost()) {
       const r = await castSkill(c, log, first.id, selfCast ? 'self' : [(await mobsInReach(c, Math.max(1, first.range - 2)))[0]]); // só a falta de MP impede
