@@ -329,6 +329,20 @@ Duas diferenças do legado, que o cenário não reprova:
 - **Gold do Arch:** ele nasce com 1.000.000 de gold. No legado o BaseSet dá 5.000.000; o Go usa 1.000.000 para todo personagem novo (valor provisório em `dbserver` `server.go`).
 - **Sephirot do Mestre de Skills:** pela leitura do código, o `compSephi` do Go dá `1760 + Class`, enquanto o legado (`_MSG_Quest.cpp:2149`) dá `1759 + Class`. Isso daria a Sephirot de outra classe. Não dá para testar sem as 8 Pedras Arch. Issue: [Jean1dev/w2pp-OpenWYD#390](https://github.com/Jean1dev/w2pp-OpenWYD/issues/390).
 
+### Situação (2026-10-26): regressão passa
+
+Execução de 2026-10-27 00:00–00:18 UTC (`--fresh --until-done`, conta do Arch nova), com o servidor de main de 2026-10-26 12:49Z (até o PR #429). Um TransKnight virou Arch BeastMaster. O veredito foi **passou**, sem mudança no bot. Relatório: `reports/2026-10-27T00-00-17-572Z-arch-creation/`.
+
+| Verificação | Resultado |
+|---|---|
+| Mortal no nível exibido 400 | ✅ 00:14:59. 399 Poeiras em 15 min. Build TK: Str 2361, Dex 400, Con 600 |
+| Pedra e Sephirot só no inventário | ✅ 00:16:44, sem Arch. O Rei agora pede "Sao necessarias 5 safiras." (antes eram 14) |
+| Conta cheia | ✅ 00:16:53, sem Arch, aviso 31, Pedra e Sephirot continuam equipadas |
+| Pergunta (confirmação 0) | ✅ 00:18:40, sem Arch: "Sao necessarias 5 safiras." |
+| A: criação | ✅ 00:18:42, logout + nova lista, Arch no slot 1, `SendArchEffect(1)`, Equip[10]/[11] do mortal vazios |
+| B: Arch | ✅ 00:18:46, mesmo nome, classe 2 (BM), nível exibido 1, rosto 8, só o corpo, inventário vazio, 1.000.000 de gold |
+| C: mortal | ✅ 00:18:50, slot 0, nível exibido 400, rosto 1, sem a Pedra e a Sephirot |
+
 ## Cenário 6 — Skills de Magia Negra da Foema
 
 `npm run scenario:foema-black` (exige a conta do cenário no `.env`: `npm run account:create -- --foema`)
