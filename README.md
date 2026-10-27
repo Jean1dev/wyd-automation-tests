@@ -1073,6 +1073,18 @@ Reteste de 2026-10-26 com o cliente real (`testeup`): **ainda cai**, às 11:06:5
 
 O [w2pp-OpenWYD#428](https://github.com/Jean1dev/w2pp-OpenWYD/pull/428) limita a fila de saída por bytes (128 KB, como o legado), com deploy às 11:41:45Z. O `testeup` foi até o Coliseu e voltou sem cair: o pico foi de 83 frames e 19 KB na fila, e nenhum `session out queue full`.
 
+### Situação (2026-10-26): regressão passa
+
+Execução de 2026-10-27 00:20–00:35 UTC (`npm run scenario:coliseu`, com banco, contas novas), com o servidor de main de 2026-10-26 12:49Z (até o PR #429). Os 5 casos foram **passa**, sem mudança no bot. Nenhum caso caiu, morreu ou recebeu aviso do servidor. Relatório: `reports/2026-10-27T00-20-38-083Z-quest-90/`.
+
+| Caso | Resultado |
+|---|---|
+| CL-01 passos de 4 tiles | ✅ 00:23:31, pico 61 frames/s, 159 mobs à vista |
+| CL-02 passos de 1 tile | ✅ 00:26:27, pico 70 frames/s, 161 mobs |
+| CL-04 `MSG_NoViewMob` | ✅ 00:29:19, pico 68 frames/s, 160 mobs |
+| CL-05 passos de 7 tiles | ✅ 00:32:13, pico 99 frames/s (98 RemoveMob às 00:31:44), 161 mobs; antes caía com `session out queue full` |
+| CL-03 leitura pausada 2 s | ✅ 00:35:07, pico 67 frames/s, 159 mobs |
+
 ## Mapa das quests principais
 
 [docs/quests/README.md](docs/quests/README.md) mapeia as quests principais do jogo para os próximos cenários. São 14 grupos, do novato ao Sub-Celestial. Para cada quest, o mapa traz:
